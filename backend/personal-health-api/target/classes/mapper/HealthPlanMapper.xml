@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.kmbeast.mapper.HealthPlanMapper">
+
+    <insert id="save" parameterType="cn.kmbeast.pojo.entity.HealthPlan">
+        INSERT INTO health_plan (id, user_id, plan_date, target_calories, exercise_minutes, sleep_hours, water_cups, create_time)
+        VALUES (#{id}, #{userId}, #{planDate}, #{targetCalories}, #{exerciseMinutes}, #{sleepHours}, #{waterCups}, #{createTime})
+    </insert>
+
+
+    <delete id="batchDelete" parameterType="list">
+        DELETE FROM health_plan WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <update id="update">
+        UPDATE health_plan
+        <set>
+            <if test="planDate != null">
+                plan_date = #{planDate},
+            </if>
+            <if test="targetCalories != null">
+                target_calories = #{targetCalories},
+            </if>
+            <if test="exerciseMinutes != null">
+                exercise_minutes = #{exerciseMinutes},
+            </if>
+            <if test="sleepHours != null">
+                sleep_hours = #{sleepHours},
+            </if>
+            <if test="waterCups != null">
+                water_cups = #{waterCups},
+            </if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id} AND user_id = #{userId}
+    </update>
+
+    <!-- 添加获取最近一次健康计划的查询 -->
+    <select id="getLatestPlan" resultMap="BaseResultMap">
+        SELECT hp.*, u.user_name
+        FROM health_plan hp
+                 LEFT JOIN user u ON hp.user_id = u.id
+        WHERE hp.user_id = #{userId}
+        ORDER BY hp.plan_date DESC, hp.create_time DESC
+            LIMIT 1
+    </select>
+
+    <select id="queryUser" resultMap="BaseResultMap">
+        SELECT hp.*, u.user_name, u.user_avatar
+        FROM health_plan hp
+        LEFT JOIN user u ON hp.user_id = u.id
+        <where>
+            <if test="id != null">
+                AND hp.id = #{id}
+            </if>
+            <if test="userId != null">
+                AND hp.user_id = #{userId}
+            </if>
+            <if test="planDate != null">
+                AND DATE(hp.plan_date) = DATE(#{planDate})
+            </if>
+            <if test="startTime != null and endTime != null">
+                AND hp.create_time BETWEEN #{startTime} AND #{endTime}
+            </if>
+        </where>
+        ORDER BY hp.plan_date DESC
+        <if test="current != null and size != null">
+            LIMIT #{current},#{size}
+        </if>
+    </select>
+
+
+    <select id="queryCount" resultType="integer">
+        SELECT COUNT(*)
+        FROM health_plan hp
+        <where>
+            <if test="id != null">
+                AND hp.id = #{id}
+            </if>
+            <if test="userId != null">
+                AND hp.user_id = #{userId}
+            </if>
+            <if test="planDate != null">
+                AND DATE(hp.plan_date) = DATE(#{planDate})
+            </if>
+            <if test="startTime != null and endTime != null">
+                AND hp.create_time BETWEEN #{startTime} AND #{endTime}
+            </if>
+        </where>
+    </select>
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.kmbeast.pojo.vo.HealthPlanVO">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="plan_date" property="planDate"/>
+        <result column="target_calories" property="targetCalories"/>
+        <result column="exercise_minutes" property="exerciseMinutes"/>
+        <result column="sleep_hours" property="sleepHours"/>
+        <result column="water_cups" property="waterCups"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+</mapper>
+

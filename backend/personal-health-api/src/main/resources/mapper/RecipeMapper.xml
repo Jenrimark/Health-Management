@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.kmbeast.mapper.RecipeMapper">
+
+    <!-- 用户端SQL保持不变 -->
+    <select id="getRecommendations" resultType="cn.kmbeast.pojo.entity.Recipe">
+        SELECT * FROM recipe
+        WHERE region_id = #{regionId} AND season_id = #{seasonId}
+        ORDER BY meal_type
+    </select>
+
+    <select id="getAllRegions" resultType="cn.kmbeast.pojo.entity.Region">
+        SELECT * FROM region
+    </select>
+
+    <select id="getAllSeasons" resultType="cn.kmbeast.pojo.entity.Season">
+        SELECT * FROM season
+    </select>
+
+    <!-- 管理端新增SQL -->
+    <insert id="insert" parameterType="cn.kmbeast.pojo.entity.Recipe">
+        INSERT INTO recipe(name, description, image, meal_type, region_id, season_id)
+        VALUES(#{name}, #{description}, #{image}, #{mealType}, #{regionId}, #{seasonId})
+    </insert>
+
+    <update id="updateById" parameterType="cn.kmbeast.pojo.entity.Recipe">
+        UPDATE recipe
+        SET name = #{name},
+            description = #{description},
+            image = #{image},
+            meal_type = #{mealType},
+            region_id = #{regionId},
+            season_id = #{seasonId}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteBatchIds" parameterType="java.util.List">
+        DELETE FROM recipe WHERE id IN
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="query" parameterType="cn.kmbeast.pojo.dto.query.extend.RecipeQueryDto"
+            resultType="cn.kmbeast.pojo.vo.RecipeVO">
+        SELECT r.*, reg.name as regionName, s.name as seasonName ,   r.meal_type as mealType
+        FROM recipe r
+        LEFT JOIN region reg ON r.region_id = reg.id
+        LEFT JOIN season s ON r.season_id = s.id
+        <where>
+            <if test="name != null and name != ''">
+                AND r.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="regionId != null">
+                AND r.region_id = #{regionId}
+            </if>
+            <if test="seasonId != null">
+                AND r.season_id = #{seasonId}
+            </if>
+            <if test="mealType != null">
+                AND r.meal_type = #{mealType}
+            </if>
+        </where>
+        ORDER BY r.id DESC
+        <if test="current != null and size != null">
+            LIMIT #{current},#{size}
+        </if>
+    </select>
+    <select id="queryCount" parameterType="cn.kmbeast.pojo.dto.query.extend.RecipeQueryDto"
+            resultType="int">
+        SELECT COUNT(*)
+        FROM recipe r
+        <where>
+            <if test="name != null and name != ''">
+                AND r.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="regionId != null">
+                AND r.region_id = #{regionId}
+            </if>
+            <if test="seasonId != null">
+                AND r.season_id = #{seasonId}
+            </if>
+            <if test="mealType != null">
+                AND r.meal_type = #{mealType}
+            </if>
+        </where>
+    </select>
+</mapper>

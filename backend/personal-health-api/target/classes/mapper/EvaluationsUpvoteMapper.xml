@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.kmbeast.mapper.EvaluationsUpvoteMapper">
+
+    <insert id="save">
+        INSERT INTO evaluations_upvote (user_id, evaluations_id)
+        VALUES (#{userId}, #{evaluationsId})
+    </insert>
+
+    <delete id="delete">
+        DELETE FROM evaluations_upvote
+        WHERE user_id = #{userId} AND evaluations_id = #{evaluationsId}
+    </delete>
+
+    <!--满足分页条件的数据总项-->
+    <select id="queryCount" resultType="integer">
+
+        SELECT COUNT(*)
+        FROM evaluations_upvote eu
+        <where>
+            <if test="id != null">
+                AND eu.id = #{id}
+            </if>
+            <if test="userId != null">
+                AND eu.user_id = #{userId}
+            </if>
+            <if test="evaluationsId != null">
+                AND eu.evaluations_id = #{evaluationsId}
+            </if>
+        </where>
+
+    </select>
+
+</mapper>
