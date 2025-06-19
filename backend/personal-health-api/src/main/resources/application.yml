@@ -30,6 +30,6 @@ mybatis:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: cn.kmbeast.pojo.dto
 
-gemini:
+deepseek:
   api:
-      key: AIzaSyA8buUgmjBM9zFg72fVpocWTZDroU-robA
+      key: sk-d176a5076bbb45149a601ea26caa3aa2
