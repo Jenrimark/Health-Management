@@ -1,7 +1,7 @@
 /*
  Navicat Premium Dump SQL
 
- Source Server         : localhost
+ Source Server         : Jenrimark
  Source Server Type    : MySQL
  Source Server Version : 80041 (8.0.41)
  Source Host           : localhost:3306
@@ -11,7 +11,7 @@
  Target Server Version : 80041 (8.0.41)
  File Encoding         : 65001
 
- Date: 19/05/2025 12:13:28
+ Date: 20/06/2025 12:33:05
 */
 
 SET NAMES utf8mb4;
@@ -63,7 +63,7 @@ CREATE TABLE `cookbook`  (
   `is_publish` tinyint(1) NULL DEFAULT NULL COMMENT '是否是公开食谱',
   `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 71 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '食谱信息表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 72 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '食谱信息表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of cookbook
@@ -107,7 +107,8 @@ INSERT INTO `cookbook` VALUES (64, 1, 'http://localhost:8080/api/personal-heath/
 INSERT INTO `cookbook` VALUES (65, 1, 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=bd95531水煮奶白菜.jpg@watermark=0', '水煮奶白菜', 1, '<p><span style=\"color: rgb(84, 83, 84); background-color: rgb(245, 247, 250); font-size: 14px;\">烧脚白菜80g</span></p>', 1, '2025-04-19 18:39:16');
 INSERT INTO `cookbook` VALUES (66, 1, 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=c237504鲜虾焖冬笋.jpg@h_1280', '鲜虾焖冬笋', 1, '<p><span style=\"color: rgb(84, 83, 84); background-color: rgb(245, 247, 250); font-size: 14px;\">冬笋80g，海虾30g</span></p>', 1, '2025-04-19 18:40:35');
 INSERT INTO `cookbook` VALUES (67, 1, 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=bfda12a红薯.webp', '红薯', 1, '<p><br></p>', 1, '2025-04-19 23:33:49');
-INSERT INTO `cookbook` VALUES (68, 2, 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=8e17c6a奶茶.webp', '奶茶', 16, '<p>超级好喝的奶茶！！！</p>', 0, '2025-04-23 10:58:09');
+INSERT INTO `cookbook` VALUES (68, 2, 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=3788599t013a1780aedcfea383.jpg', '巧克力', 2, '<p>超甜！</p>', 0, '2025-04-23 10:58:09');
+INSERT INTO `cookbook` VALUES (71, 29, 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=e6bae5b90.jpg', '奶茶', 16, '<p>超好喝</p>', 1, '2025-06-19 15:17:06');
 
 -- ----------------------------
 -- Table structure for cookbook_nutriment
@@ -119,7 +120,7 @@ CREATE TABLE `cookbook_nutriment`  (
   `nutriment_id` int NULL DEFAULT NULL COMMENT '营养素ID',
   `100g_value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '每100g食物中含量',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 67 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '食谱营养素关联信息表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 70 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '食谱营养素关联信息表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of cookbook_nutriment
@@ -187,8 +188,11 @@ INSERT INTO `cookbook_nutriment` VALUES (60, 1, 6, '18');
 INSERT INTO `cookbook_nutriment` VALUES (62, 1, 3, '4');
 INSERT INTO `cookbook_nutriment` VALUES (63, 1, 5, '210');
 INSERT INTO `cookbook_nutriment` VALUES (64, 10, 9, '1');
-INSERT INTO `cookbook_nutriment` VALUES (65, 68, 4, '5');
-INSERT INTO `cookbook_nutriment` VALUES (66, 68, 3, '2');
+INSERT INTO `cookbook_nutriment` VALUES (65, 68, 4, '28.9');
+INSERT INTO `cookbook_nutriment` VALUES (66, 68, 3, '53');
+INSERT INTO `cookbook_nutriment` VALUES (67, 68, 14, '205');
+INSERT INTO `cookbook_nutriment` VALUES (68, 68, 1, '10.7');
+INSERT INTO `cookbook_nutriment` VALUES (69, 68, 8, '60');
 
 -- ----------------------------
 -- Table structure for diet_history
@@ -202,7 +206,7 @@ CREATE TABLE `diet_history`  (
   `value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '记录的值',
   `create_time` datetime NULL DEFAULT NULL COMMENT '记录时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 38 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '用户饮食信息表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 42 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '用户饮食信息表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of diet_history
@@ -243,6 +247,10 @@ INSERT INTO `diet_history` VALUES (34, 2, 68, '午餐', '200', '2025-05-16 19:23
 INSERT INTO `diet_history` VALUES (35, 2, 67, '早餐', '200', '2025-05-16 19:23:20');
 INSERT INTO `diet_history` VALUES (36, 2, 68, '午餐', '300', '2025-05-17 09:01:17');
 INSERT INTO `diet_history` VALUES (37, 2, 67, '早餐', '200', '2025-05-17 09:01:17');
+INSERT INTO `diet_history` VALUES (38, 29, 66, NULL, '10', '2025-06-17 17:41:52');
+INSERT INTO `diet_history` VALUES (39, 29, 17, NULL, '3', '2025-06-17 17:41:52');
+INSERT INTO `diet_history` VALUES (40, 29, 10, NULL, '2', '2025-06-17 17:41:52');
+INSERT INTO `diet_history` VALUES (41, 2, 30, NULL, '10', '2025-06-19 23:03:59');
 
 -- ----------------------------
 -- Table structure for evaluations
@@ -259,7 +267,7 @@ CREATE TABLE `evaluations`  (
   `upvote_list` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL COMMENT '点赞列表，以\",\"分割',
   `create_time` datetime NULL DEFAULT NULL COMMENT '评论时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 24 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 25 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of evaluations
@@ -287,6 +295,7 @@ INSERT INTO `evaluations` VALUES (20, 13, 2, NULL, 'NEWS', 1, '111', NULL, '2025
 INSERT INTO `evaluations` VALUES (21, NULL, 2, NULL, 'NEWS', 5, '11', NULL, '2025-05-16 19:16:36');
 INSERT INTO `evaluations` VALUES (22, 10, 2, NULL, 'NEWS', 5, '好的', NULL, '2025-05-16 19:16:45');
 INSERT INTO `evaluations` VALUES (23, NULL, 2, NULL, 'NEWS', 1, '1111', NULL, '2025-05-16 19:20:28');
+INSERT INTO `evaluations` VALUES (24, NULL, 29, NULL, 'NEWS', 70, '很不错', NULL, '2025-06-17 17:39:54');
 
 -- ----------------------------
 -- Table structure for evaluations_upvote
@@ -297,7 +306,7 @@ CREATE TABLE `evaluations_upvote`  (
   `user_id` int NULL DEFAULT NULL COMMENT '用户ID',
   `evaluations_id` int NULL DEFAULT NULL COMMENT '点赞ID',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 67 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 67 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of evaluations_upvote
@@ -404,7 +413,7 @@ CREATE TABLE `health_model_config`  (
   `is_global` tinyint(1) NULL DEFAULT NULL COMMENT '是否是全局模型',
   `value_range` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '正常值范围',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 20 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '健康模型表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 26 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '健康模型表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of health_model_config
@@ -424,6 +433,12 @@ INSERT INTO `health_model_config` VALUES (12, 1, '心率', '预防冠心病、�
 INSERT INTO `health_model_config` VALUES (13, 1, '血脂', '预防疾病', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=27c2ff1肝脏.png', '毫摩尔/升', 'mol/L', 1, '2,5');
 INSERT INTO `health_model_config` VALUES (14, 1, '体温', '记录体温', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=178dde2温度计.png', '℃', '摄氏度', 1, '36,38');
 INSERT INTO `health_model_config` VALUES (15, 2, '硒酵母', '每日硒酵母摄入', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=c406bb5药物.png', 'mcg', NULL, 0, '200,300');
+INSERT INTO `health_model_config` VALUES (20, 29, '身体总水分', '身体总水分指人体内所含水分的总量', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=aae9ad8绘制身体总水分小图标.png', '千克', 'TBW', 1, '40,60');
+INSERT INTO `health_model_config` VALUES (21, 29, '脂肪', '身体脂肪是能量储备、体温调节的重要物质', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=38704b1生成脂肪图片.png', '克/百分比', 'BF', 1, '7000,20000');
+INSERT INTO `health_model_config` VALUES (22, 29, '蛋白质', '蛋白质是构成人体细胞、组织的重要成分', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=7e9b19b生成脂肪图片 (1).png', '克', 'PRO', 1, '65,180');
+INSERT INTO `health_model_config` VALUES (23, 29, '肌肉', '肌肉是人体运动、代谢的核心组织，参与力量支撑、基础代谢维持', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=99367e5绘制肌肉图标.png', '千克', 'MM', 1, '20,60');
+INSERT INTO `health_model_config` VALUES (24, 29, '基础代谢率', '基础代谢率指人体清醒静息状态下（无运动、消化等额外消耗 ），维持心跳、呼吸、体温等基本生理功能的能量消耗', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=01778a1生成二次元图标.png', '千卡', 'BMR', 1, '1200,2000');
+INSERT INTO `health_model_config` VALUES (25, 29, '内脏脂肪等级', '内脏脂肪等级反映腹腔内内脏周围脂肪堆积程度', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=b422a4dQQ截图20250619221352.png', '级', 'VFL', 1, '1,9');
 
 -- ----------------------------
 -- Table structure for health_plan
@@ -440,7 +455,7 @@ CREATE TABLE `health_plan`  (
   `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 10 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_unicode_ci ROW_FORMAT = Fixed;
+) ENGINE = MyISAM AUTO_INCREMENT = 10 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_unicode_ci ROW_FORMAT = FIXED;
 
 -- ----------------------------
 -- Records of health_plan
@@ -451,7 +466,7 @@ INSERT INTO `health_plan` VALUES (5, 2, '2025-04-16', 2000, 30, 8.0, 8, '2025-04
 INSERT INTO `health_plan` VALUES (6, 2, '2025-04-16', 2012, 30, 8.0, 8, '2025-04-16 20:30:03', '2025-04-16 20:30:02');
 INSERT INTO `health_plan` VALUES (7, 2, '2025-05-16', 2000, 30, 8.0, 8, '2025-05-16 18:55:14', '2025-05-16 18:55:13');
 INSERT INTO `health_plan` VALUES (8, 2, '2025-05-16', 2000, 30, 8.0, 8, '2025-05-16 19:22:40', '2025-05-16 19:22:40');
-INSERT INTO `health_plan` VALUES (9, 2, '2025-05-17', 2000, 30, 8.0, 8, '2025-05-17 09:00:41', '2025-05-17 09:00:40');
+INSERT INTO `health_plan` VALUES (9, 2, '2025-05-17', 2000, 30, 8.0, 8, '2025-05-17 09:00:41', '2025-06-20 09:42:35');
 
 -- ----------------------------
 -- Table structure for interaction
@@ -466,7 +481,7 @@ CREATE TABLE `interaction`  (
   `score` int NULL DEFAULT NULL COMMENT '评分',
   `create_time` datetime NULL DEFAULT NULL COMMENT '互动时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 140 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '互动信息表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 145 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '互动信息表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of interaction
@@ -605,6 +620,10 @@ INSERT INTO `interaction` VALUES (135, 1, 'UPVOTE', 5, 2, NULL, '2025-05-16 19:1
 INSERT INTO `interaction` VALUES (136, 2, 'COLLECTION', 5, 2, NULL, '2025-05-16 19:16:33');
 INSERT INTO `interaction` VALUES (138, 2, 'COLLECTION', 1, 2, NULL, '2025-05-16 19:20:24');
 INSERT INTO `interaction` VALUES (139, 1, 'UPVOTE', 1, 2, NULL, '2025-05-17 08:57:29');
+INSERT INTO `interaction` VALUES (140, 3, 'VIEW', 65, 29, NULL, '2025-06-17 09:24:00');
+INSERT INTO `interaction` VALUES (141, 3, 'VIEW', 70, 29, NULL, '2025-06-17 17:39:44');
+INSERT INTO `interaction` VALUES (142, 3, 'VIEW', 64, 2, NULL, '2025-06-19 11:12:52');
+INSERT INTO `interaction` VALUES (144, 1, 'UPVOTE', 4, 2, NULL, '2025-06-19 23:14:35');
 
 -- ----------------------------
 -- Table structure for message
@@ -620,7 +639,7 @@ CREATE TABLE `message`  (
   `content_id` int NULL DEFAULT NULL COMMENT '关联的内容ID',
   `create_time` datetime NULL DEFAULT NULL COMMENT '消息的发送时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 70 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 99 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of message
@@ -689,6 +708,35 @@ INSERT INTO `message` VALUES (66, '你好', 4, 3, NULL, 0, NULL, '2025-05-16 19:
 INSERT INTO `message` VALUES (67, '你好', 4, 2, NULL, 0, NULL, '2025-05-16 19:25:13');
 INSERT INTO `message` VALUES (68, '你记录的【心率】偏低了！当前值：40.0，正常值范围:[60,100]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-05-17 08:57:00');
 INSERT INTO `message` VALUES (69, '你记录的【谷丙转氨酶】超标了！当前值：260.0，正常值范围:[108,258]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-05-17 08:57:00');
+INSERT INTO `message` VALUES (70, '你记录的【心率】超标了！当前值：120.0，正常值范围:[60,100]，请注意休息。必要时请就医!', 3, 29, NULL, 1, NULL, '2025-06-17 17:39:15');
+INSERT INTO `message` VALUES (71, '你记录的【晨跑步数】偏低了！当前值：0.0，正常值范围:[3000,10000]，请注意休息。必要时请就医!', 3, 29, NULL, 1, NULL, '2025-06-17 17:39:15');
+INSERT INTO `message` VALUES (72, '你记录的【夜跑步数】偏低了！当前值：0.0，正常值范围:[422,17990]，请注意休息。必要时请就医!', 3, 29, NULL, 1, NULL, '2025-06-17 17:39:15');
+INSERT INTO `message` VALUES (73, '你记录的【运动心率】超标了！当前值：230.0，正常值范围:[75,197]，请注意休息。必要时请就医!', 3, 29, NULL, 1, NULL, '2025-06-17 17:39:15');
+INSERT INTO `message` VALUES (74, '你记录的【每日喝水量】偏低了！当前值：500.0，正常值范围:[1000,2000]，请注意休息。必要时请就医!', 3, 29, NULL, 1, NULL, '2025-06-17 17:39:15');
+INSERT INTO `message` VALUES (75, '你记录的【夜跑步数】超标了！当前值：54242.0，正常值范围:[422,17990]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-19 22:22:35');
+INSERT INTO `message` VALUES (76, '你记录的【夜间血压】超标了！当前值：150.0，正常值范围:[72,145]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-19 22:22:35');
+INSERT INTO `message` VALUES (77, '你记录的【运动心率】超标了！当前值：200.0，正常值范围:[75,197]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-19 22:22:35');
+INSERT INTO `message` VALUES (78, '你记录的【晨跑步数】偏低了！当前值：2000.0，正常值范围:[3000,10000]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-20 09:40:35');
+INSERT INTO `message` VALUES (79, '你记录的【晨跑步数】偏低了！当前值：2000.0，正常值范围:[3000,10000]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-20 09:40:39');
+INSERT INTO `message` VALUES (80, '你记录的【晨跑步数】偏低了！当前值：2000.0，正常值范围:[3000,10000]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-20 09:40:44');
+INSERT INTO `message` VALUES (81, '你记录的【晨跑步数】偏低了！当前值：2000.0，正常值范围:[3000,10000]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-20 09:40:50');
+INSERT INTO `message` VALUES (82, '你记录的【运动心率】超标了！当前值：200.0，正常值范围:[75,197]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-20 09:40:50');
+INSERT INTO `message` VALUES (83, '你记录的【晨跑步数】偏低了！当前值：2000.0，正常值范围:[3000,10000]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-20 09:40:54');
+INSERT INTO `message` VALUES (84, '你记录的【运动心率】超标了！当前值：200.0，正常值范围:[75,197]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-20 09:40:54');
+INSERT INTO `message` VALUES (85, '你记录的【晨跑步数】偏低了！当前值：2000.0，正常值范围:[3000,10000]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-20 09:40:59');
+INSERT INTO `message` VALUES (86, '你记录的【运动心率】超标了！当前值：200.0，正常值范围:[75,197]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-20 09:40:59');
+INSERT INTO `message` VALUES (87, '你记录的【晨跑步数】偏低了！当前值：2000.0，正常值范围:[3000,10000]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-20 09:41:03');
+INSERT INTO `message` VALUES (88, '你记录的【运动心率】超标了！当前值：200.0，正常值范围:[75,197]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-20 09:41:04');
+INSERT INTO `message` VALUES (89, '你记录的【晨跑步数】偏低了！当前值：2000.0，正常值范围:[3000,10000]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-20 09:41:10');
+INSERT INTO `message` VALUES (90, '你记录的【运动心率】超标了！当前值：200.0，正常值范围:[75,197]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-20 09:41:10');
+INSERT INTO `message` VALUES (91, '你记录的【晨跑步数】偏低了！当前值：2000.0，正常值范围:[3000,10000]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-20 09:41:15');
+INSERT INTO `message` VALUES (92, '你记录的【运动心率】超标了！当前值：200.0，正常值范围:[75,197]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-20 09:41:15');
+INSERT INTO `message` VALUES (93, '你记录的【晨跑步数】偏低了！当前值：2000.0，正常值范围:[3000,10000]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-20 09:41:21');
+INSERT INTO `message` VALUES (94, '你记录的【运动心率】超标了！当前值：200.0，正常值范围:[75,197]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-20 09:41:21');
+INSERT INTO `message` VALUES (95, '你记录的【晨跑步数】偏低了！当前值：2000.0，正常值范围:[3000,10000]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-20 09:41:23');
+INSERT INTO `message` VALUES (96, '你记录的【运动心率】超标了！当前值：200.0，正常值范围:[75,197]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-20 09:41:23');
+INSERT INTO `message` VALUES (97, '你记录的【晨跑步数】偏低了！当前值：2000.0，正常值范围:[3000,10000]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-20 09:41:29');
+INSERT INTO `message` VALUES (98, '你记录的【运动心率】超标了！当前值：200.0，正常值范围:[75,197]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-20 09:41:29');
 
 -- ----------------------------
 -- Table structure for nutriment
@@ -703,19 +751,27 @@ CREATE TABLE `nutriment`  (
   `is_publish` tinyint(1) NULL DEFAULT NULL COMMENT '是否公开',
   `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '营养素信息表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 22 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '营养素信息表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of nutriment
 -- ----------------------------
-INSERT INTO `nutriment` VALUES (1, 2, '蛋白质', '人体必须摄入项', 'kDa', 1, '2024-11-27 13:19:40');
+INSERT INTO `nutriment` VALUES (1, 2, '蛋白质', '人体必须摄入项', '克', 1, '2024-11-27 13:19:40');
 INSERT INTO `nutriment` VALUES (3, 2, '脂肪', '脂肪的单位‌通常是指脂肪的含量或重量，通常以百分比或克数来表示。', '克', 1, '2024-11-29 15:27:59');
-INSERT INTO `nutriment` VALUES (4, 2, '含糖量', '糖的单位是指糖的重量或含量的计量单位。在不同的国家和地区使用的计量方式不同，因此糖的单位也有所不同。', '克', 1, '2024-11-29 15:28:58');
-INSERT INTO `nutriment` VALUES (5, 2, '钾含量', '‌钾含量的单位通常是mmol/L‌。血清钾的单位是mmol/L，正常值范围通常为3.5mmol/L-5.3mmol/L', 'mmol/L‌', 1, '2024-11-29 15:56:14');
-INSERT INTO `nutriment` VALUES (6, 2, '钙含量', '毫克(mg)是计量钙等营养素的常用单位,而克(g)是更大的单位,通常用于表示食品或补充剂中含量较高的营养素。', '毫克(mg)', 1, '2024-11-29 15:56:58');
+INSERT INTO `nutriment` VALUES (4, 2, '碳水化合物', '是人体最经济、最直接的能量来源', '克', 1, '2024-11-29 15:28:58');
+INSERT INTO `nutriment` VALUES (5, 2, '钾', '‌钾含量的单位通常是mmol/L‌。血清钾的单位是mmol/L，正常值范围通常为3.5mmol/L-5.3mmol/L', 'mmol/L‌', 1, '2024-11-29 15:56:14');
+INSERT INTO `nutriment` VALUES (6, 2, '钙', '毫克(mg)是计量钙等营养素的常用单位,而克(g)是更大的单位,通常用于表示食品或补充剂中含量较高的营养素。', '毫克(mg)', 1, '2024-11-29 15:56:58');
 INSERT INTO `nutriment` VALUES (7, 2, '纤维素', '促进消化健康，帮助维持血糖水平', '克', 0, '2024-11-30 15:39:57');
-INSERT INTO `nutriment` VALUES (8, 2, '维生素 A', '支持视力、免疫功能和皮肤健康。', '微克', 0, '2024-11-30 15:40:26');
-INSERT INTO `nutriment` VALUES (9, 2, '维生素 D', '促进钙的吸收，支持骨骼健康', '微克', 0, '2024-11-30 15:40:47');
+INSERT INTO `nutriment` VALUES (8, 2, '维生素 A', '支持视力、免疫功能和皮肤健康。', '毫克(mg)', 0, '2024-11-30 15:40:26');
+INSERT INTO `nutriment` VALUES (9, 2, '维生素 D', '促进钙的吸收，支持骨骼健康', '毫克(mg)', 0, '2024-11-30 15:40:47');
+INSERT INTO `nutriment` VALUES (14, 29, '热量', '维持人体正常生理功能方面发挥着至关重要的作用', '千卡', 1, '2025-06-19 14:49:03');
+INSERT INTO `nutriment` VALUES (15, 29, '维生素B1', '维生素 B₁助力碳水化合物分解供能', '毫克(mg)', 1, '2025-06-19 14:59:24');
+INSERT INTO `nutriment` VALUES (16, 29, '维生素B2', 'B₂参与氧化还原反应；维护皮肤、黏膜健康，像 B₂可防口角炎等', '毫克(mg)', 1, '2025-06-19 14:59:49');
+INSERT INTO `nutriment` VALUES (17, 29, '维生素B12', 'B₁₂、叶酸参与造血，助红细胞生成；还能调节神经系统，改善精神状态，缓解焦虑、疲劳 。', '毫克(mg)', 1, '2025-06-19 15:00:11');
+INSERT INTO `nutriment` VALUES (18, 29, '烟酸', '除作为人体必需营养成分，还是重要医药原料（用于治疗高胆固醇血症等，不过剂量过大有腹泻、头晕等不良反应，需遵医嘱 ）', '毫克(mg)', 1, '2025-06-19 15:02:21');
+INSERT INTO `nutriment` VALUES (19, 29, '维生素C', '抗氧化，清除自由基，延缓衰老、防慢性病；促进胶原蛋白合成，利伤口愈合、维持皮肤弹性；增强免疫力，助白细胞功能、促进抗体生成；促进铁吸收，防缺铁性贫血；还能辅助解毒，减轻重金属等对身体的伤害 。', '毫克(mg)', 1, '2025-06-19 15:03:06');
+INSERT INTO `nutriment` VALUES (20, 29, '铁', '是血红蛋白、肌红蛋白重要组成，参与氧的运输与储存，保障组织供氧；参与能量代谢，助力细胞产生能量；对免疫功能有影响，缺铁易致免疫力下降；还参与酶的合成，对细胞生长、分化和代谢意义重大 。', '毫克(mg)', 1, '2025-06-19 15:05:05');
+INSERT INTO `nutriment` VALUES (21, 29, '叶酸', '叶酸参与造血，助红细胞生成', '微克', 1, '2025-06-19 15:06:33');
 
 -- ----------------------------
 -- Table structure for recipe
@@ -733,7 +789,7 @@ CREATE TABLE `recipe`  (
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_region_season`(`region_id` ASC, `season_id` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 251 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '食谱表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 251 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '食谱表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of recipe
@@ -993,7 +1049,7 @@ CREATE TABLE `region`  (
   `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '地区名称',
   `code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '地区代码',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '地区表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '地区表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of region
@@ -1014,7 +1070,7 @@ CREATE TABLE `season`  (
   `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '季节名称',
   `code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '季节代码',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '季节表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '季节表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of season
@@ -1032,7 +1088,7 @@ CREATE TABLE `tags`  (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '标签ID',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '标签分类名',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '标签分类表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 26 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '标签分类表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tags
@@ -1062,33 +1118,29 @@ CREATE TABLE `user`  (
   `user_role` int NULL DEFAULT NULL COMMENT '用户角色(1：管理员）',
   `is_login` tinyint(1) NULL DEFAULT NULL COMMENT '可登录状态(0：可用，1：不可用)',
   `is_word` tinyint(1) NULL DEFAULT NULL COMMENT '禁言状态(0：可用，1：不可用)',
+  `gender` tinyint(1) NULL DEFAULT NULL COMMENT '性别(0：女性，1：男性)',
+  `age` int NULL DEFAULT NULL COMMENT '年龄',
   `create_time` datetime NULL DEFAULT NULL COMMENT '用户注册时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 29 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 30 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (1, 'admin', 'admin', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=c19ec0cchen.jpg', '846744569@qq.com', 1, 0, 0, '2025-04-01 23:05:27');
-INSERT INTO `user` VALUES (2, 'aa', 'aa', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=d95c11c19.jpg', '846744569@qq.com', 2, 0, 0, '2025-04-02 23:05:58');
-INSERT INTO `user` VALUES (3, 'bb', 'bb', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=b5718ff20.jpg', '123@qq.com', 2, 0, 0, '2025-04-18 23:06:21');
-INSERT INTO `user` VALUES (4, 'cc', 'cc', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=82dd17818.jpg', '1234@qq.com', 2, 0, 0, '2025-04-03 23:07:06');
-INSERT INTO `user` VALUES (5, 'dd', 'dd', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=cb8bbda17.jpg', '1234@qq.com', 2, 0, 0, '2025-04-04 23:07:44');
-INSERT INTO `user` VALUES (6, 'ee', 'ee', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=768ca766.jpg', '1234@qq.com', 2, 1, 0, '2025-04-05 23:08:06');
-INSERT INTO `user` VALUES (7, 'ff', 'ff', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=bd3a863admin.jpg', '1234@qq.com', 2, 0, 0, '2025-04-05 23:09:00');
-INSERT INTO `user` VALUES (8, 'gg', 'gg', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=25cc72b21.jpg', '1234@qq.com', 2, 0, 0, '2025-04-06 23:09:40');
-INSERT INTO `user` VALUES (9, 'hh', 'hh', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=824821210.jpg', '1234@qq.com', 2, 0, 0, '2025-04-06 23:10:19');
-INSERT INTO `user` VALUES (10, 'aiqin', '爱情海', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=bab7fa19.jpg', '1234@qq.com', 2, 0, 0, '2025-04-06 23:11:00');
-INSERT INTO `user` VALUES (11, 'momo', '陌陌', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=0d176351.jpg', '1234@qq.com', 2, 0, 0, '2025-04-12 23:11:40');
-INSERT INTO `user` VALUES (12, 'chenxi', '晨曦', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=6645f5916.jpg', '1234@qq.com', 2, 0, 0, '2025-04-09 23:12:18');
-INSERT INTO `user` VALUES (13, 'kk', 'kk', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=ebf04a314.jpg', '1234@qq.com', 2, 0, 0, '2025-04-09 23:13:26');
-INSERT INTO `user` VALUES (14, 'yy', 'yy', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=310c0c013.jpg', '1234@qq.com', 2, 0, 0, '2025-04-10 23:15:03');
-INSERT INTO `user` VALUES (15, 'lisi', '李四', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=319d50f12.jpg', '1234@qq.com', 2, 0, 0, '2025-04-12 23:18:38');
-INSERT INTO `user` VALUES (16, 'liming', '黎明', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=c86d1b711.jpg', '1234@qq.com', 2, 0, 0, '2025-04-06 23:18:43');
-INSERT INTO `user` VALUES (17, 'wangwu', '王五', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=0b8e0f65.jpg', '1234@qq.com', 2, 0, 0, '2025-04-08 23:18:46');
-INSERT INTO `user` VALUES (18, 'xaiozhan', '肖战', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=0fcb9ef4.jpg', '1234@qq.com', 2, 0, 0, '2025-04-09 23:18:50');
-INSERT INTO `user` VALUES (19, 'xingchen', '星辰', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=b724e4d3.jpg', '1234@qq.com', 2, 0, 0, '2025-04-10 23:18:53');
-INSERT INTO `user` VALUES (20, 'crush', 'crush', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=d18076d2.jpg', '1234@qq.com', 2, 0, 0, '2025-04-16 23:18:57');
+INSERT INTO `user` VALUES (2, 'whd', '吴汉东', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=8b13839微信图片_2025-05-21_010610_632.jpg', '2303532728@qq.com', 2, 0, 0, 1, 20, '2025-04-02 23:05:58');
+INSERT INTO `user` VALUES (3, 'xhr', '许浩然', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=b5718ff20.jpg', '123@qq.com', 2, 0, 0, 1, 20, '2025-04-18 23:06:21');
+INSERT INTO `user` VALUES (4, 'lym', '刘玉明', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=82dd17818.jpg', '1234@qq.com', 2, 0, 0, 1, 21, '2025-04-03 23:07:06');
+INSERT INTO `user` VALUES (5, 'wwb', '王文博', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=cb8bbda17.jpg', '1234@qq.com', 2, 0, 0, 1, 19, '2025-04-04 23:07:44');
+INSERT INTO `user` VALUES (6, 'wzr', '王梓瑞', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=768ca766.jpg', '1234@qq.com', 2, 0, 1, 1, 19, '2025-04-05 23:08:06');
+INSERT INTO `user` VALUES (7, 'zyk', '张殷恺', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=bd3a863admin.jpg', '1234@qq.com', 2, 1, 0, 1, 19, '2025-04-05 23:09:00');
+INSERT INTO `user` VALUES (8, 'zle', '张淋迩', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=25cc72b21.jpg', '1234@qq.com', 2, 0, 0, 0, 19, '2025-04-06 23:09:40');
+INSERT INTO `user` VALUES (9, 'fjq', '付佳琪', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=824821210.jpg', '1234@qq.com', 2, 0, 0, 0, 20, '2025-04-06 23:10:19');
+INSERT INTO `user` VALUES (16, 'lyh', '刘伊恒', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=c86d1b711.jpg', '1234@qq.com', 2, 0, 0, 0, 20, '2025-04-06 23:18:43');
+INSERT INTO `user` VALUES (17, 'rty', '任天翌', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=0b8e0f65.jpg', '1234@qq.com', 2, 0, 0, 1, 19, '2025-04-08 23:18:46');
+INSERT INTO `user` VALUES (18, 'yjt', '余霁庭', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=0fcb9ef4.jpg', '1234@qq.com', 2, 0, 0, 1, 19, '2025-04-09 23:18:50');
+INSERT INTO `user` VALUES (19, 'ycx', '叶辰勋', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=b724e4d3.jpg', '1234@qq.com', 2, 0, 0, 0, 21, '2025-04-10 23:18:53');
+INSERT INTO `user` VALUES (20, 'lcz', '吕承泽', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=d18076d2.jpg', '1234@qq.com', 2, 0, 0, 1, 19, '2025-04-16 23:18:57');
+INSERT INTO `user` VALUES (29, 'Jenrimark', 'Jenrimark', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=249bc9eImage_1720676880457.jpg', '230@qq.com', 1, 0, 0, 1, 19, '2025-06-16 11:24:46');
 
 -- ----------------------------
 -- Table structure for user_health
@@ -1101,7 +1153,7 @@ CREATE TABLE `user_health`  (
   `value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '输入的值',
   `create_time` datetime NULL DEFAULT NULL COMMENT '记录时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 138 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '用户健康记录表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 430 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '用户健康记录表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of user_health
@@ -1243,5 +1295,297 @@ INSERT INTO `user_health` VALUES (134, 2, 12, '59', '2025-05-16 19:19:37');
 INSERT INTO `user_health` VALUES (135, 2, 4, '260', '2025-05-16 19:19:37');
 INSERT INTO `user_health` VALUES (136, 2, 12, '40', '2025-05-17 08:57:00');
 INSERT INTO `user_health` VALUES (137, 2, 4, '260', '2025-05-17 08:57:00');
+INSERT INTO `user_health` VALUES (138, 29, 14, '36.8', '2025-06-17 17:38:14');
+INSERT INTO `user_health` VALUES (139, 29, 14, '36.8', '2025-06-17 17:38:24');
+INSERT INTO `user_health` VALUES (140, 29, 13, '3', '2025-06-17 17:38:24');
+INSERT INTO `user_health` VALUES (141, 29, 14, '36.8', '2025-06-17 17:39:15');
+INSERT INTO `user_health` VALUES (142, 29, 13, '3', '2025-06-17 17:39:15');
+INSERT INTO `user_health` VALUES (143, 29, 12, '120', '2025-06-17 17:39:15');
+INSERT INTO `user_health` VALUES (144, 29, 11, '4', '2025-06-17 17:39:15');
+INSERT INTO `user_health` VALUES (145, 29, 10, '0', '2025-06-17 17:39:15');
+INSERT INTO `user_health` VALUES (146, 29, 9, '0', '2025-06-17 17:39:15');
+INSERT INTO `user_health` VALUES (147, 29, 8, '80', '2025-06-17 17:39:15');
+INSERT INTO `user_health` VALUES (148, 29, 7, '230', '2025-06-17 17:39:15');
+INSERT INTO `user_health` VALUES (149, 29, 6, '1', '2025-06-17 17:39:15');
+INSERT INTO `user_health` VALUES (150, 29, 5, '5', '2025-06-17 17:39:15');
+INSERT INTO `user_health` VALUES (151, 29, 4, '120', '2025-06-17 17:39:15');
+INSERT INTO `user_health` VALUES (152, 29, 3, '500', '2025-06-17 17:39:15');
+INSERT INTO `user_health` VALUES (153, 29, 2, '85', '2025-06-17 17:39:15');
+INSERT INTO `user_health` VALUES (154, 2, 14, '37', '2025-06-19 20:46:59');
+INSERT INTO `user_health` VALUES (155, 2, 20, '50', '2025-06-19 20:54:32');
+INSERT INTO `user_health` VALUES (156, 2, 25, '8', '2025-06-19 22:22:35');
+INSERT INTO `user_health` VALUES (157, 2, 24, '2000', '2025-06-19 22:22:35');
+INSERT INTO `user_health` VALUES (158, 2, 23, '50', '2025-06-19 22:22:35');
+INSERT INTO `user_health` VALUES (159, 2, 22, '80', '2025-06-19 22:22:35');
+INSERT INTO `user_health` VALUES (160, 2, 21, '10000', '2025-06-19 22:22:35');
+INSERT INTO `user_health` VALUES (161, 2, 20, '55', '2025-06-19 22:22:35');
+INSERT INTO `user_health` VALUES (162, 2, 14, '37', '2025-06-19 22:22:35');
+INSERT INTO `user_health` VALUES (163, 2, 13, '3', '2025-06-19 22:22:35');
+INSERT INTO `user_health` VALUES (164, 2, 12, '88', '2025-06-19 22:22:35');
+INSERT INTO `user_health` VALUES (165, 2, 11, '5', '2025-06-19 22:22:35');
+INSERT INTO `user_health` VALUES (166, 2, 10, '6666', '2025-06-19 22:22:35');
+INSERT INTO `user_health` VALUES (167, 2, 9, '54242', '2025-06-19 22:22:35');
+INSERT INTO `user_health` VALUES (168, 2, 8, '150', '2025-06-19 22:22:35');
+INSERT INTO `user_health` VALUES (169, 2, 7, '200', '2025-06-19 22:22:35');
+INSERT INTO `user_health` VALUES (170, 2, 6, '1', '2025-06-19 22:22:35');
+INSERT INTO `user_health` VALUES (171, 2, 5, '8', '2025-06-19 22:22:35');
+INSERT INTO `user_health` VALUES (172, 2, 4, '200', '2025-06-19 22:22:35');
+INSERT INTO `user_health` VALUES (173, 2, 3, '2000', '2025-06-19 22:22:35');
+INSERT INTO `user_health` VALUES (174, 2, 2, '50', '2025-06-19 22:22:35');
+INSERT INTO `user_health` VALUES (175, 2, 1, '185', '2025-06-19 22:22:35');
+INSERT INTO `user_health` VALUES (176, 2, 23, '30', '2025-06-20 09:23:50');
+INSERT INTO `user_health` VALUES (177, 2, 24, '2000', '2025-06-20 09:23:50');
+INSERT INTO `user_health` VALUES (178, 2, 21, '20000', '2025-06-20 09:23:50');
+INSERT INTO `user_health` VALUES (179, 2, 20, '50', '2025-06-20 09:36:23');
+INSERT INTO `user_health` VALUES (180, 2, 25, '8', '2025-06-20 09:39:45');
+INSERT INTO `user_health` VALUES (181, 2, 25, '8', '2025-06-20 09:39:52');
+INSERT INTO `user_health` VALUES (182, 2, 24, '2000', '2025-06-20 09:39:52');
+INSERT INTO `user_health` VALUES (183, 2, 25, '8', '2025-06-20 09:39:58');
+INSERT INTO `user_health` VALUES (184, 2, 24, '2000', '2025-06-20 09:39:58');
+INSERT INTO `user_health` VALUES (185, 2, 23, '50', '2025-06-20 09:39:58');
+INSERT INTO `user_health` VALUES (186, 2, 25, '8', '2025-06-20 09:40:03');
+INSERT INTO `user_health` VALUES (187, 2, 24, '2000', '2025-06-20 09:40:03');
+INSERT INTO `user_health` VALUES (188, 2, 23, '50', '2025-06-20 09:40:03');
+INSERT INTO `user_health` VALUES (189, 2, 22, '88', '2025-06-20 09:40:03');
+INSERT INTO `user_health` VALUES (190, 2, 25, '8', '2025-06-20 09:40:09');
+INSERT INTO `user_health` VALUES (191, 2, 24, '2000', '2025-06-20 09:40:09');
+INSERT INTO `user_health` VALUES (192, 2, 23, '50', '2025-06-20 09:40:09');
+INSERT INTO `user_health` VALUES (193, 2, 22, '88', '2025-06-20 09:40:09');
+INSERT INTO `user_health` VALUES (194, 2, 21, '8000', '2025-06-20 09:40:09');
+INSERT INTO `user_health` VALUES (195, 2, 25, '8', '2025-06-20 09:40:13');
+INSERT INTO `user_health` VALUES (196, 2, 24, '2000', '2025-06-20 09:40:13');
+INSERT INTO `user_health` VALUES (197, 2, 23, '50', '2025-06-20 09:40:13');
+INSERT INTO `user_health` VALUES (198, 2, 22, '88', '2025-06-20 09:40:13');
+INSERT INTO `user_health` VALUES (199, 2, 21, '8000', '2025-06-20 09:40:13');
+INSERT INTO `user_health` VALUES (200, 2, 20, '50', '2025-06-20 09:40:13');
+INSERT INTO `user_health` VALUES (201, 2, 25, '8', '2025-06-20 09:40:19');
+INSERT INTO `user_health` VALUES (202, 2, 24, '2000', '2025-06-20 09:40:19');
+INSERT INTO `user_health` VALUES (203, 2, 23, '50', '2025-06-20 09:40:19');
+INSERT INTO `user_health` VALUES (204, 2, 22, '88', '2025-06-20 09:40:19');
+INSERT INTO `user_health` VALUES (205, 2, 21, '8000', '2025-06-20 09:40:19');
+INSERT INTO `user_health` VALUES (206, 2, 20, '50', '2025-06-20 09:40:19');
+INSERT INTO `user_health` VALUES (207, 2, 14, '37.8', '2025-06-20 09:40:19');
+INSERT INTO `user_health` VALUES (208, 2, 25, '8', '2025-06-20 09:40:23');
+INSERT INTO `user_health` VALUES (209, 2, 24, '2000', '2025-06-20 09:40:23');
+INSERT INTO `user_health` VALUES (210, 2, 23, '50', '2025-06-20 09:40:23');
+INSERT INTO `user_health` VALUES (211, 2, 22, '88', '2025-06-20 09:40:23');
+INSERT INTO `user_health` VALUES (212, 2, 21, '8000', '2025-06-20 09:40:23');
+INSERT INTO `user_health` VALUES (213, 2, 20, '50', '2025-06-20 09:40:23');
+INSERT INTO `user_health` VALUES (214, 2, 14, '37.8', '2025-06-20 09:40:23');
+INSERT INTO `user_health` VALUES (215, 2, 13, '3', '2025-06-20 09:40:23');
+INSERT INTO `user_health` VALUES (216, 2, 25, '8', '2025-06-20 09:40:27');
+INSERT INTO `user_health` VALUES (217, 2, 24, '2000', '2025-06-20 09:40:27');
+INSERT INTO `user_health` VALUES (218, 2, 23, '50', '2025-06-20 09:40:27');
+INSERT INTO `user_health` VALUES (219, 2, 22, '88', '2025-06-20 09:40:27');
+INSERT INTO `user_health` VALUES (220, 2, 21, '8000', '2025-06-20 09:40:27');
+INSERT INTO `user_health` VALUES (221, 2, 20, '50', '2025-06-20 09:40:27');
+INSERT INTO `user_health` VALUES (222, 2, 14, '37.8', '2025-06-20 09:40:27');
+INSERT INTO `user_health` VALUES (223, 2, 13, '3', '2025-06-20 09:40:27');
+INSERT INTO `user_health` VALUES (224, 2, 12, '88', '2025-06-20 09:40:27');
+INSERT INTO `user_health` VALUES (225, 2, 25, '8', '2025-06-20 09:40:31');
+INSERT INTO `user_health` VALUES (226, 2, 24, '2000', '2025-06-20 09:40:31');
+INSERT INTO `user_health` VALUES (227, 2, 23, '50', '2025-06-20 09:40:31');
+INSERT INTO `user_health` VALUES (228, 2, 22, '88', '2025-06-20 09:40:31');
+INSERT INTO `user_health` VALUES (229, 2, 21, '8000', '2025-06-20 09:40:31');
+INSERT INTO `user_health` VALUES (230, 2, 20, '50', '2025-06-20 09:40:31');
+INSERT INTO `user_health` VALUES (231, 2, 14, '37.8', '2025-06-20 09:40:31');
+INSERT INTO `user_health` VALUES (232, 2, 13, '3', '2025-06-20 09:40:31');
+INSERT INTO `user_health` VALUES (233, 2, 12, '88', '2025-06-20 09:40:31');
+INSERT INTO `user_health` VALUES (234, 2, 11, '5', '2025-06-20 09:40:31');
+INSERT INTO `user_health` VALUES (235, 2, 25, '8', '2025-06-20 09:40:35');
+INSERT INTO `user_health` VALUES (236, 2, 24, '2000', '2025-06-20 09:40:35');
+INSERT INTO `user_health` VALUES (237, 2, 23, '50', '2025-06-20 09:40:35');
+INSERT INTO `user_health` VALUES (238, 2, 22, '88', '2025-06-20 09:40:35');
+INSERT INTO `user_health` VALUES (239, 2, 21, '8000', '2025-06-20 09:40:35');
+INSERT INTO `user_health` VALUES (240, 2, 20, '50', '2025-06-20 09:40:35');
+INSERT INTO `user_health` VALUES (241, 2, 14, '37.8', '2025-06-20 09:40:35');
+INSERT INTO `user_health` VALUES (242, 2, 13, '3', '2025-06-20 09:40:35');
+INSERT INTO `user_health` VALUES (243, 2, 12, '88', '2025-06-20 09:40:35');
+INSERT INTO `user_health` VALUES (244, 2, 11, '5', '2025-06-20 09:40:35');
+INSERT INTO `user_health` VALUES (245, 2, 10, '2000', '2025-06-20 09:40:35');
+INSERT INTO `user_health` VALUES (246, 2, 25, '8', '2025-06-20 09:40:39');
+INSERT INTO `user_health` VALUES (247, 2, 24, '2000', '2025-06-20 09:40:39');
+INSERT INTO `user_health` VALUES (248, 2, 23, '50', '2025-06-20 09:40:39');
+INSERT INTO `user_health` VALUES (249, 2, 22, '88', '2025-06-20 09:40:39');
+INSERT INTO `user_health` VALUES (250, 2, 21, '8000', '2025-06-20 09:40:39');
+INSERT INTO `user_health` VALUES (251, 2, 20, '50', '2025-06-20 09:40:39');
+INSERT INTO `user_health` VALUES (252, 2, 14, '37.8', '2025-06-20 09:40:39');
+INSERT INTO `user_health` VALUES (253, 2, 13, '3', '2025-06-20 09:40:39');
+INSERT INTO `user_health` VALUES (254, 2, 12, '88', '2025-06-20 09:40:39');
+INSERT INTO `user_health` VALUES (255, 2, 11, '5', '2025-06-20 09:40:39');
+INSERT INTO `user_health` VALUES (256, 2, 10, '2000', '2025-06-20 09:40:39');
+INSERT INTO `user_health` VALUES (257, 2, 9, '2000', '2025-06-20 09:40:39');
+INSERT INTO `user_health` VALUES (258, 2, 25, '8', '2025-06-20 09:40:44');
+INSERT INTO `user_health` VALUES (259, 2, 24, '2000', '2025-06-20 09:40:44');
+INSERT INTO `user_health` VALUES (260, 2, 23, '50', '2025-06-20 09:40:44');
+INSERT INTO `user_health` VALUES (261, 2, 22, '88', '2025-06-20 09:40:44');
+INSERT INTO `user_health` VALUES (262, 2, 21, '8000', '2025-06-20 09:40:44');
+INSERT INTO `user_health` VALUES (263, 2, 20, '50', '2025-06-20 09:40:44');
+INSERT INTO `user_health` VALUES (264, 2, 14, '37.8', '2025-06-20 09:40:44');
+INSERT INTO `user_health` VALUES (265, 2, 13, '3', '2025-06-20 09:40:44');
+INSERT INTO `user_health` VALUES (266, 2, 12, '88', '2025-06-20 09:40:44');
+INSERT INTO `user_health` VALUES (267, 2, 11, '5', '2025-06-20 09:40:44');
+INSERT INTO `user_health` VALUES (268, 2, 10, '2000', '2025-06-20 09:40:44');
+INSERT INTO `user_health` VALUES (269, 2, 9, '2000', '2025-06-20 09:40:44');
+INSERT INTO `user_health` VALUES (270, 2, 8, '88', '2025-06-20 09:40:44');
+INSERT INTO `user_health` VALUES (271, 2, 25, '8', '2025-06-20 09:40:50');
+INSERT INTO `user_health` VALUES (272, 2, 24, '2000', '2025-06-20 09:40:50');
+INSERT INTO `user_health` VALUES (273, 2, 23, '50', '2025-06-20 09:40:50');
+INSERT INTO `user_health` VALUES (274, 2, 22, '88', '2025-06-20 09:40:50');
+INSERT INTO `user_health` VALUES (275, 2, 21, '8000', '2025-06-20 09:40:50');
+INSERT INTO `user_health` VALUES (276, 2, 20, '50', '2025-06-20 09:40:50');
+INSERT INTO `user_health` VALUES (277, 2, 14, '37.8', '2025-06-20 09:40:50');
+INSERT INTO `user_health` VALUES (278, 2, 13, '3', '2025-06-20 09:40:50');
+INSERT INTO `user_health` VALUES (279, 2, 12, '88', '2025-06-20 09:40:50');
+INSERT INTO `user_health` VALUES (280, 2, 11, '5', '2025-06-20 09:40:50');
+INSERT INTO `user_health` VALUES (281, 2, 10, '2000', '2025-06-20 09:40:50');
+INSERT INTO `user_health` VALUES (282, 2, 9, '2000', '2025-06-20 09:40:50');
+INSERT INTO `user_health` VALUES (283, 2, 8, '88', '2025-06-20 09:40:50');
+INSERT INTO `user_health` VALUES (284, 2, 7, '200', '2025-06-20 09:40:50');
+INSERT INTO `user_health` VALUES (285, 2, 25, '8', '2025-06-20 09:40:54');
+INSERT INTO `user_health` VALUES (286, 2, 24, '2000', '2025-06-20 09:40:54');
+INSERT INTO `user_health` VALUES (287, 2, 23, '50', '2025-06-20 09:40:54');
+INSERT INTO `user_health` VALUES (288, 2, 22, '88', '2025-06-20 09:40:54');
+INSERT INTO `user_health` VALUES (289, 2, 21, '8000', '2025-06-20 09:40:54');
+INSERT INTO `user_health` VALUES (290, 2, 20, '50', '2025-06-20 09:40:54');
+INSERT INTO `user_health` VALUES (291, 2, 14, '37.8', '2025-06-20 09:40:54');
+INSERT INTO `user_health` VALUES (292, 2, 13, '3', '2025-06-20 09:40:54');
+INSERT INTO `user_health` VALUES (293, 2, 12, '88', '2025-06-20 09:40:54');
+INSERT INTO `user_health` VALUES (294, 2, 11, '5', '2025-06-20 09:40:54');
+INSERT INTO `user_health` VALUES (295, 2, 10, '2000', '2025-06-20 09:40:54');
+INSERT INTO `user_health` VALUES (296, 2, 9, '2000', '2025-06-20 09:40:54');
+INSERT INTO `user_health` VALUES (297, 2, 8, '88', '2025-06-20 09:40:54');
+INSERT INTO `user_health` VALUES (298, 2, 7, '200', '2025-06-20 09:40:54');
+INSERT INTO `user_health` VALUES (299, 2, 6, '1', '2025-06-20 09:40:54');
+INSERT INTO `user_health` VALUES (300, 2, 25, '8', '2025-06-20 09:40:59');
+INSERT INTO `user_health` VALUES (301, 2, 24, '2000', '2025-06-20 09:40:59');
+INSERT INTO `user_health` VALUES (302, 2, 23, '50', '2025-06-20 09:40:59');
+INSERT INTO `user_health` VALUES (303, 2, 22, '88', '2025-06-20 09:40:59');
+INSERT INTO `user_health` VALUES (304, 2, 21, '8000', '2025-06-20 09:40:59');
+INSERT INTO `user_health` VALUES (305, 2, 20, '50', '2025-06-20 09:40:59');
+INSERT INTO `user_health` VALUES (306, 2, 14, '37.8', '2025-06-20 09:40:59');
+INSERT INTO `user_health` VALUES (307, 2, 13, '3', '2025-06-20 09:40:59');
+INSERT INTO `user_health` VALUES (308, 2, 12, '88', '2025-06-20 09:40:59');
+INSERT INTO `user_health` VALUES (309, 2, 11, '5', '2025-06-20 09:40:59');
+INSERT INTO `user_health` VALUES (310, 2, 10, '2000', '2025-06-20 09:40:59');
+INSERT INTO `user_health` VALUES (311, 2, 9, '2000', '2025-06-20 09:40:59');
+INSERT INTO `user_health` VALUES (312, 2, 8, '88', '2025-06-20 09:40:59');
+INSERT INTO `user_health` VALUES (313, 2, 7, '200', '2025-06-20 09:40:59');
+INSERT INTO `user_health` VALUES (314, 2, 6, '1', '2025-06-20 09:40:59');
+INSERT INTO `user_health` VALUES (315, 2, 5, '8', '2025-06-20 09:40:59');
+INSERT INTO `user_health` VALUES (316, 2, 25, '8', '2025-06-20 09:41:04');
+INSERT INTO `user_health` VALUES (317, 2, 24, '2000', '2025-06-20 09:41:04');
+INSERT INTO `user_health` VALUES (318, 2, 23, '50', '2025-06-20 09:41:04');
+INSERT INTO `user_health` VALUES (319, 2, 22, '88', '2025-06-20 09:41:04');
+INSERT INTO `user_health` VALUES (320, 2, 21, '8000', '2025-06-20 09:41:04');
+INSERT INTO `user_health` VALUES (321, 2, 20, '50', '2025-06-20 09:41:04');
+INSERT INTO `user_health` VALUES (322, 2, 14, '37.8', '2025-06-20 09:41:04');
+INSERT INTO `user_health` VALUES (323, 2, 13, '3', '2025-06-20 09:41:04');
+INSERT INTO `user_health` VALUES (324, 2, 12, '88', '2025-06-20 09:41:04');
+INSERT INTO `user_health` VALUES (325, 2, 11, '5', '2025-06-20 09:41:04');
+INSERT INTO `user_health` VALUES (326, 2, 10, '2000', '2025-06-20 09:41:04');
+INSERT INTO `user_health` VALUES (327, 2, 9, '2000', '2025-06-20 09:41:04');
+INSERT INTO `user_health` VALUES (328, 2, 8, '88', '2025-06-20 09:41:04');
+INSERT INTO `user_health` VALUES (329, 2, 7, '200', '2025-06-20 09:41:04');
+INSERT INTO `user_health` VALUES (330, 2, 6, '1', '2025-06-20 09:41:04');
+INSERT INTO `user_health` VALUES (331, 2, 5, '8', '2025-06-20 09:41:04');
+INSERT INTO `user_health` VALUES (332, 2, 4, '200', '2025-06-20 09:41:04');
+INSERT INTO `user_health` VALUES (333, 2, 25, '8', '2025-06-20 09:41:10');
+INSERT INTO `user_health` VALUES (334, 2, 24, '2000', '2025-06-20 09:41:10');
+INSERT INTO `user_health` VALUES (335, 2, 23, '50', '2025-06-20 09:41:10');
+INSERT INTO `user_health` VALUES (336, 2, 22, '88', '2025-06-20 09:41:10');
+INSERT INTO `user_health` VALUES (337, 2, 21, '8000', '2025-06-20 09:41:10');
+INSERT INTO `user_health` VALUES (338, 2, 20, '50', '2025-06-20 09:41:10');
+INSERT INTO `user_health` VALUES (339, 2, 14, '37.8', '2025-06-20 09:41:10');
+INSERT INTO `user_health` VALUES (340, 2, 13, '3', '2025-06-20 09:41:10');
+INSERT INTO `user_health` VALUES (341, 2, 12, '88', '2025-06-20 09:41:10');
+INSERT INTO `user_health` VALUES (342, 2, 11, '5', '2025-06-20 09:41:10');
+INSERT INTO `user_health` VALUES (343, 2, 10, '2000', '2025-06-20 09:41:10');
+INSERT INTO `user_health` VALUES (344, 2, 9, '2000', '2025-06-20 09:41:10');
+INSERT INTO `user_health` VALUES (345, 2, 8, '88', '2025-06-20 09:41:10');
+INSERT INTO `user_health` VALUES (346, 2, 7, '200', '2025-06-20 09:41:10');
+INSERT INTO `user_health` VALUES (347, 2, 6, '1', '2025-06-20 09:41:10');
+INSERT INTO `user_health` VALUES (348, 2, 5, '8', '2025-06-20 09:41:10');
+INSERT INTO `user_health` VALUES (349, 2, 4, '200', '2025-06-20 09:41:10');
+INSERT INTO `user_health` VALUES (350, 2, 3, '1500', '2025-06-20 09:41:10');
+INSERT INTO `user_health` VALUES (351, 2, 25, '8', '2025-06-20 09:41:15');
+INSERT INTO `user_health` VALUES (352, 2, 24, '2000', '2025-06-20 09:41:15');
+INSERT INTO `user_health` VALUES (353, 2, 23, '50', '2025-06-20 09:41:15');
+INSERT INTO `user_health` VALUES (354, 2, 22, '88', '2025-06-20 09:41:15');
+INSERT INTO `user_health` VALUES (355, 2, 21, '8000', '2025-06-20 09:41:15');
+INSERT INTO `user_health` VALUES (356, 2, 20, '50', '2025-06-20 09:41:15');
+INSERT INTO `user_health` VALUES (357, 2, 14, '37.8', '2025-06-20 09:41:15');
+INSERT INTO `user_health` VALUES (358, 2, 13, '3', '2025-06-20 09:41:15');
+INSERT INTO `user_health` VALUES (359, 2, 12, '88', '2025-06-20 09:41:15');
+INSERT INTO `user_health` VALUES (360, 2, 11, '5', '2025-06-20 09:41:15');
+INSERT INTO `user_health` VALUES (361, 2, 10, '2000', '2025-06-20 09:41:15');
+INSERT INTO `user_health` VALUES (362, 2, 9, '2000', '2025-06-20 09:41:15');
+INSERT INTO `user_health` VALUES (363, 2, 8, '88', '2025-06-20 09:41:15');
+INSERT INTO `user_health` VALUES (364, 2, 7, '200', '2025-06-20 09:41:15');
+INSERT INTO `user_health` VALUES (365, 2, 6, '1', '2025-06-20 09:41:15');
+INSERT INTO `user_health` VALUES (366, 2, 5, '8', '2025-06-20 09:41:15');
+INSERT INTO `user_health` VALUES (367, 2, 4, '200', '2025-06-20 09:41:15');
+INSERT INTO `user_health` VALUES (368, 2, 3, '1500', '2025-06-20 09:41:15');
+INSERT INTO `user_health` VALUES (369, 2, 2, '50', '2025-06-20 09:41:15');
+INSERT INTO `user_health` VALUES (370, 2, 25, '8', '2025-06-20 09:41:21');
+INSERT INTO `user_health` VALUES (371, 2, 24, '2000', '2025-06-20 09:41:21');
+INSERT INTO `user_health` VALUES (372, 2, 23, '50', '2025-06-20 09:41:21');
+INSERT INTO `user_health` VALUES (373, 2, 22, '88', '2025-06-20 09:41:21');
+INSERT INTO `user_health` VALUES (374, 2, 21, '8000', '2025-06-20 09:41:21');
+INSERT INTO `user_health` VALUES (375, 2, 20, '50', '2025-06-20 09:41:21');
+INSERT INTO `user_health` VALUES (376, 2, 14, '37.8', '2025-06-20 09:41:21');
+INSERT INTO `user_health` VALUES (377, 2, 13, '3', '2025-06-20 09:41:21');
+INSERT INTO `user_health` VALUES (378, 2, 12, '88', '2025-06-20 09:41:21');
+INSERT INTO `user_health` VALUES (379, 2, 11, '5', '2025-06-20 09:41:21');
+INSERT INTO `user_health` VALUES (380, 2, 10, '2000', '2025-06-20 09:41:21');
+INSERT INTO `user_health` VALUES (381, 2, 9, '2000', '2025-06-20 09:41:21');
+INSERT INTO `user_health` VALUES (382, 2, 8, '88', '2025-06-20 09:41:21');
+INSERT INTO `user_health` VALUES (383, 2, 7, '200', '2025-06-20 09:41:21');
+INSERT INTO `user_health` VALUES (384, 2, 6, '1', '2025-06-20 09:41:21');
+INSERT INTO `user_health` VALUES (385, 2, 5, '8', '2025-06-20 09:41:21');
+INSERT INTO `user_health` VALUES (386, 2, 4, '200', '2025-06-20 09:41:21');
+INSERT INTO `user_health` VALUES (387, 2, 3, '1500', '2025-06-20 09:41:21');
+INSERT INTO `user_health` VALUES (388, 2, 2, '50', '2025-06-20 09:41:21');
+INSERT INTO `user_health` VALUES (389, 2, 1, '173', '2025-06-20 09:41:21');
+INSERT INTO `user_health` VALUES (390, 2, 25, '8', '2025-06-20 09:41:23');
+INSERT INTO `user_health` VALUES (391, 2, 24, '2000', '2025-06-20 09:41:23');
+INSERT INTO `user_health` VALUES (392, 2, 23, '50', '2025-06-20 09:41:23');
+INSERT INTO `user_health` VALUES (393, 2, 22, '88', '2025-06-20 09:41:23');
+INSERT INTO `user_health` VALUES (394, 2, 21, '8000', '2025-06-20 09:41:23');
+INSERT INTO `user_health` VALUES (395, 2, 20, '50', '2025-06-20 09:41:23');
+INSERT INTO `user_health` VALUES (396, 2, 14, '37.8', '2025-06-20 09:41:23');
+INSERT INTO `user_health` VALUES (397, 2, 13, '3', '2025-06-20 09:41:23');
+INSERT INTO `user_health` VALUES (398, 2, 12, '88', '2025-06-20 09:41:23');
+INSERT INTO `user_health` VALUES (399, 2, 11, '5', '2025-06-20 09:41:23');
+INSERT INTO `user_health` VALUES (400, 2, 10, '2000', '2025-06-20 09:41:23');
+INSERT INTO `user_health` VALUES (401, 2, 9, '2000', '2025-06-20 09:41:23');
+INSERT INTO `user_health` VALUES (402, 2, 8, '88', '2025-06-20 09:41:23');
+INSERT INTO `user_health` VALUES (403, 2, 7, '200', '2025-06-20 09:41:23');
+INSERT INTO `user_health` VALUES (404, 2, 6, '1', '2025-06-20 09:41:23');
+INSERT INTO `user_health` VALUES (405, 2, 5, '8', '2025-06-20 09:41:23');
+INSERT INTO `user_health` VALUES (406, 2, 4, '200', '2025-06-20 09:41:23');
+INSERT INTO `user_health` VALUES (407, 2, 3, '1500', '2025-06-20 09:41:23');
+INSERT INTO `user_health` VALUES (408, 2, 2, '50', '2025-06-20 09:41:23');
+INSERT INTO `user_health` VALUES (409, 2, 1, '173', '2025-06-20 09:41:23');
+INSERT INTO `user_health` VALUES (410, 2, 25, '8', '2025-06-20 09:41:29');
+INSERT INTO `user_health` VALUES (411, 2, 24, '2000', '2025-06-20 09:41:29');
+INSERT INTO `user_health` VALUES (412, 2, 23, '50', '2025-06-20 09:41:29');
+INSERT INTO `user_health` VALUES (413, 2, 22, '88', '2025-06-20 09:41:29');
+INSERT INTO `user_health` VALUES (414, 2, 21, '8000', '2025-06-20 09:41:29');
+INSERT INTO `user_health` VALUES (415, 2, 20, '50', '2025-06-20 09:41:29');
+INSERT INTO `user_health` VALUES (416, 2, 14, '37.8', '2025-06-20 09:41:29');
+INSERT INTO `user_health` VALUES (417, 2, 13, '3', '2025-06-20 09:41:29');
+INSERT INTO `user_health` VALUES (418, 2, 12, '88', '2025-06-20 09:41:29');
+INSERT INTO `user_health` VALUES (419, 2, 11, '5', '2025-06-20 09:41:29');
+INSERT INTO `user_health` VALUES (420, 2, 10, '2000', '2025-06-20 09:41:29');
+INSERT INTO `user_health` VALUES (421, 2, 9, '2000', '2025-06-20 09:41:29');
+INSERT INTO `user_health` VALUES (422, 2, 8, '88', '2025-06-20 09:41:29');
+INSERT INTO `user_health` VALUES (423, 2, 7, '200', '2025-06-20 09:41:29');
+INSERT INTO `user_health` VALUES (424, 2, 6, '1', '2025-06-20 09:41:29');
+INSERT INTO `user_health` VALUES (425, 2, 5, '8', '2025-06-20 09:41:29');
+INSERT INTO `user_health` VALUES (426, 2, 4, '200', '2025-06-20 09:41:29');
+INSERT INTO `user_health` VALUES (427, 2, 3, '1500', '2025-06-20 09:41:29');
+INSERT INTO `user_health` VALUES (428, 2, 2, '50', '2025-06-20 09:41:29');
+INSERT INTO `user_health` VALUES (429, 2, 1, '173', '2025-06-20 09:41:29');
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -11,7 +11,6 @@ public class UserUpdateDTO {
 
     private String userAccount;
 
-
     private String userName;
 
     private String userPwd;
@@ -19,4 +18,8 @@ public class UserUpdateDTO {
     private String userAvatar;
 
     private String userEmail;
+    
+    private Boolean gender;
+    
+    private Integer age;
 }

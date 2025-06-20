@@ -28,4 +28,14 @@ public class UserRegisterDTO {
      * 用户头像
      */
     private String userAvatar;
+    
+    /**
+     * 性别(0：女性，1：男性)
+     */
+    private Boolean gender;
+    
+    /**
+     * 年龄
+     */
+    private Integer age;
 }

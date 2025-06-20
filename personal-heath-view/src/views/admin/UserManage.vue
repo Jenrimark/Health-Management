@@ -39,6 +39,16 @@
                 <el-table-column prop="userName" label="名称"></el-table-column>
                 <el-table-column prop="userAccount" width="128" label="账号"></el-table-column>
                 <el-table-column prop="userEmail" width="168" label="邮箱"></el-table-column>
+                <el-table-column prop="gender" width="68" label="性别">
+                    <template slot-scope="scope">
+                        <span>{{ scope.row.gender === true ? '男' : scope.row.gender === false ? '女' : '未设置' }}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="age" width="68" label="年龄">
+                    <template slot-scope="scope">
+                        <span>{{ scope.row.age || '未设置' }}</span>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="userRole" width="68" label="角色">
                     <template slot-scope="scope">
                         <span>{{ scope.row.userRole === 1 ? '管理员' : '用户' }}</span>
@@ -101,6 +111,19 @@
                     <input class="dialog-input" v-model="data.userEmail" placeholder="邮箱" />
                     <span class="dialog-hover">密码</span>
                     <input class="dialog-input" v-model="userPwd" type="password" placeholder="密码" />
+                    
+                    <div style="display: flex; align-items: center; margin-bottom: 15px; margin-top: 5px;">
+                        <span class="dialog-hover" style="margin-right: 15px;">性别</span>
+                        <el-radio-group v-model="data.gender">
+                            <el-radio :label="false">女</el-radio>
+                            <el-radio :label="true">男</el-radio>
+                        </el-radio-group>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <span class="dialog-hover" style="margin-right: 15px;">年龄</span>
+                        <el-input-number v-model="data.age" :min="1" :max="120"></el-input-number>
+                    </div>
                 </el-row>
             </div>
             <span slot="footer" class="dialog-footer" style="margin-top: 10px;">

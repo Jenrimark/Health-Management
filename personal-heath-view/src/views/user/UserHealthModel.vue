@@ -27,6 +27,14 @@
                 <div>
                     <LineChart @on-selected="onSelectedTime" height="500px" tag="" :values="values" :date="dates" />
                 </div>
+                <!-- 添加身体评分可视化组件 -->
+                <div class="score-container">
+                    <div class="score-title">身体健康评分</div>
+                    <div class="score-ball" :class="scoreClass">
+                        <span class="score-text">{{ healthScore }}</span>
+                    </div>
+                    <div class="score-description">{{ scoreDescription }}</div>
+                </div>
             </div>
             <div style="flex: 1;min-width: 50%;">
                 <h2 style="padding-left: 20px;border-left: 2px solid rgb(43, 121, 203);">健康指标数据</h2>
@@ -104,12 +112,40 @@ export default {
             pageSize: 20,
             totalItems: 0,
             searchTime: [],
-            healthModelConfigId: null
+            healthModelConfigId: null,
+            healthScore: 85, // 身体健康评分
+        }
+    },
+    computed: {
+        scoreClass() {
+            // 根据分数返回不同的样式类
+            if (this.healthScore >= 90) {
+                return 'score-excellent';
+            } else if (this.healthScore >= 75) {
+                return 'score-good';
+            } else if (this.healthScore >= 60) {
+                return 'score-average';
+            } else {
+                return 'score-poor';
+            }
+        },
+        scoreDescription() {
+            // 根据分数返回不同的描述文字
+            if (this.healthScore >= 90) {
+                return '优秀 - 您的健康状况非常好！';
+            } else if (this.healthScore >= 75) {
+                return '良好 - 您的健康状况良好。';
+            } else if (this.healthScore >= 60) {
+                return '一般 - 您的健康状况需要改善。';
+            } else {
+                return '较差 - 请注意您的健康状况。';
+            }
         }
     },
     created() {
         this.loadHealthModelConfig();//从后端API中获取
         this.fetchFreshData(); //从后端获取最新的健康记录数据并更新页面显示
+        this.calculateHealthScore(); // 计算健康评分
     },
     methods: {
         timeChange() {
@@ -201,6 +237,7 @@ export default {
                 const { data } = response;
                 this.tableData = data.data;
                 this.totalItems = data.total;
+                this.calculateHealthScore(); // 重新计算健康评分
             } catch (error) {
                 console.error('查询用户健康记录信息异常:', error);
             }
@@ -284,6 +321,23 @@ export default {
         toRecord() {
             this.$router.push('/record');
         },
+        // 计算健康评分
+        calculateHealthScore() {
+            // 这里是计算健康评分的逻辑，可以根据后端数据或本地计算
+            // 示例逻辑：根据用户的健康记录数据计算
+            // 实际项目中，您可能需要根据各种指标（如BMI、血压、血糖等）综合计算
+            if (this.tableData.length > 0) {
+                // 统计异常指标的数量
+                const abnormalCount = this.tableData.filter(item => !this.statusCheck(item)).length;
+                // 根据异常指标数量计算评分
+                const totalCount = this.tableData.length;
+                const normalRate = (totalCount - abnormalCount) / totalCount;
+                this.healthScore = Math.round(normalRate * 100);
+            } else {
+                // 默认评分
+                this.healthScore = 85;
+            }
+        }
     }
 };
 </script>
@@ -390,5 +444,61 @@ h2 {
     width: 100%;
     height: 100%;
     border-radius: 5px;
+}
+
+/* 身体评分可视化组件样式 */
+.score-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 30px;
+    padding: 20px;
+}
+
+.score-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.score-ball {
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.score-text {
+    font-size: 72px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.score-description {
+    font-size: 16px;
+    text-align: center;
+    color: #666;
+}
+
+.score-excellent {
+    background: linear-gradient(to bottom right, #4caf50, #2e7d32);
+}
+
+.score-good {
+    background: linear-gradient(to bottom right, #2196f3, #1565c0);
+}
+
+.score-average {
+    background: linear-gradient(to bottom right, #ff9800, #e65100);
+}
+
+.score-poor {
+    background: linear-gradient(to bottom right, #f44336, #b71c1c);
 }
 </style>

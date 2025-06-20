@@ -10,6 +10,8 @@
                           user_role,
                           is_login,
                           is_word,
+                          gender,
+                          age,
                           create_time)
         VALUES (#{userAccount},
                 #{userName},
@@ -19,6 +21,8 @@
                 #{userRole},
                 #{isLogin},
                 #{isWord},
+                #{gender},
+                #{age},
                 #{createTime})
     </insert>
     <update id="update" parameterType="cn.kmbeast.pojo.entity.User">
@@ -47,6 +51,12 @@
             </if>
             <if test="userRole != null">
                 user_role = #{userRole},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+            <if test="age != null">
+                age = #{age},
             </if>
         </set>
         WHERE id = #{id}
@@ -154,6 +164,8 @@
         <result column="user_role" property="userRole"/>
         <result column="is_login" property="isLogin"/>
         <result column="is_word" property="isWord"/>
+        <result column="gender" property="gender"/>
+        <result column="age" property="age"/>
         <result column="create_time" property="createTime"/>
     </resultMap>
 

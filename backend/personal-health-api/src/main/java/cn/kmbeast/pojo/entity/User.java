@@ -34,6 +34,10 @@ public class User {
     private Boolean isLogin;
 
     private Boolean isWord;
+    
+    private Boolean gender;
+    
+    private Integer age;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;

@@ -35,6 +35,21 @@
                     </p>
                     <input class="modelInput" type="text" v-model="data.email" placeholder="用户名">
                 </el-row>
+                <div style="margin: 15px 0;">
+                    <p style="font-size: 12px;padding: 3px 0; margin-bottom: 10px;">
+                        <span class="modelName">*性别</span>
+                    </p>
+                    <el-radio-group v-model="data.gender" style="margin-left: 10px;">
+                        <el-radio :label="false">女</el-radio>
+                        <el-radio :label="true">男</el-radio>
+                    </el-radio-group>
+                </div>
+                <div style="margin: 15px 0;">
+                    <p style="font-size: 12px;padding: 3px 0; margin-bottom: 10px;">
+                        <span class="modelName">*年龄</span>
+                    </p>
+                    <el-input-number v-model="data.age" :min="1" :max="120" style="margin-left: 10px;"></el-input-number>
+                </div>
             </el-row>
             <span slot="footer" class="dialog-footer">
                 <el-button class="customer" size="small" style="background-color: rgb(241, 241, 241);border: none;"
@@ -127,7 +142,9 @@ export default {
                 const userUpdateDTO = {
                     userAvatar: this.data.url,
                     userName: this.data.name,
-                    userEmail: this.data.email
+                    userEmail: this.data.email,
+                    gender: this.data.gender,
+                    age: this.data.age
                 }
                 const resposne = await this.$axios.put(`/user/update`, userUpdateDTO);
                 const { data } = resposne;
@@ -245,14 +262,16 @@ export default {
                     this.$router.push('/login');
                     return;
                 }
-                const { id: userId, userAvatar, userName, userRole, userEmail } = res.data.data;
+                const { id: userId, userAvatar, userName, userRole, userEmail, gender, age } = res.data.data;
                 // 将用户信息存储起来
                 sessionStorage.setItem('userInfo', JSON.stringify(res.data.data));
                 this.userInfo = {
                     url: userAvatar,
                     name: userName,
                     role: userRole,
-                    email: userEmail
+                    email: userEmail,
+                    gender: gender,
+                    age: age
                 };
                 this.data = { ...this.userInfo };
                 // 根据角色解析路由

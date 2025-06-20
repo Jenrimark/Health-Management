@@ -69,6 +69,8 @@ public class UserServiceImpl implements UserService {
                 .userAvatar(userRegisterDTO.getUserAvatar())
                 .userPwd(userRegisterDTO.getUserPwd())
                 .userEmail(userRegisterDTO.getUserEmail())
+                .gender(userRegisterDTO.getGender())
+                .age(userRegisterDTO.getAge())
                 .createTime(LocalDateTime.now())
                 .isLogin(LoginStatusEnum.USE.getFlag())
                 .isWord(WordStatusEnum.USE.getFlag()).build();
@@ -139,8 +141,14 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Result<String> update(UserUpdateDTO userUpdateDTO) {
-        User updateEntity = User.builder().id(LocalThreadHolder.getUserId()).build();
-        BeanUtils.copyProperties(userUpdateDTO, updateEntity);
+        User updateEntity = User.builder()
+                .id(LocalThreadHolder.getUserId())
+                .userName(userUpdateDTO.getUserName())
+                .userAvatar(userUpdateDTO.getUserAvatar())
+                .userEmail(userUpdateDTO.getUserEmail())
+                .gender(userUpdateDTO.getGender())
+                .age(userUpdateDTO.getAge())
+                .build();
         userMapper.update(updateEntity);
         return ApiResult.success();
     }
