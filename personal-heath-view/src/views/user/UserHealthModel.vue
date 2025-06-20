@@ -76,7 +76,7 @@
                     </el-row>
                 </el-row>
                 <el-row style="margin: 0 20px;border-top: 1px solid rgb(245,245,245);">
-                    <el-table row-key="id" @selection-change="handleSelectionChange" :data="tableData">
+                    <el-table row-key="id" @selection-change="handleSelectionChange" :data="filteredTableData">
                         <el-table-column prop="name" label="指标项">
                             <template slot-scope="scope">
                                 <span><i class="el-icon-paperclip" style="margin-right: 3px;"></i>{{ scope.row.name
@@ -168,6 +168,19 @@ export default {
             } else {
                 return '较差 - 请注意您的健康状况。';
             }
+        },
+        // 过滤健康指标数据，不显示自动计算的三个指标
+        filteredTableData() {
+            // 需要隐藏的指标名称
+            const hiddenMetrics = ['BMI', 'BMI指数', '身体质量指数', '体脂率', '体脂百分比', '基础代谢率', 'BMR'];
+            
+            // 过滤数据
+            return this.tableData.filter(item => {
+                // 如果数据项的名称在需要隐藏的列表中，则不显示
+                return !hiddenMetrics.some(metric => 
+                    item.name && item.name.toLowerCase().includes(metric.toLowerCase())
+                );
+            });
         }
     },
     created() {
@@ -1072,27 +1085,7 @@ h2 {
     border-radius: 5px;
 }
 
-.avatar-uploader {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100px;
-    height: 100px;
-    border: 1px dashed #ddd;
-    border-radius: 5px;
-    margin-bottom: 20px;
-}
 
-.avatar-uploader-icon {
-    font-size: 28px;
-    color: #999;
-}
-
-.avatar-uploader img {
-    width: 100%;
-    height: 100%;
-    border-radius: 5px;
-}
 
 /* 身体评分可视化组件样式 */
 .score-container {
