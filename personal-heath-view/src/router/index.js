@@ -186,7 +186,7 @@ const routes = [
         isHidden: true,
       },
       {
-        name: '每日健康计划',
+        name: '我的运动',
         path: "/daily-health",
         component: () => import(`@/views/user/DailyHealth.vue`),
         meta: {

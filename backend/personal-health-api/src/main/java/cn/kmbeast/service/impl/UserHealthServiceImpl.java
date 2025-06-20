@@ -131,10 +131,10 @@ public class UserHealthServiceImpl implements UserHealthService {
         String content;
         if (currentValue > maxValue) {
             content = "你记录的【" + healthModelConfig.getName() + "】超标了！当前值：" + currentValue +
-                    "，正常值范围:[" + valueRange + "]，请注意休息。必要时请就医!";
+                    "，正常值范围:[" + valueRange + "]!";
         } else if (currentValue < minValue) {
             content = "你记录的【" + healthModelConfig.getName() + "】偏低了！当前值：" + currentValue +
-                    "，正常值范围:[" + valueRange + "]，请注意休息。必要时请就医!";
+                    "，正常值范围:[" + valueRange + "]!";
         } else {
             // 理论上不会走到这里，因为只有异常值才会调用此方法
             content = "你记录的【" + healthModelConfig.getName() + "】异常了，正常值范围:[" + valueRange + "]";
