@@ -35,6 +35,29 @@
                     </div>
                     <div class="score-description">{{ scoreDescription }}</div>
                 </div>
+
+                <!-- 添加健康指标计算数据 -->
+                <div class="health-metrics-container">
+                    <h3>健康指标计算</h3>
+                    <el-button type="primary" size="small" class="calculate-btn" @click="showCalculationDetails">计算详情</el-button>
+                    <div class="health-metrics">
+                        <div class="metric-item">
+                            <div class="metric-title">BMI指数</div>
+                            <div class="metric-value">{{ bmiValue || '-- --' }}</div>
+                            <div class="metric-desc">{{ bmiDescription }}</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-title">体脂率</div>
+                            <div class="metric-value">{{ bodyFatRate || '-- --' }}%</div>
+                            <div class="metric-desc">{{ bodyFatDescription }}</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-title">基础代谢率</div>
+                            <div class="metric-value">{{ bmrValue || '-- --' }} kcal</div>
+                            <div class="metric-desc">每日消耗的最低热量</div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div style="flex: 1;min-width: 50%;">
                 <h2 style="padding-left: 20px;border-left: 2px solid rgb(43, 121, 203);">健康指标数据</h2>
@@ -114,6 +137,11 @@ export default {
             searchTime: [],
             healthModelConfigId: null,
             healthScore: 85, // 身体健康评分
+            bmiValue: null,
+            bmiDescription: '',
+            bodyFatRate: null,
+            bodyFatDescription: '',
+            bmrValue: null,
         }
     },
     computed: {
@@ -146,6 +174,7 @@ export default {
         this.loadHealthModelConfig();//从后端API中获取
         this.fetchFreshData(); //从后端获取最新的健康记录数据并更新页面显示
         this.calculateHealthScore(); // 计算健康评分
+        this.calculateHealthMetrics(false); // 计算健康指标但不显示弹窗
     },
     methods: {
         timeChange() {
@@ -233,13 +262,22 @@ export default {
                     healthModelConfigId: this.healthModelConfigId,
                     userId: userEntitySave.id
                 };
-                const response = await this.$axios.post('/user-health/query', params);
+                
+                console.log('获取最新数据，参数:', params);
+                
+                // 添加时间戳参数避免缓存
+                const timestamp = new Date().getTime();
+                const response = await this.$axios.post(`/user-health/query?t=${timestamp}`, params);
                 const { data } = response;
                 this.tableData = data.data;
                 this.totalItems = data.total;
                 this.calculateHealthScore(); // 重新计算健康评分
+                
+                // 返回结果用于链式调用
+                return data;
             } catch (error) {
                 console.error('查询用户健康记录信息异常:', error);
+                throw error; // 抛出异常以便调用者处理
             }
         },
         // 点击输入框里面的清除按钮
@@ -276,6 +314,7 @@ export default {
                     // 拿到的数据，要做可视化处理
                     this.values = data.data.map(entity => entity.value).reverse();
                     this.dates = data.data.map(entity => entity.createTime).reverse();
+                    this.calculateHealthMetrics(false); // 获取最新数据并更新计算指标
                 }
             })
         },
@@ -337,7 +376,616 @@ export default {
                 // 默认评分
                 this.healthScore = 85;
             }
-        }
+        },
+        // 安全地获取记录的值
+        getRecordValue(record) {
+            if (!record) return null;
+            
+            // 打印记录以便调试
+            console.log('获取值的记录:', record);
+            
+            // 尝试各种可能的值属性名
+            if (record.value !== undefined) return record.value;
+            
+            // 根据API返回的可能字段名
+            if (record.val !== undefined) return record.val;
+            if (record.recordValue !== undefined) return record.recordValue;
+            if (record.v !== undefined) return record.v;
+            if (record.data !== undefined && typeof record.data !== 'object') return record.data;
+            
+            // 尝试通过属性名称中包含"value"或"val"的字段获取值
+            for (const key in record) {
+                if (record.hasOwnProperty(key) && 
+                    (key.toLowerCase().includes('value') || key.toLowerCase().includes('val')) && 
+                    typeof record[key] !== 'object' &&
+                    record[key] !== null) {
+                    console.log('通过名称匹配找到值属性:', key, record[key]);
+                    return record[key];
+                }
+            }
+            
+            // 如果找不到值属性，返回第一个非对象非数组的数值型属性
+            for (const key in record) {
+                if (record.hasOwnProperty(key) && 
+                    typeof record[key] !== 'object' && 
+                    typeof record[key] !== 'boolean' &&
+                    !isNaN(parseFloat(record[key])) &&
+                    key !== 'id' && 
+                    key !== 'userId' && 
+                    key !== 'health_model_config_id' &&
+                    key !== 'healthModelConfigId' &&
+                    key !== 'createTime') {
+                    console.log('找到可能的数值属性:', key, record[key]);
+                    return record[key];
+                }
+            }
+            
+            // 最后尝试任何非空的字符串属性
+            for (const key in record) {
+                if (record.hasOwnProperty(key) && 
+                    typeof record[key] === 'string' &&
+                    record[key].trim() !== '' &&
+                    key !== 'id' && 
+                    key !== 'userId' && 
+                    key !== 'createTime' &&
+                    key !== 'name' &&
+                    key !== 'unit' &&
+                    key !== 'symbol') {
+                    console.log('找到可能的字符串属性:', key, record[key]);
+                    return record[key];
+                }
+            }
+            
+            console.log('无法找到值属性!');
+            return null;
+        },
+        
+        // 根据不同的可能属性名查找健康记录
+        findHealthRecord(data, modelId) {
+            if (!data || !Array.isArray(data) || data.length === 0) return null;
+            
+            // 优先使用health_model_config_id
+            let record = data.find(item => item.health_model_config_id === modelId);
+            
+            // 如果没找到，尝试其他可能的属性名
+            if (!record) {
+                record = data.find(item => 
+                    item.healthModelConfigId === modelId ||
+                    item.modelId === modelId || 
+                    item.configId === modelId
+                );
+            }
+            
+            return record;
+        },
+        
+        // 分析健康记录数据，用于排查问题
+        analyzeHealthRecords(records) {
+            if (!records || !Array.isArray(records) || records.length === 0) {
+                console.log('没有健康记录数据可供分析');
+                return;
+            }
+            
+            console.log('========== 健康记录数据结构分析 ==========');
+            console.log(`共有 ${records.length} 条记录`);
+            
+            // 提取所有字段名
+            const allFields = new Set();
+            records.forEach(record => {
+                Object.keys(record).forEach(key => allFields.add(key));
+            });
+            
+            console.log('所有可能的字段名:', Array.from(allFields));
+            
+            // 统计不同模型ID的分布
+            const modelIdCount = {};
+            records.forEach(record => {
+                const id = record.health_model_config_id || record.healthModelConfigId;
+                if (id) {
+                    modelIdCount[id] = (modelIdCount[id] || 0) + 1;
+                }
+            });
+            
+            console.log('模型ID分布:', modelIdCount);
+            
+            // 分析名称和ID的对应关系
+            const modelNameMap = {};
+            records.forEach(record => {
+                const id = record.health_model_config_id || record.healthModelConfigId;
+                const name = record.name;
+                if (id && name) {
+                    if (!modelNameMap[id]) modelNameMap[id] = {};
+                    modelNameMap[id][name] = (modelNameMap[id][name] || 0) + 1;
+                }
+            });
+            
+            console.log('模型ID与名称的对应关系:', modelNameMap);
+            
+            // 分析几个关键记录的完整数据
+            console.log('几个典型记录的数据结构:');
+            // 尝试找身高记录
+            const heightRecord = records.find(r => (r.name && r.name.includes('身高')) || 
+                (r.health_model_config_id === 1 || r.healthModelConfigId === 1));
+            
+            // 尝试找体重记录
+            const weightRecord = records.find(r => (r.name && r.name.includes('体重')));
+            
+            if (heightRecord) {
+                console.log('身高记录示例:', heightRecord);
+            }
+            
+            if (weightRecord) {
+                console.log('体重记录示例:', weightRecord);
+            }
+            
+            console.log('========== 分析结束 ==========');
+        },
+        
+        // 显示计算详情
+        showCalculationDetails() {
+            // 显示加载提示
+            const loading = this.$loading({
+                lock: true,
+                text: '正在获取最新健康数据...',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
+            
+            // 强制刷新数据，使用setTimeout确保UI先更新
+            setTimeout(() => {
+                // 先重新获取表格数据
+                this.fetchFreshData().then(() => {
+                    // 然后重新计算健康指标并显示详情弹窗
+                    this.calculateHealthMetrics(true);
+                }).catch(err => {
+                    console.error('获取数据失败:', err);
+                    this.$message.error('获取数据失败，请重试');
+                }).finally(() => {
+                    loading.close();
+                });
+            }, 100);
+        },
+        
+        // 计算健康指标的方法
+        async calculateHealthMetrics(showDetails = false) {
+            try {
+                const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+                
+                if (!userInfo) {
+                    this.$message.error('未获取到用户信息，请先登录');
+                    return;
+                }
+                
+                try {
+                    // 添加时间戳避免缓存
+                    const timestamp = new Date().getTime();
+                    // 直接获取所有健康记录
+                    const response = await this.$axios.post(`/user-health/query?t=${timestamp}`, {
+                        current: 1,
+                        size: 500, // 增大获取数量确保获取全部记录
+                        userId: userInfo.id
+                    });
+                    
+                    const allHealthData = response.data.data;
+                    
+                    console.log('获取到的最新健康数据:', allHealthData);
+                    console.log('数据记录总数:', allHealthData ? allHealthData.length : 0);
+                    
+                    if (!allHealthData || !Array.isArray(allHealthData) || allHealthData.length === 0) {
+                        this.$message.error('未获取到健康记录数据');
+                        return;
+                    }
+                    
+                    // 分析健康数据结构
+                    this.analyzeHealthRecords(allHealthData);
+                    
+                    // 分别找出身高和体重的最新记录
+                    let heightRecords = allHealthData.filter(record => {
+                        const id = record.health_model_config_id || record.healthModelConfigId;
+                        return id == 1;  // 修正：身高ID为1
+                    });
+                    
+                    // 查找体重模型ID - 优先从配置中获取
+                    let weightModelId = null;
+                    const weightModelName = '体重';
+                    
+                    // 1. 从配置中查找体重模型
+                    const weightModel = this.usersHealthModelConfig.find(model => 
+                        model.name === weightModelName || 
+                        model.name === '用户体重' ||
+                        (model.name && model.name.includes('体重'))
+                    );
+                    
+                    if (weightModel) {
+                        weightModelId = weightModel.id;
+                        console.log('从配置中找到体重模型ID:', weightModelId);
+                    } else {
+                        console.log('从配置中未找到体重模型，尝试从已有记录推断');
+                        
+                        // 2. 尝试从已有记录推断体重ID
+                        // 查找名称包含"体重"的记录
+                        const weightNameRecords = allHealthData.filter(record => 
+                            record.name && record.name.includes('体重')
+                        );
+                        
+                        if (weightNameRecords.length > 0) {
+                            // 获取最常见的ID
+                            const idCounts = {};
+                            weightNameRecords.forEach(record => {
+                                const id = record.health_model_config_id || record.healthModelConfigId;
+                                if (id) {
+                                    idCounts[id] = (idCounts[id] || 0) + 1;
+                                }
+                            });
+                            
+                            // 找出出现最多的ID
+                            let maxCount = 0;
+                            let mostCommonId = null;
+                            for (const id in idCounts) {
+                                if (idCounts[id] > maxCount) {
+                                    maxCount = idCounts[id];
+                                    mostCommonId = id;
+                                }
+                            }
+                            
+                            if (mostCommonId) {
+                                weightModelId = mostCommonId;
+                                console.log('从记录中推断体重模型ID:', weightModelId);
+                            }
+                        }
+                        
+                        // 3. 如果仍未找到，使用常见的体重ID
+                        if (!weightModelId) {
+                            weightModelId = 20; // 默认常用ID
+                            console.log('无法推断体重ID，使用默认ID:', weightModelId);
+                        }
+                    }
+                    
+                    console.log('最终确定的体重模型ID:', weightModelId);
+                    
+                    // 输出所有记录的模型ID分布，用于调试
+                    console.log('所有健康模型记录的ID分布:');
+                    const idCounts = {};
+                    allHealthData.forEach(record => {
+                        const id = record.health_model_config_id || record.healthModelConfigId;
+                        if (id) {
+                            idCounts[id] = (idCounts[id] || 0) + 1;
+                        }
+                    });
+                    console.log(idCounts);
+                    
+                    let weightRecords = allHealthData.filter(record => {
+                        const id = record.health_model_config_id || record.healthModelConfigId;
+                        // 尝试多种可能的ID
+                        return id == weightModelId || id == 20 || id == 2;  // 尝试多个可能的体重ID
+                    });
+                    
+                    console.log('身高记录数:', heightRecords.length);
+                    console.log('体重记录数:', weightRecords.length);
+                    
+                    // 如果通过ID没找到体重记录，尝试通过名称查找
+                    if (weightRecords.length === 0) {
+                        console.log('通过ID未找到体重记录，尝试通过名称查找...');
+                        weightRecords = allHealthData.filter(record => {
+                            // 通过名称或标签查找与体重相关的记录
+                            return (record.name && record.name.includes('体重')) || 
+                                  (record.symbol && record.symbol === 'weight');
+                        });
+                        
+                        if (weightRecords.length > 0) {
+                            console.log('通过名称找到体重记录:', weightRecords.length, '条');
+                        } else {
+                            // 最后尝试找数值合理的记录
+                            console.log('尝试通过数值范围查找可能的体重记录...');
+                            weightRecords = allHealthData.filter(record => {
+                                // 获取记录值
+                                const value = this.getRecordValue(record);
+                                if (!value) return false;
+                                
+                                // 转为数字
+                                const numValue = parseFloat(value);
+                                // 体重一般在30-300kg范围内
+                                return !isNaN(numValue) && numValue > 30 && numValue < 300;
+                            });
+                            
+                            if (weightRecords.length > 0) {
+                                console.log('通过数值范围找到可能的体重记录:', weightRecords.length, '条');
+                            }
+                        }
+                        
+                        console.log('通过名称找到的体重记录数:', weightRecords.length);
+                    }
+                    
+                    if (!heightRecords.length) {
+                        this.$message.error('未找到身高记录(ID=1)，无法计算');
+                        return;
+                    }
+                    
+                    if (!weightRecords.length) {
+                        // 使用更友好的错误提示
+                        this.$message.error(`未找到体重记录，请先添加体重数据。尝试过的ID: ${weightModelId}, 20, 2`);
+                        
+                        // 显示现有的模型配置，帮助诊断
+                        console.log('可用的健康模型配置:', this.usersHealthModelConfig);
+                        
+                        // 遍历健康数据，查找可能有用的线索
+                        console.log('现有健康数据的模型ID和名称:');
+                        const modelSamples = [];
+                        allHealthData.slice(0, 10).forEach(record => {
+                            modelSamples.push({
+                                id: record.health_model_config_id || record.healthModelConfigId,
+                                name: record.name,
+                                value: record.value
+                            });
+                        });
+                        console.log(modelSamples);
+                        
+                        return;
+                    }
+                    
+                    // 按时间降序排序，取第一条记录
+                    heightRecords.sort((a, b) => {
+                        const dateA = new Date(a.createTime || a.create_time);
+                        const dateB = new Date(b.createTime || b.create_time);
+                        return dateB - dateA; // 降序
+                    });
+                    
+                    weightRecords.sort((a, b) => {
+                        const dateA = new Date(a.createTime || a.create_time);
+                        const dateB = new Date(b.createTime || b.create_time);
+                        return dateB - dateA; // 降序
+                    });
+                    
+                    // 获取最新记录的值
+                    const latestHeightRecord = heightRecords[0];
+                    const latestWeightRecord = weightRecords[0];
+                    
+                    console.log('最新身高记录:', latestHeightRecord);
+                    console.log('最新体重记录:', latestWeightRecord);
+                    
+                    // 如果仍然找不到体重记录，尝试寻找标题含有"体重"的记录
+                    if (!latestWeightRecord && allHealthData.length > 0) {
+                        console.log('尝试通过名称搜索体重记录...');
+                        const possibleWeightRecords = allHealthData.filter(record => {
+                            return record.name && record.name.includes('体重');
+                        });
+                        
+                        if (possibleWeightRecords.length > 0) {
+                            console.log('通过名称找到可能的体重记录:', possibleWeightRecords.length, '条');
+                            possibleWeightRecords.sort((a, b) => {
+                                const dateA = new Date(a.createTime || a.create_time);
+                                const dateB = new Date(b.createTime || b.create_time);
+                                return dateB - dateA; // 降序
+                            });
+                            const possibleWeightRecord = possibleWeightRecords[0];
+                            console.log('可能的体重记录:', possibleWeightRecord);
+                            weightRecords = [possibleWeightRecord];
+                        }
+                    }
+                    
+                    // 确保能够获取到值
+                    let heightValue = this.getRecordValue(latestHeightRecord);
+                    let weightValue = this.getRecordValue(latestWeightRecord);
+                    
+                    // 检查值是否有效
+                    if (!heightValue) {
+                        console.error('身高记录缺少value字段:', latestHeightRecord);
+                        for (const key in latestHeightRecord) {
+                            console.log(`身高记录字段${key}:`, latestHeightRecord[key]);
+                        }
+                        this.$message.error('身高数据格式异常，无法计算');
+                        return;
+                    }
+                    
+                    if (!weightValue) {
+                        console.error('体重记录缺少value字段:', latestWeightRecord);
+                        for (const key in latestWeightRecord) {
+                            console.log(`体重记录字段${key}:`, latestWeightRecord[key]);
+                        }
+                        this.$message.error('体重数据格式异常，无法计算');
+                        return;
+                    }
+                    
+                    // 显示原始值
+                    console.log('身高原始值:', heightValue);
+                    console.log('体重原始值:', weightValue);
+                    
+                    // 转换为数字
+                    heightValue = parseFloat(heightValue);
+                    weightValue = parseFloat(weightValue);
+                    
+                    if (isNaN(heightValue) || isNaN(weightValue)) {
+                        this.$message.error('数据格式错误，无法计算');
+                        return;
+                    }
+                    
+                    // 身高单位可能是米，需要转换为厘米
+                    if (heightValue < 3) {
+                        console.log('身高小于3，转换为厘米:', heightValue, '->', heightValue * 100);
+                        heightValue = heightValue * 100;
+                    }
+                    
+                    // 获取用户年龄和性别
+                    const age = userInfo.age || 25;
+                    const gender = userInfo.gender;
+                    
+                    console.log('计算使用的数据 - 身高:', heightValue, '厘米, 体重:', weightValue, '千克, 年龄:', age, '性别:', gender ? '男' : '女');
+                    
+                    // 计算健康指标
+                    this.calculateBMI(heightValue, weightValue);
+                    this.calculateBodyFatRate(gender, age, heightValue, weightValue);
+                    this.calculateBMR(gender, age, heightValue, weightValue);
+                    
+                    console.log('计算完成，结果:', {
+                        bmi: this.bmiValue,
+                        bodyFat: this.bodyFatRate,
+                        bmr: this.bmrValue
+                    });
+                    
+                    this.$message.success(`健康指标计算完成! BMI: ${this.bmiValue}, 体脂率: ${this.bodyFatRate}%, BMR: ${this.bmrValue}kcal`);
+                    
+                    // 准备详细的计算信息
+                    const detailInfo = `
+                    <div style="text-align: left; font-family: monospace;">
+                    <h3>计算过程</h3>
+                    <p><b>使用的数据:</b></p>
+                    <ul>
+                    <li>身高: ${heightValue} 厘米</li>
+                    <li>体重: ${weightValue} 千克</li>
+                    <li>年龄: ${age} 岁</li>
+                    <li>性别: ${gender ? '男' : '女'}</li>
+                    </ul>
+                    <p><b>计算结果:</b></p>
+                    <ul>
+                    <li>BMI: ${this.bmiValue} (${this.bmiDescription})</li>
+                    <li>体脂率: ${this.bodyFatRate}% (${this.bodyFatDescription})</li>
+                    <li>基础代谢率: ${this.bmrValue} kcal</li>
+                    </ul>
+                    <p><b>计算公式:</b></p>
+                    <ul>
+                    <li>BMI = 体重(${weightValue}kg) / (身高(${heightValue/100}m)²) = ${this.bmiValue}</li>
+                    <li>体脂率 = 1.2 × BMI + 0.23 × 年龄 - 5.4 - 10.8 × ${gender ? '1' : '0'} = ${this.bodyFatRate}%</li>
+                    <li>基础代谢率(${gender ? '男' : '女'}) = ${gender ? 
+                      `(13.7 × ${weightValue}) + (5.0 × ${heightValue}) - (6.8 × ${age}) + 66` : 
+                      `(9.6 × ${weightValue}) + (1.8 × ${heightValue}) - (4.7 × ${age}) + 655`} = ${this.bmrValue} kcal</li>
+                    </ul>
+                    </div>
+                    `;
+                    
+                    // 只有当showDetails为true时才显示详情弹窗
+                    if (showDetails) {
+                        // 弹窗显示详细计算过程
+                        this.$alert(detailInfo, '健康指标计算详情', {
+                            dangerouslyUseHTMLString: true,
+                            customClass: 'calculation-details-dialog',
+                            closeOnClickModal: true,
+                            closeOnPressEscape: true,
+                            confirmButtonText: '我知道了'
+                        });
+                    }
+                    
+                } catch (error) {
+                    console.error('获取健康数据异常:', error);
+                    this.$message.error('获取健康数据失败: ' + (error.message || '未知错误'));
+                }
+            } catch (error) {
+                console.error('健康计算总异常:', error);
+                this.$message.error('计算健康指标失败: ' + (error.message || '未知错误'));
+            }
+        },
+        
+        // 计算BMI
+        calculateBMI(height, weight) {
+            if (!height || !weight) return;
+            
+            // 转换为数字并确保有效
+            const h = parseFloat(height) / 100; // 转换为米
+            const w = parseFloat(weight);
+            
+            // 计算BMI
+            const bmi = w / (h * h);
+            
+            if (isNaN(bmi) || bmi <= 0) {
+                console.error('BMI计算错误:', { height, weight, bmi });
+                return;
+            }
+            
+            this.bmiValue = bmi.toFixed(1);
+            
+            // 设置BMI描述
+            if (bmi < 18.5) {
+                this.bmiDescription = '体重过轻';
+            } else if (bmi < 24) {
+                this.bmiDescription = '体重正常';
+            } else if (bmi < 28) {
+                this.bmiDescription = '超重';
+            } else {
+                this.bmiDescription = '肥胖';
+            }
+        },
+        
+        // 计算体脂率
+        calculateBodyFatRate(gender, age, height, weight) {
+            if (gender === undefined || !age || !height || !weight) return;
+            
+            // 转换为数字
+            const h = parseFloat(height) / 100; // 转换为米
+            const w = parseFloat(weight);
+            const a = parseInt(age);
+            
+            // 计算BMI
+            const bmi = w / (h * h);
+            
+            if (isNaN(bmi) || bmi <= 0) {
+                console.error('体脂率计算错误 - BMI无效:', { height, weight, bmi });
+                return;
+            }
+            
+            // 体脂率计算公式：1.2 * BMI + 0.23 * 年龄 - 5.4 - 10.8 * 性别(男:1,女:0)
+            const genderFactor = gender ? 1 : 0;
+            const bodyFat = (1.2 * bmi) + (0.23 * a) - 5.4 - (10.8 * genderFactor);
+            
+            if (isNaN(bodyFat)) {
+                console.error('体脂率计算错误:', { bmi, age, gender, bodyFat });
+                return;
+            }
+            
+            this.bodyFatRate = bodyFat.toFixed(1);
+            
+            // 设置体脂率描述
+            if (gender) { // 男性
+                if (bodyFat < 10) {
+                    this.bodyFatDescription = '偏低';
+                } else if (bodyFat < 20) {
+                    this.bodyFatDescription = '健康';
+                } else if (bodyFat < 25) {
+                    this.bodyFatDescription = '超重';
+                } else {
+                    this.bodyFatDescription = '肥胖';
+                }
+            } else { // 女性
+                if (bodyFat < 15) {
+                    this.bodyFatDescription = '偏低';
+                } else if (bodyFat < 25) {
+                    this.bodyFatDescription = '健康';
+                } else if (bodyFat < 30) {
+                    this.bodyFatDescription = '超重';
+                } else {
+                    this.bodyFatDescription = '肥胖';
+                }
+            }
+        },
+        
+        // 计算基础代谢率
+        calculateBMR(gender, age, height, weight) {
+            if (gender === undefined || !age || !height || !weight) return;
+            
+            // 转换为数字
+            const h = parseFloat(height);
+            const w = parseFloat(weight);
+            const a = parseInt(age);
+            
+            if (isNaN(h) || isNaN(w) || isNaN(a)) {
+                console.error('BMR计算错误 - 无效输入:', { height, weight, age });
+                return;
+            }
+            
+            // 基础代谢率计算公式
+            let bmr;
+            
+            if (gender) { // 男性
+                bmr = (13.7 * w) + (5.0 * h) - (6.8 * a) + 66;
+            } else { // 女性
+                bmr = (9.6 * w) + (1.8 * h) - (4.7 * a) + 655;
+            }
+            
+            if (isNaN(bmr)) {
+                console.error('BMR计算错误:', { height, weight, age, gender, bmr });
+                return;
+            }
+            
+            this.bmrValue = Math.round(bmr);
+        },
     }
 };
 </script>
@@ -500,5 +1148,47 @@ h2 {
 
 .score-poor {
     background: linear-gradient(to bottom right, #f44336, #b71c1c);
+}
+
+/* 健康指标计算数据样式 */
+.health-metrics-container {
+    margin-top: 30px;
+    padding: 20px;
+    position: relative;
+}
+
+.calculate-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.health-metrics {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.metric-item {
+    text-align: center;
+}
+
+.metric-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.metric-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.metric-desc {
+    font-size: 14px;
+    color: #666;
 }
 </style>
