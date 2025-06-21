@@ -7,17 +7,17 @@
         <el-button style="float: right; padding: 3px 0" type="text" @click="handleAdd">添加记录</el-button>
       </div>
 
-      <el-table :data="healthPlans" style="width: 100%">
-        <el-table-column prop="planDate" label="日期" width="180">
+      <el-table :data="healthPlans" style="width: 100%" class="health-table">
+        <el-table-column prop="planDate" label="日期" width="120" align="center" header-align="center">
           <template slot-scope="scope">
             {{ formatDate(scope.row.planDate) }}
           </template>
         </el-table-column>
-        <el-table-column prop="targetCalories" label="目标热量(kcal)" width="180"/>
-        <el-table-column prop="exerciseMinutes" label="运动时间(分钟)"/>
-        <el-table-column prop="sleepHours" label="睡眠时间(小时)"/>
-        <el-table-column prop="waterCups" label="饮水量(杯)"/>
-        <el-table-column label="操作" width="250">
+        <el-table-column prop="steps" label="步数" width="120" align="center" header-align="center"/>
+        <el-table-column prop="exerciseMinutes" label="时间(分)" width="120" align="center" header-align="center"/>
+        <el-table-column prop="exerciseType" label="运动方式" width="120" align="center" header-align="center"/>
+        <el-table-column prop="caloriesBurned" label="热量(kcal)" width="120" align="center" header-align="center"/>
+        <el-table-column label="操作设置" align="center" header-align="center">
           <template slot-scope="scope">
             <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
             <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
@@ -105,11 +105,11 @@
         </div>
         
         <div style="margin-block: 10px;">
-          <span class="dialog-hover">目标热量</span>
+          <span class="dialog-hover">运动步数</span>
           <el-input-number 
-            v-model="form.targetCalories" 
-            :min="1000" 
-            :max="5000"
+            v-model="form.steps" 
+            :min="0" 
+            :max="50000"
             style="width: 200px;">
           </el-input-number>
         </div>
@@ -125,22 +125,26 @@
         </div>
         
         <div style="margin-block: 10px;">
-          <span class="dialog-hover">睡眠时间</span>
-          <el-input-number 
-            v-model="form.sleepHours" 
-            :min="4" 
-            :max="12" 
-            :step="0.5"
+          <span class="dialog-hover">运动方式</span>
+          <el-select 
+            v-model="form.exerciseType" 
+            placeholder="选择运动方式"
             style="width: 200px;">
-          </el-input-number>
+            <el-option label="跑步" value="跑步"></el-option>
+            <el-option label="步行" value="步行"></el-option>
+            <el-option label="游泳" value="游泳"></el-option>
+            <el-option label="骑行" value="骑行"></el-option>
+            <el-option label="爬山" value="爬山"></el-option>
+            <el-option label="其他" value="其他"></el-option>
+          </el-select>
         </div>
         
         <div style="margin-block: 10px;">
-          <span class="dialog-hover">饮水量</span>
+          <span class="dialog-hover">消耗热量</span>
           <el-input-number 
-            v-model="form.waterCups" 
+            v-model="form.caloriesBurned" 
             :min="0" 
-            :max="20"
+            :max="3000"
             style="width: 200px;">
           </el-input-number>
         </div>
@@ -171,14 +175,14 @@ export default {
       dialogTitle: '添加记录',
       form: {
         planDate: '',
-        targetCalories: 2000,
+        steps: 8000,
         exerciseMinutes: 30,
-        sleepHours: 8,
-        waterCups: 8
+        exerciseType: '跑步',
+        caloriesBurned: 300
       },
       rules: {
         planDate: [{ required: true, message: '请选择日期', trigger: 'change' }],
-        targetCalories: [{ required: true, message: '请输入目标热量', trigger: 'blur' }]
+        steps: [{ required: true, message: '请输入运动步数', trigger: 'blur' }]
       },
       
       // 统计数据（保留）
@@ -239,10 +243,10 @@ export default {
       this.dialogTitle = '添加记录';
       this.form = {
         planDate: new Date(),
-        targetCalories: 2000,
+        steps: 8000,
         exerciseMinutes: 30,
-        sleepHours: 8,
-        waterCups: 8
+        exerciseType: '跑步',
+        caloriesBurned: 300
       };
       this.dialogVisible = true;
     },
@@ -506,6 +510,76 @@ export default {
   
   &.stats-card {
     margin-top: 30px;
+  }
+}
+
+// 添加健康表格样式
+.health-table {
+  ::v-deep {
+    .el-table__header-wrapper {
+      th {
+        background-color: #f5f7fa;
+        color: #606266;
+        font-weight: 600;
+        height: 40px;
+        line-height: 24px;
+        padding: 12px 0;
+        text-align: center !important;
+      }
+      
+      .el-table__header {
+        display: table;
+        width: 100% !important;
+        table-layout: fixed;
+      }
+      
+      thead {
+        tr {
+          display: table-row;
+          width: 100%;
+          text-align: center !important;
+        }
+        
+        th .cell {
+          text-align: center !important;
+          width: 100% !important;
+          padding: 0 !important;
+        }
+      }
+    }
+    
+    .el-table__body-wrapper {
+      td {
+        font-size: 14px;
+        padding: 12px 0;
+        height: 60px;
+        line-height: 24px;
+      }
+    }
+
+    .el-table__row {
+      height: 60px;
+    }
+    
+    // 修复边框样式
+    .el-table__header {
+      border-bottom: 1px solid #EBEEF5;
+    }
+
+    .el-table--border::after, 
+    .el-table--group::after, 
+    .el-table::before {
+      background-color: transparent;
+    }
+    
+    // 调整条纹样式
+    .el-table--striped .el-table__body tr.el-table__row--striped td {
+      background-color: #f5f7fa;
+    }
+
+    .el-table__body tr:hover > td {
+      background-color: #ecf5ff;
+    }
   }
 }
 

@@ -12,10 +12,10 @@ public class  HealthPlanQueryDto extends QueryDto {
     private Integer id;
     private Integer userId;
     private Date planDate;
-    private Integer targetCalories;
+    private Integer steps;
     private Integer exerciseMinutes;
-    private Double sleepHours;
-    private Integer waterCups;
+    private String exerciseType;
+    private Integer caloriesBurned;
     private Date createTime;
     private Date updateTime;
 }

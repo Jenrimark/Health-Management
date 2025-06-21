@@ -170,21 +170,21 @@
             
             <div class="plan-metric">
               <div class="metric-icon">
-                <i class="el-icon-moon"></i>
+                <i class="el-icon-data-analysis"></i>
               </div>
               <div class="metric-info">
-                <div class="metric-value">{{ latestHealthPlan.sleepHours }} 小时</div>
-                <div class="metric-label">睡眠目标</div>
+                <div class="metric-value">{{ latestHealthPlan.exerciseType }}</div>
+                <div class="metric-label">运动方式</div>
               </div>
             </div>
             
             <div class="plan-metric">
               <div class="metric-icon">
-                <i class="el-icon-water-cup"></i>
+                <i class="el-icon-stopwatch"></i>
               </div>
               <div class="metric-info">
-                <div class="metric-value">{{ latestHealthPlan.waterCups }} 杯</div>
-                <div class="metric-label">饮水目标</div>
+                <div class="metric-value">{{ latestHealthPlan.caloriesBurned }} kcal</div>
+                <div class="metric-label">消耗热量</div>
               </div>
             </div>
           </div>

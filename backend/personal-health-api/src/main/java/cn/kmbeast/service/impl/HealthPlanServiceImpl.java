@@ -9,6 +9,7 @@ import cn.kmbeast.pojo.entity.Cookbook;
 import cn.kmbeast.pojo.entity.HealthPlan;
 import cn.kmbeast.pojo.vo.HealthPlanVO;
 import cn.kmbeast.service.HealthPlanService;
+import cn.kmbeast.utils.IdFactoryUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -36,7 +37,10 @@ public class HealthPlanServiceImpl implements HealthPlanService {
     public Result<String> save(HealthPlan healthplan) {
 
         healthplan.setUserId(LocalThreadHolder.getUserId());
-
+        // 确保ID不为空
+        if (healthplan.getId() == null) {
+            healthplan.setId(IdFactoryUtil.getIntegerId());
+        }
         healthplan.setCreateTime(LocalDateTime.now());
         healthplanMapper.save(healthplan);
         return ApiResult.success();

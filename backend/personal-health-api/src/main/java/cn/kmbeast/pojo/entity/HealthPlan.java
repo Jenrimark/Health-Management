@@ -11,10 +11,10 @@ public class HealthPlan {
     private Integer id;
     private Integer userId;
     private Date planDate;
-    private Integer targetCalories;
+    private Integer steps;
     private Integer exerciseMinutes;
-    private Double sleepHours;
-    private Integer waterCups;
+    private String exerciseType;
+    private Integer caloriesBurned;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")

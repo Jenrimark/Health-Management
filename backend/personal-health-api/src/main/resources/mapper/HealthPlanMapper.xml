@@ -3,8 +3,8 @@
 <mapper namespace="cn.kmbeast.mapper.HealthPlanMapper">
 
     <insert id="save" parameterType="cn.kmbeast.pojo.entity.HealthPlan">
-        INSERT INTO health_plan (id, user_id, plan_date, target_calories, exercise_minutes, sleep_hours, water_cups, create_time)
-        VALUES (#{id}, #{userId}, #{planDate}, #{targetCalories}, #{exerciseMinutes}, #{sleepHours}, #{waterCups}, #{createTime})
+        INSERT INTO health_plan (id, user_id, plan_date, steps, exercise_minutes, exercise_type, calories_burned, create_time)
+        VALUES (#{id}, #{userId}, #{planDate}, #{steps}, #{exerciseMinutes}, #{exerciseType}, #{caloriesBurned}, #{createTime})
     </insert>
 
 
@@ -20,17 +20,17 @@
             <if test="planDate != null">
                 plan_date = #{planDate},
             </if>
-            <if test="targetCalories != null">
-                target_calories = #{targetCalories},
+            <if test="steps != null">
+                steps = #{steps},
             </if>
             <if test="exerciseMinutes != null">
                 exercise_minutes = #{exerciseMinutes},
             </if>
-            <if test="sleepHours != null">
-                sleep_hours = #{sleepHours},
+            <if test="exerciseType != null">
+                exercise_type = #{exerciseType},
             </if>
-            <if test="waterCups != null">
-                water_cups = #{waterCups},
+            <if test="caloriesBurned != null">
+                calories_burned = #{caloriesBurned},
             </if>
             update_time = NOW()
         </set>
@@ -96,13 +96,12 @@
         <id column="id" property="id"/>
         <result column="user_id" property="userId"/>
         <result column="plan_date" property="planDate"/>
-        <result column="target_calories" property="targetCalories"/>
+        <result column="steps" property="steps"/>
         <result column="exercise_minutes" property="exerciseMinutes"/>
-        <result column="sleep_hours" property="sleepHours"/>
-        <result column="water_cups" property="waterCups"/>
+        <result column="exercise_type" property="exerciseType"/>
+        <result column="calories_burned" property="caloriesBurned"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
 </mapper>
-
