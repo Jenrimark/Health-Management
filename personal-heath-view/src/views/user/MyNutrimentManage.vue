@@ -53,6 +53,16 @@
                     <el-input type="textarea" :rows="3" placeholder="用一句话描述这项配置吧" v-model="data.detail">
                     </el-input>
                 </div>
+                <div style="margin-top: 15px; display: flex; align-items: center;">
+                    <span class="dialog-hover" style="margin-right: 10px;">是否公开</span>
+                    <el-switch
+                        v-model="data.isPublish"
+                        active-color="#13ce66"
+                        inactive-color="#ff4949"
+                        active-text="公开"
+                        inactive-text="私有">
+                    </el-switch>
+                </div>
             </div>
             <span slot="footer" class="dialog-footer" style="margin-top: 10px;">
                 <span class="channel-button" @click="cannel()">
@@ -152,6 +162,7 @@ updateOperation() {
         },
         add() {
             this.dialogNutrimentOperaion = true;
+            this.data = { isPublish: false }; // 设置默认为私有
         },
         // 批量删除数据
        // 修改批量删除方法

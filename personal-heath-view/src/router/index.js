@@ -201,7 +201,7 @@ const routes = [
       },
       {
         path: '/my-cookbook',
-        name: '我的食谱',
+        name: '食谱营养素',
         component: () => import('@/views/user/CookbookOperation.vue'),
         meta: { requireAuth: true }
       },
