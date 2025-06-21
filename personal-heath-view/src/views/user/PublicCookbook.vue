@@ -67,14 +67,23 @@
         </el-dialog>
 
         <!-- 营养素弹窗 -->
-        <el-dialog :visible.sync="nutrimentDialogVisible" title="食谱营养素信息" width="50%">
-            <el-table :data="cookbookNutrimentList" border style="width: 100%">
-                <el-table-column prop="nutrimentName" label="营养素名称" width="180"></el-table-column>
-                <el-table-column prop="g100Value" label="每100g含量"></el-table-column>
-                <el-table-column prop="nutrimentUnit" label="单位"></el-table-column>
-            </el-table>
-            <div v-if="cookbookNutrimentList.length === 0" style="text-align: center; padding: 20px;">
-                该食谱暂无营养素信息
+        <el-dialog :visible.sync="nutrimentDialogVisible" custom-class="nutriment-dialog" width="65%">
+            <div class="nutriment-header">
+                <h2 class="nutriment-title">食谱营养素信息</h2>
+                <p class="nutriment-subtitle">每100克食物的营养成分详情</p>
+            </div>
+            <div v-if="cookbookNutrimentList.length === 0" class="nutriment-empty">
+                <el-empty description="该食谱暂无营养素信息"></el-empty>
+            </div>
+            <div v-else class="nutriment-container">
+                <div class="nutriment-card" v-for="(item, index) in cookbookNutrimentList" :key="index">
+                    <div class="nutriment-card-header">
+                        <span class="nutriment-name">{{item.nutrimentName}}</span>
+                    </div>
+                    <div class="nutriment-card-body">
+                        <div class="nutriment-value">{{item.g100Value}}<span class="nutriment-unit">{{item.nutrimentUnit}}</span></div>
+                    </div>
+                </div>
             </div>
         </el-dialog>
     </el-row>
@@ -260,7 +269,12 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
+/* 全局样式，确保能够应用到元素上 */
+.nutriment-dialog .el-dialog__body {
+    padding: 40px 30px 25px 30px !important;
+}
+
 .cookbook-cover {
     width: 200px;
     height: 150px;
@@ -307,5 +321,101 @@ export default {
 .button-row {
     display: flex;
     justify-content: space-between;
+}
+
+.nutriment-dialog {
+    border-radius: 8px;
+}
+
+.nutriment-dialog .el-dialog__header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.nutriment-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed #f0f0f0;
+}
+
+.nutriment-title {
+    font-size: 22px;
+    color: #409EFF;
+    margin-bottom: 10px;
+}
+
+.nutriment-subtitle {
+    color: #909399;
+    font-size: 14px;
+    margin: 0;
+}
+
+.nutriment-empty {
+    padding: 30px 0;
+    text-align: center;
+}
+
+.nutriment-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 10px 0;
+}
+
+.nutriment-card {
+    width: 160px;
+    height: 130px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border: 1px solid #ebeef5;
+}
+
+.nutriment-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.nutriment-card-header {
+    padding: 14px 10px;
+    background-color: #409EFF;
+    color: white;
+    text-align: center;
+}
+
+.nutriment-name {
+    font-size: 16px;
+    font-weight: bold;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nutriment-card-body {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px;
+}
+
+.nutriment-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #303133;
+    text-align: center;
+}
+
+.nutriment-unit {
+    font-size: 13px;
+    color: #606266;
+    margin-left: 3px;
 }
 </style> 

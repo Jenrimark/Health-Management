@@ -21,13 +21,7 @@
         </el-row>
         <el-row style="margin: 0 22px;border-top: 1px solid rgb(245,245,245);">
             <el-table :stripe="true" :data="tableData" style="width: 100%">
-                <el-table-column prop="userAvatar" width="68" label="头像">
-                    <template slot-scope="scope">
-                        <el-avatar :size="25" :src="scope.row.userAvatar" style="margin-top: 10px;"></el-avatar>
-                    </template>
-                </el-table-column>
                 <el-table-column prop="title" label="食谱名"></el-table-column>
-                <el-table-column prop="id" :sortable="true" label="内容ID" width="98"></el-table-column>
                 <el-table-column prop="categoryName" label="所属类别" width="118"></el-table-column>
                 <el-table-column prop="isPublish" label="是否公开" width="118">
                     <template slot-scope="scope">
