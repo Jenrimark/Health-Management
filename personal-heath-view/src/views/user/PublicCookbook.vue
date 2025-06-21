@@ -49,20 +49,33 @@
         </el-row>
         
         <!-- 食谱详情弹窗 -->
-        <el-dialog :visible.sync="dialogVisible" title="食谱详情" width="60%">
-            <div v-if="currentCookbook">
-                <div class="cookbook-header">
-                    <img :src="currentCookbook.cover" class="cookbook-cover" v-if="currentCookbook.cover">
-                    <div class="cookbook-title">
-                        <h2>{{currentCookbook.title}}</h2>
-                        <div class="cookbook-meta">
-                            <span>分类：{{currentCookbook.categoryName}}</span>
-                            <span>发布者：{{currentCookbook.userName}}</span>
-                            <span>发布时间：{{currentCookbook.createTime}}</span>
+        <el-dialog :visible.sync="dialogVisible" custom-class="cookbook-detail-dialog" width="65%">
+            <div class="cookbook-detail-header">
+                <h2 class="cookbook-detail-title">食谱详情</h2>
+                <p class="cookbook-detail-subtitle">精选食谱内容与营养信息</p>
+            </div>
+            <div v-if="currentCookbook" class="cookbook-detail-container">
+                <div class="cookbook-detail-info">
+                    <img :src="currentCookbook.cover" class="cookbook-detail-cover" v-if="currentCookbook.cover">
+                    <div class="cookbook-detail-meta">
+                        <h3>{{currentCookbook.title}}</h3>
+                        <div class="cookbook-meta-items">
+                            <div class="cookbook-meta-item">
+                                <i class="el-icon-menu"></i>
+                                <span>{{currentCookbook.categoryName}}</span>
+                            </div>
+                            <div class="cookbook-meta-item">
+                                <i class="el-icon-user"></i>
+                                <span>{{currentCookbook.userName}}</span>
+                            </div>
+                            <div class="cookbook-meta-item">
+                                <i class="el-icon-time"></i>
+                                <span>{{currentCookbook.createTime}}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="cookbook-content" v-html="currentCookbook.content"></div>
+                <div class="cookbook-detail-content" v-html="currentCookbook.content"></div>
             </div>
         </el-dialog>
 
@@ -417,5 +430,103 @@ export default {
     font-size: 13px;
     color: #606266;
     margin-left: 3px;
+}
+
+.cookbook-detail-dialog {
+    border-radius: 8px;
+}
+
+.cookbook-detail-dialog .el-dialog__header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.cookbook-detail-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 10px 0;
+}
+
+.cookbook-detail-info {
+    display: flex;
+    align-items: center;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.05);
+}
+
+.cookbook-detail-cover {
+    width: 180px;
+    height: 140px;
+    object-fit: cover;
+    margin-right: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.cookbook-detail-meta {
+    flex: 1;
+}
+
+.cookbook-detail-meta h3 {
+    color: #303133;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 20px;
+}
+
+.cookbook-meta-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    color: #666;
+}
+
+.cookbook-meta-item {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 6px 12px;
+    border-radius: 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.cookbook-meta-item i {
+    margin-right: 5px;
+    color: #409EFF;
+}
+
+.cookbook-detail-content {
+    margin-top: 10px;
+    line-height: 1.6;
+    background-color: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.05);
+}
+
+.cookbook-detail-dialog .el-dialog__body {
+    padding: 40px 30px 25px 30px !important;
+}
+
+.cookbook-detail-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed #f0f0f0;
+}
+
+.cookbook-detail-title {
+    font-size: 22px;
+    color: #409EFF;
+    margin-bottom: 10px;
+}
+
+.cookbook-detail-subtitle {
+    color: #909399;
+    font-size: 14px;
+    margin: 0;
 }
 </style> 
