@@ -1,10 +1,10 @@
 <template>
   <div class="daily-health">
-    <!-- 每日健康计划卡片（还原为原始版本） -->
+    <!-- 我的运动记录卡片（还原为原始版本） -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>每日健康计划</span>
-        <el-button style="float: right; padding: 3px 0" type="text" @click="handleAdd">添加计划</el-button>
+        <span>我的运动记录</span>
+        <el-button style="float: right; padding: 3px 0" type="text" @click="handleAdd">添加记录</el-button>
       </div>
 
       <el-table :data="healthPlans" style="width: 100%">
@@ -168,7 +168,7 @@ export default {
       healthPlans: [],
       latestHealthPlan: null,
       dialogVisible: false,
-      dialogTitle: '添加计划',
+      dialogTitle: '添加记录',
       form: {
         planDate: '',
         targetCalories: 2000,
@@ -236,7 +236,7 @@ export default {
       }
     },
     handleAdd() {
-      this.dialogTitle = '添加计划';
+      this.dialogTitle = '添加记录';
       this.form = {
         planDate: new Date(),
         targetCalories: 2000,
