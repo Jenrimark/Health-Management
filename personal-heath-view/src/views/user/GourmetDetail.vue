@@ -28,7 +28,7 @@
                 </span>
                 <span class="stat-item">
                   <i class="el-icon-view"></i>
-                  {{ gourmet.viewCount }} 浏览
+                  {{ gourmet.viewCount }} 精选
                 </span>
                 <span class="stat-item">
                   <i class="el-icon-star-off"></i>
@@ -291,7 +291,7 @@
             this.gourmet.viewCount += 1;
           }
         }).catch(error => {
-          console.log("浏览操作异常：", error);
+          console.log("精选操作异常：", error);
         })
       },
       

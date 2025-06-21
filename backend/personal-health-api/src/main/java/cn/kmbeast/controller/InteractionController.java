@@ -73,7 +73,7 @@ public class InteractionController {
     }
 
     /**
-     * 浏览操作
+     * 精选操作
      *
      * @return Result<Void> 响应结果
      */

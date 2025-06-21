@@ -41,7 +41,7 @@ public class GourmetListVO {
      */
     private String userAvatar;
     /**
-     * 浏览量
+     * 精选量
      */
     private Integer viewCount;
     /**

@@ -12,7 +12,7 @@ public enum InteractionTypeEnum {
 
     UPVOTE(1, "点赞"),
     COLLECTION(2, "收藏"),
-    VIEW(3, "浏览"),
+    VIEW(3, "精选"),
     RATING(4, "评分");
 
     /**

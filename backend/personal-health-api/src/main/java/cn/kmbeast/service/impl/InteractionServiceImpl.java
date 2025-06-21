@@ -49,9 +49,9 @@ public class InteractionServiceImpl implements InteractionService {
     }
 
     /**
-     * 浏览操作
+     * 精选操作
      * 逻辑：
-     * 1. 传入内容ID，查询用户与这篇内容有没有产生浏览关系
+     * 1. 传入内容ID，查询用户与这篇内容有没有产生精选关系
      * 2. 如果没有，则新增这种关系；如果有，不进行处理，直接返回。
      *
      * @param contentId 内容
@@ -81,7 +81,7 @@ public class InteractionServiceImpl implements InteractionService {
         interaction.setContentType(contentType);
         interaction.setUserId(LocalThreadHolder.getUserId());
         interaction.setCreateTime(LocalDateTime.now());
-        // 新增浏览关系
+        // 新增精选关系
         interactionMapper.save(interaction);
     }
 

@@ -9,10 +9,10 @@
         <el-tab-pane label="食谱配置">
             <MyCookbookNutrimentManage/>
         </el-tab-pane>
-        <el-tab-pane label="浏览食谱">
+        <el-tab-pane label="精选食谱">
             <PublicCookbook />
         </el-tab-pane>
-        <el-tab-pane label="浏览营养素">
+        <el-tab-pane label="精选营养素">
             <PublicNutriment />
         </el-tab-pane>
     </el-tabs>

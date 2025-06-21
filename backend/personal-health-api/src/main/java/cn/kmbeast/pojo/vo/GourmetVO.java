@@ -28,7 +28,7 @@ public class GourmetVO extends Gourmet {
      */
     private String userAvatar;
     /**
-     * 浏览量
+     * 精选量
      */
     private Integer viewCount;
     /**
