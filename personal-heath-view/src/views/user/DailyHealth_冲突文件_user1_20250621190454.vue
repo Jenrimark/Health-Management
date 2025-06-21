@@ -1,6 +1,6 @@
 <template>
   <div class="daily-health">
-    <!-- 统计功能卡片（保留） -->
+    <!-- 统计功能卡片（现在放在第一位） -->
     <el-card class="box-card stats-card">
       <div slot="header" class="clearfix">
         <span>运动数据统计</span>
@@ -58,51 +58,15 @@
         </div>
       </div>
     </el-card>
-    
-    <!-- 我的运动记录卡片（还原为原始版本） -->
+
+    <!-- 我的运动记录卡片（现在放在第二位） -->
     <el-card class="box-card">
-      <div slot="header" class="clearfix card-header">
-        <span class="header-title">我的运动记录</span>
-        
-        <!-- 筛选元素整合到标题行 -->
-        <div class="header-filters">
-          <div class="filter-item">
-            <el-date-picker
-              v-model="dateRange"
-              type="daterange"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              size="small"
-              value-format="yyyy-MM-dd">
-            </el-date-picker>
-          </div>
-          
-          <div class="filter-item">
-            <el-select 
-              v-model="exerciseTypeFilter" 
-              placeholder="运动方式" 
-              size="small"
-              clearable>
-              <el-option label="跑步" value="跑步"></el-option>
-              <el-option label="步行" value="步行"></el-option>
-              <el-option label="游泳" value="游泳"></el-option>
-              <el-option label="骑行" value="骑行"></el-option>
-              <el-option label="爬山" value="爬山"></el-option>
-              <el-option label="其他" value="其他"></el-option>
-            </el-select>
-          </div>
-          
-          <div class="filter-actions">
-            <el-button type="primary" size="mini" icon="el-icon-search" circle @click="handleFilter"></el-button>
-            <el-button size="mini" icon="el-icon-refresh" circle @click="resetFilter"></el-button>
-          </div>
-        </div>
-        
-        <el-button class="add-record-btn" type="primary" size="small" icon="el-icon-plus" @click="handleAdd">添加记录</el-button>
+      <div slot="header" class="clearfix">
+        <span>我的运动记录</span>
+        <el-button style="float: right; padding: 3px 0" type="text" @click="handleAdd">添加记录</el-button>
       </div>
-      
-      <el-table :data="filteredHealthPlans" style="width: 100%" class="health-table">
+
+      <el-table :data="healthPlans" style="width: 100%" class="health-table">
         <el-table-column prop="planDate" label="日期" width="120" align="center" header-align="center">
           <template slot-scope="scope">
             {{ formatDate(scope.row.planDate) }}
@@ -121,7 +85,7 @@
       </el-table>
     </el-card>
 
-    <!-- 添加/编辑健康计划对话框（还原为原始版本） -->
+    <!-- 添加/编辑健康计划对话框（保持在最后不变） -->
     <el-dialog 
       :show-close="false" 
       :visible.sync="dialogVisible" 
@@ -233,12 +197,7 @@ export default {
       
       // 图表实例（保留）
       stepsChart: null,
-      caloriesChart: null,
-      
-      // 筛选相关数据
-      dateRange: [],
-      exerciseTypeFilter: '',
-      filteredHealthPlans: []
+      caloriesChart: null
     };
   },
   created() {
@@ -263,7 +222,6 @@ export default {
       try {
         const response = await this.$axios.post('/health-plans/queryUser', {});
         this.healthPlans = response.data.data;
-        this.filteredHealthPlans = [...this.healthPlans]; // 初始化筛选后数据
       } catch (error) {
         console.error('获取计划列表失败:', error);
         this.$message.error('获取计划列表失败');
@@ -534,30 +492,6 @@ export default {
           }
         ]
       });
-    },
-    
-    // 筛选相关方法
-    handleFilter() {
-      // 实现筛选逻辑
-      this.filteredHealthPlans = this.healthPlans.filter(plan => {
-        let dateMatch = true;
-        if (this.dateRange && this.dateRange.length === 2) {
-          const planDate = new Date(plan.planDate);
-          const startDate = new Date(this.dateRange[0]);
-          const endDate = new Date(this.dateRange[1]);
-          dateMatch = planDate >= startDate && planDate <= endDate;
-        }
-        
-        const typeMatch = !this.exerciseTypeFilter || plan.exerciseType === this.exerciseTypeFilter;
-        
-        return dateMatch && typeMatch;
-      });
-    },
-    
-    resetFilter() {
-      this.dateRange = [];
-      this.exerciseTypeFilter = '';
-      this.filteredHealthPlans = [...this.healthPlans]; // 重置为所有数据
     }
   }
 };
@@ -760,88 +694,5 @@ export default {
     background-color: #66b1ff;
     border-color: #66b1ff;
   }
-}
-
-.filter-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.filter-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.filter-label {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.filter-buttons {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.card-header {
-  position: relative;
-  display: flex;
-  align-items: center;
-  padding: 10px 20px;
-}
-
-.header-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin-right: 20px;
-  white-space: nowrap;
-}
-
-.header-filters {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  flex: 1;
-  gap: 10px;
-
-  .filter-item {
-    .el-date-editor.el-input__inner {
-      width: 240px;
-    }
-    .el-input {
-      width: 120px;
-    }
-  }
-
-  @media screen and (max-width: 1200px) {
-    .filter-item {
-      .el-date-editor.el-input__inner {
-        width: 220px;
-      }
-    }
-  }
-
-  @media screen and (max-width: 992px) {
-    .filter-item {
-      .el-date-editor.el-input__inner {
-        width: 200px;
-      }
-    }
-  }
-}
-
-.filter-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: 5px;
-}
-
-.add-record-btn {
-  margin-left: auto;
-  margin-right: 55px;
 }
 </style>
