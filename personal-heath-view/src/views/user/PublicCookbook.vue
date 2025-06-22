@@ -1,6 +1,10 @@
 <template>
     <el-row style="background-color: #FFFFFF;padding: 5px 0;border-radius: 5px;">
         <el-row style="padding: 10px;margin-left: 5px;">
+            <el-row style="display: flex;justify-content: left;gap: 6px;margin-bottom: 10px;">
+                <el-button type="primary" size="small" @click="showFoodNutrientSearch">食物营养成分查询</el-button>
+                <el-button type="success" size="small" @click="showPortionCalculator">食物份量营养计算</el-button>
+            </el-row>
             <el-row style="display: flex;justify-content: left;gap: 6px;">
                 <el-select style="width: 100px;" @change="fetchFreshData" size="small"
                     v-model="cookbookQueryDto.categoryId" placeholder="菜系">
@@ -99,6 +103,151 @@
                 </div>
             </div>
         </el-dialog>
+
+        <!-- 食物营养成分查询弹窗 -->
+        <el-dialog :visible.sync="foodNutrientSearchVisible" custom-class="cookbook-detail-dialog" width="70%">
+            <div class="cookbook-detail-header">
+                <h2 class="cookbook-detail-title">食物营养成分查询</h2>
+                <p class="cookbook-detail-subtitle">查询食物的详细营养成分信息</p>
+            </div>
+            <div class="food-nutrient-search-container">
+                <div class="food-search-section">
+                    <div class="food-search-form">
+                        <el-form :inline="true" :model="foodSearchForm" class="search-form">
+                            <el-form-item label="食物名称">
+                                <el-autocomplete
+                                    v-model="foodSearchForm.name"
+                                    :fetch-suggestions="queryFoodSuggestions"
+                                    placeholder="请输入食物名称"
+                                    @select="handleFoodSelect"
+                                    style="width: 250px"
+                                    clearable>
+                                </el-autocomplete>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-button type="primary" @click="searchFoodNutrient">查询</el-button>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+
+                    <div v-if="showFoodSearchResults" class="food-search-results">
+                        <div class="cookbook-detail-info">
+                            <img :src="currentFoodInfo.image" class="cookbook-detail-cover" v-if="currentFoodInfo && currentFoodInfo.image">
+                            <div class="cookbook-detail-meta">
+                                <h3>{{currentFoodInfo.name}}</h3>
+                                <div class="cookbook-meta-items">
+                                    <div class="cookbook-meta-item">
+                                        <i class="el-icon-menu"></i>
+                                        <span>{{currentFoodInfo.category}}</span>
+                                    </div>
+                                </div>
+                                <p class="food-description">{{currentFoodInfo.description}}</p>
+                            </div>
+                        </div>
+
+                        <div class="nutrient-section">
+                            <h4 class="nutrient-section-title">每100克{{currentFoodInfo.name}}的营养成分</h4>
+                            <div class="nutrient-table-container">
+                                <el-table :data="currentFoodNutrients" style="width: 100%">
+                                    <el-table-column prop="name" label="营养素" width="150"></el-table-column>
+                                    <el-table-column prop="value" label="含量"></el-table-column>
+                                    <el-table-column prop="unit" label="单位" width="80"></el-table-column>
+                                    <el-table-column prop="percentage" label="每日参考值%" width="120">
+                                        <template slot-scope="scope">
+                                            <el-progress :percentage="scope.row.percentage" :color="getProgressColor(scope.row.percentage)" :show-text="false"></el-progress>
+                                            <span>{{scope.row.percentage}}%</span>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </el-dialog>
+
+        <!-- 食物份量营养计算弹窗 -->
+        <el-dialog :visible.sync="portionCalculatorVisible" custom-class="cookbook-detail-dialog" width="70%">
+            <div class="cookbook-detail-header">
+                <h2 class="cookbook-detail-title">食物份量营养计算</h2>
+                <p class="cookbook-detail-subtitle">根据食物重量计算精确的营养成分</p>
+            </div>
+            <div class="portion-calculator-container">
+                <div class="portion-calculator-form">
+                    <el-form :model="portionCalculatorForm" label-width="120px">
+                        <el-form-item label="选择食物">
+                            <el-autocomplete
+                                v-model="portionCalculatorForm.foodName"
+                                :fetch-suggestions="queryFoodSuggestions"
+                                placeholder="请输入食物名称"
+                                @select="handlePortionFoodSelect"
+                                style="width: 250px"
+                                clearable>
+                            </el-autocomplete>
+                        </el-form-item>
+                        <el-form-item label="食物重量(克)">
+                            <el-input-number 
+                                v-model="portionCalculatorForm.weight" 
+                                :min="1" 
+                                :max="10000"
+                                @change="calculatePortionNutrients">
+                            </el-input-number>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" @click="calculatePortionNutrients">计算</el-button>
+                        </el-form-item>
+                    </el-form>
+                </div>
+
+                <div v-if="showPortionResults" class="portion-calculator-results">
+                    <div class="cookbook-detail-info">
+                        <div class="cookbook-detail-meta">
+                            <h3>{{portionCalculatorForm.weight}}克{{portionCalculatorForm.foodName}}的营养成分</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="nutrition-summary">
+                        <div class="summary-header">
+                            <h4>总热量: <span class="calorie-value">{{totalCalories}}</span> 千卡</h4>
+                        </div>
+                        <div class="macronutrient-distribution">
+                            <div class="macro-item">
+                                <div class="macro-label">蛋白质</div>
+                                <el-progress :percentage="proteinPercentage" color="#67C23A"></el-progress>
+                                <div class="macro-value">{{proteinGrams}}克 ({{proteinPercentage}}%)</div>
+                            </div>
+                            <div class="macro-item">
+                                <div class="macro-label">脂肪</div>
+                                <el-progress :percentage="fatPercentage" color="#E6A23C"></el-progress>
+                                <div class="macro-value">{{fatGrams}}克 ({{fatPercentage}}%)</div>
+                            </div>
+                            <div class="macro-item">
+                                <div class="macro-label">碳水化合物</div>
+                                <el-progress :percentage="carbPercentage" color="#409EFF"></el-progress>
+                                <div class="macro-value">{{carbGrams}}克 ({{carbPercentage}}%)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="nutrient-section">
+                        <h4 class="nutrient-section-title">详细营养素含量</h4>
+                        <div class="nutrient-table-container">
+                            <el-table :data="portionNutrients" style="width: 100%">
+                                <el-table-column prop="name" label="营养素" width="150"></el-table-column>
+                                <el-table-column prop="value" label="含量"></el-table-column>
+                                <el-table-column prop="unit" label="单位" width="80"></el-table-column>
+                                <el-table-column prop="percentage" label="每日参考值%" width="120">
+                                    <template slot-scope="scope">
+                                        <el-progress :percentage="scope.row.percentage" :color="getProgressColor(scope.row.percentage)" :show-text="false"></el-progress>
+                                        <span>{{scope.row.percentage}}%</span>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </el-dialog>
     </el-row>
 </template>
 
@@ -121,6 +270,222 @@ export default {
             currentCookbook: null,
             cookbookNutrimentList: [],
             currentUserId: null, // 当前用户ID
+            foodNutrientSearchVisible: false,
+            foodSearchForm: {
+                name: '',
+            },
+            currentFoodInfo: null,
+            currentFoodNutrients: [],
+            showFoodSearchResults: false,
+            portionCalculatorVisible: false,
+            portionCalculatorForm: {
+                foodName: '',
+                weight: 100,
+            },
+            showPortionResults: false,
+            portionNutrients: [],
+            totalCalories: 0,
+            proteinPercentage: 0,
+            fatPercentage: 0,
+            carbPercentage: 0,
+            proteinGrams: 0,
+            fatGrams: 0,
+            carbGrams: 0,
+            // 食物数据库
+            foodDatabase: [
+                {
+                    id: 1,
+                    name: '白米饭',
+                    image: '',
+                    description: '煮熟的白米饭，主要提供碳水化合物和能量。',
+                    category: '主食',
+                    nutrients: [
+                        { name: '热量', value: 116, unit: 'kcal', percentage: 6 },
+                        { name: '蛋白质', value: 2.6, unit: 'g', percentage: 4 },
+                        { name: '脂肪', value: 0.3, unit: 'g', percentage: 0 },
+                        { name: '碳水化合物', value: 25.6, unit: 'g', percentage: 9 },
+                        { name: '膳食纤维', value: 0.3, unit: 'g', percentage: 1 },
+                        { name: '维生素B1', value: 0.02, unit: 'mg', percentage: 2 },
+                        { name: '维生素B2', value: 0.01, unit: 'mg', percentage: 1 },
+                        { name: '钾', value: 28, unit: 'mg', percentage: 1 },
+                        { name: '镁', value: 13, unit: 'mg', percentage: 4 },
+                        { name: '钙', value: 5, unit: 'mg', percentage: 1 },
+                        { name: '铁', value: 0.2, unit: 'mg', percentage: 1 }
+                    ]
+                },
+                {
+                    id: 2,
+                    name: '猪肉（瘦）',
+                    image: '',
+                    description: '瘦猪肉是优质蛋白质的来源，含有多种B族维生素和矿物质。',
+                    category: '肉类',
+                    nutrients: [
+                        { name: '热量', value: 143, unit: 'kcal', percentage: 7 },
+                        { name: '蛋白质', value: 20.3, unit: 'g', percentage: 34 },
+                        { name: '脂肪', value: 6.2, unit: 'g', percentage: 9 },
+                        { name: '碳水化合物', value: 0.5, unit: 'g', percentage: 0 },
+                        { name: '维生素B1', value: 0.6, unit: 'mg', percentage: 50 },
+                        { name: '维生素B2', value: 0.2, unit: 'mg', percentage: 15 },
+                        { name: '维生素B6', value: 0.4, unit: 'mg', percentage: 24 },
+                        { name: '烟酸', value: 3.8, unit: 'mg', percentage: 24 },
+                        { name: '锌', value: 2.5, unit: 'mg', percentage: 23 },
+                        { name: '铁', value: 1.5, unit: 'mg', percentage: 11 }
+                    ]
+                },
+                {
+                    id: 3,
+                    name: '鸡蛋',
+                    image: '',
+                    description: '鸡蛋是优质蛋白质和多种维生素、矿物质的良好来源，尤其富含卵磷脂和胆碱。',
+                    category: '蛋类',
+                    nutrients: [
+                        { name: '热量', value: 155, unit: 'kcal', percentage: 8 },
+                        { name: '蛋白质', value: 12.7, unit: 'g', percentage: 21 },
+                        { name: '脂肪', value: 11.1, unit: 'g', percentage: 16 },
+                        { name: '碳水化合物', value: 0.7, unit: 'g', percentage: 0 },
+                        { name: '维生素A', value: 228, unit: 'μg', percentage: 25 },
+                        { name: '维生素D', value: 1.8, unit: 'μg', percentage: 18 },
+                        { name: '维生素E', value: 1.1, unit: 'mg', percentage: 7 },
+                        { name: '维生素B2', value: 0.45, unit: 'mg', percentage: 35 },
+                        { name: '胆碱', value: 250, unit: 'mg', percentage: 45 },
+                        { name: '叶酸', value: 24, unit: 'μg', percentage: 6 },
+                        { name: '铁', value: 2.1, unit: 'mg', percentage: 15 },
+                        { name: '硒', value: 30.7, unit: 'μg', percentage: 56 },
+                        { name: '锌', value: 1.3, unit: 'mg', percentage: 12 }
+                    ]
+                },
+                {
+                    id: 4,
+                    name: '西兰花',
+                    image: '',
+                    description: '西兰花富含维生素C、维生素K、叶酸和膳食纤维，具有很高的营养价值。',
+                    category: '蔬菜',
+                    nutrients: [
+                        { name: '热量', value: 34, unit: 'kcal', percentage: 2 },
+                        { name: '蛋白质', value: 2.8, unit: 'g', percentage: 5 },
+                        { name: '脂肪', value: 0.4, unit: 'g', percentage: 1 },
+                        { name: '碳水化合物', value: 6.6, unit: 'g', percentage: 2 },
+                        { name: '膳食纤维', value: 2.6, unit: 'g', percentage: 10 },
+                        { name: '维生素C', value: 89.2, unit: 'mg', percentage: 99 },
+                        { name: '维生素K', value: 102, unit: 'μg', percentage: 85 },
+                        { name: '叶酸', value: 63, unit: 'μg', percentage: 16 },
+                        { name: '维生素A', value: 31, unit: 'μg', percentage: 3 },
+                        { name: '钾', value: 316, unit: 'mg', percentage: 7 },
+                        { name: '钙', value: 47, unit: 'mg', percentage: 5 }
+                    ]
+                },
+                {
+                    id: 5,
+                    name: '香蕉',
+                    image: '',
+                    description: '香蕉富含钾、维生素B6和膳食纤维，是很好的能量来源。',
+                    category: '水果',
+                    nutrients: [
+                        { name: '热量', value: 89, unit: 'kcal', percentage: 4 },
+                        { name: '蛋白质', value: 1.1, unit: 'g', percentage: 2 },
+                        { name: '脂肪', value: 0.3, unit: 'g', percentage: 0 },
+                        { name: '碳水化合物', value: 22.8, unit: 'g', percentage: 8 },
+                        { name: '膳食纤维', value: 2.6, unit: 'g', percentage: 10 },
+                        { name: '维生素B6', value: 0.4, unit: 'mg', percentage: 24 },
+                        { name: '维生素C', value: 8.7, unit: 'mg', percentage: 10 },
+                        { name: '钾', value: 358, unit: 'mg', percentage: 8 },
+                        { name: '镁', value: 27, unit: 'mg', percentage: 7 }
+                    ]
+                },
+                {
+                    id: 6,
+                    name: '牛奶',
+                    image: '',
+                    description: '牛奶含有优质蛋白质、钙、维生素B2和B12，是钙的重要来源。',
+                    category: '乳制品',
+                    nutrients: [
+                        { name: '热量', value: 60, unit: 'kcal', percentage: 3 },
+                        { name: '蛋白质', value: 3.3, unit: 'g', percentage: 6 },
+                        { name: '脂肪', value: 3.2, unit: 'g', percentage: 5 },
+                        { name: '碳水化合物', value: 4.8, unit: 'g', percentage: 2 },
+                        { name: '钙', value: 120, unit: 'mg', percentage: 12 },
+                        { name: '维生素B2', value: 0.17, unit: 'mg', percentage: 13 },
+                        { name: '维生素B12', value: 0.45, unit: 'μg', percentage: 19 },
+                        { name: '维生素D', value: 0.2, unit: 'μg', percentage: 2 },
+                        { name: '钾', value: 150, unit: 'mg', percentage: 3 },
+                        { name: '磷', value: 93, unit: 'mg', percentage: 13 }
+                    ]
+                },
+                {
+                    id: 7,
+                    name: '豆腐',
+                    image: '',
+                    description: '豆腐是植物蛋白的良好来源，富含钙、镁和铁等矿物质。',
+                    category: '豆制品',
+                    nutrients: [
+                        { name: '热量', value: 76, unit: 'kcal', percentage: 4 },
+                        { name: '蛋白质', value: 8.2, unit: 'g', percentage: 14 },
+                        { name: '脂肪', value: 4.6, unit: 'g', percentage: 7 },
+                        { name: '碳水化合物', value: 1.5, unit: 'g', percentage: 1 },
+                        { name: '钙', value: 350, unit: 'mg', percentage: 35 },
+                        { name: '铁', value: 3.4, unit: 'mg', percentage: 24 },
+                        { name: '镁', value: 38, unit: 'mg', percentage: 10 },
+                        { name: '锌', value: 0.6, unit: 'mg', percentage: 5 },
+                        { name: '维生素E', value: 0.1, unit: 'mg', percentage: 1 }
+                    ]
+                },
+                {
+                    id: 8,
+                    name: '燕麦',
+                    image: '',
+                    description: '燕麦富含可溶性膳食纤维β-葡聚糖，能够帮助降低胆固醇，是优质的谷物食品。',
+                    category: '谷物',
+                    nutrients: [
+                        { name: '热量', value: 389, unit: 'kcal', percentage: 19 },
+                        { name: '蛋白质', value: 16.9, unit: 'g', percentage: 28 },
+                        { name: '脂肪', value: 6.9, unit: 'g', percentage: 10 },
+                        { name: '碳水化合物', value: 66.3, unit: 'g', percentage: 22 },
+                        { name: '膳食纤维', value: 10.6, unit: 'g', percentage: 42 },
+                        { name: '维生素B1', value: 0.76, unit: 'mg', percentage: 63 },
+                        { name: '铁', value: 4.7, unit: 'mg', percentage: 34 },
+                        { name: '锌', value: 4, unit: 'mg', percentage: 36 },
+                        { name: '镁', value: 177, unit: 'mg', percentage: 44 },
+                        { name: '钾', value: 429, unit: 'mg', percentage: 9 }
+                    ]
+                },
+                {
+                    id: 9,
+                    name: '三文鱼',
+                    image: '',
+                    description: '三文鱼富含Omega-3脂肪酸、高质量蛋白质和多种维生素，对心脏健康有益。',
+                    category: '海鲜',
+                    nutrients: [
+                        { name: '热量', value: 208, unit: 'kcal', percentage: 10 },
+                        { name: '蛋白质', value: 22.1, unit: 'g', percentage: 37 },
+                        { name: '脂肪', value: 13.4, unit: 'g', percentage: 19 },
+                        { name: 'Omega-3', value: 2.3, unit: 'g', percentage: 115 },
+                        { name: '维生素D', value: 13.7, unit: 'μg', percentage: 137 },
+                        { name: '维生素B12', value: 2.8, unit: 'μg', percentage: 117 },
+                        { name: '硒', value: 46.8, unit: 'μg', percentage: 85 },
+                        { name: '钾', value: 363, unit: 'mg', percentage: 8 },
+                        { name: '磷', value: 250, unit: 'mg', percentage: 36 }
+                    ]
+                },
+                {
+                    id: 10,
+                    name: '花生',
+                    image: '',
+                    description: '花生富含蛋白质、不饱和脂肪酸和多种维生素、矿物质，是良好的能量来源。',
+                    category: '坚果',
+                    nutrients: [
+                        { name: '热量', value: 567, unit: 'kcal', percentage: 28 },
+                        { name: '蛋白质', value: 25.8, unit: 'g', percentage: 43 },
+                        { name: '脂肪', value: 49.2, unit: 'g', percentage: 70 },
+                        { name: '碳水化合物', value: 16.1, unit: 'g', percentage: 5 },
+                        { name: '膳食纤维', value: 8.5, unit: 'g', percentage: 34 },
+                        { name: '维生素E', value: 8.3, unit: 'mg', percentage: 55 },
+                        { name: '烟酸', value: 12.1, unit: 'mg', percentage: 76 },
+                        { name: '镁', value: 168, unit: 'mg', percentage: 42 },
+                        { name: '磷', value: 376, unit: 'mg', percentage: 54 },
+                        { name: '锰', value: 1.9, unit: 'mg', percentage: 83 }
+                    ]
+                }
+            ]
         };
     },
     created() {
@@ -207,8 +572,8 @@ export default {
             }
             // 处理编辑逻辑
             this.$router.push({
-                path: '/user/createGourmet',
-                query: { id: cookbook.id }
+                path: "/user/gourmet/form",
+                query: { cookbookId: cookbook.id },
             });
         },
         
@@ -220,41 +585,36 @@ export default {
                 return;
             }
             
-            this.$confirm('确定要删除这个食谱吗？', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
+            this.$confirm("是否确定删除该食谱?", "提示", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "warning",
             }).then(() => {
-                this.$axios.post('/cookbook/batchDelete', [cookbook.id]).then(res => {
-                    if (res.data.code === 200) {
-                        this.$notify({
-                            duration: 1000,
-                            title: '信息删除',
-                            message: '删除成功',
-                            type: 'success'
-                        });
-                        this.fetchFreshData();
-                    } else {
-                        this.$message.error(res.data.message || "删除失败");
-                    }
-                }).catch(error => {
-                    this.$message.error("删除异常");
-                    console.error('删除食谱异常:', error);
-                });
-            }).catch(() => {
-                // 取消删除操作
-            });
+                this.$axios.post("/cookbook/delete", { id: cookbook.id })
+                    .then((res) => {
+                        if (res.data.code === 200) {
+                            this.$message.success("删除成功");
+                            this.fetchFreshData();
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("删除食谱异常:", error);
+                        this.$message.error("删除食谱异常");
+                    });
+            }).catch(() => { });
         },
         
-        // 查询食谱营养素关联数据
+        // 查询食谱关联的营养素数据
         fetchCookbookNutrimentData(cookbookId) {
-            const cookbookNutrimentQueryDto = { cookbookId }
-            this.$axios.post('/cookbookNutriment/query', cookbookNutrimentQueryDto).then(res => {
+            this.cookbookNutrimentList = [];
+            this.$axios.post('/cookbookNutriment/getListByCookbookId', { cookbookId }).then(res => {
                 if (res.data.code === 200) {
                     this.cookbookNutrimentList = res.data.data;
                 }
             }).catch(error => {
-                console.log("查询食谱营养素关联信息异常：", error);
+                console.log("查询食谱关联营养素异常：", error);
             });
         },
         
@@ -277,6 +637,133 @@ export default {
         handleCurrentChange(val) {
             this.currentPage = val;
             this.fetchFreshData();
+        },
+        
+        showFoodNutrientSearch() {
+            this.foodNutrientSearchVisible = true;
+        },
+        
+        queryFoodSuggestions(queryString, cb) {
+            const results = queryString ? this.foodDatabase.filter(food => {
+                return food.name.toLowerCase().includes(queryString.toLowerCase());
+            }) : this.foodDatabase;
+            
+            // 返回格式化后的数据供自动完成组件使用
+            cb(results.map(food => ({
+                value: food.name,
+                id: food.id,
+                name: food.name,
+                image: food.image,
+                description: food.description,
+                category: food.category,
+                nutrients: food.nutrients
+            })));
+        },
+        
+        handleFoodSelect(item) {
+            // 处理食物选择后的逻辑
+            this.currentFoodInfo = item;
+            this.currentFoodNutrients = item.nutrients;
+            this.showFoodSearchResults = true;
+        },
+        
+        searchFoodNutrient() {
+            // 实现食物营养成分查询的逻辑
+            if (!this.foodSearchForm.name) {
+                this.$message.warning('请输入食物名称');
+                return;
+            }
+            
+            // 根据名称查找食物
+            const foodItem = this.foodDatabase.find(food => 
+                food.name.toLowerCase() === this.foodSearchForm.name.toLowerCase()
+            );
+            
+            if (foodItem) {
+                this.currentFoodInfo = {
+                    id: foodItem.id,
+                    name: foodItem.name,
+                    image: foodItem.image,
+                    description: foodItem.description,
+                    category: foodItem.category
+                };
+                this.currentFoodNutrients = foodItem.nutrients;
+                this.showFoodSearchResults = true;
+            } else {
+                this.$message.warning('未找到该食物信息');
+            }
+        },
+        
+        showPortionCalculator() {
+            this.portionCalculatorVisible = true;
+        },
+        
+        calculatePortionNutrients() {
+            // 实现食物份量营养计算的逻辑
+            if (!this.portionCalculatorForm.foodName) {
+                this.$message.warning('请选择食物');
+                return;
+            }
+            
+            // 根据名称查找食物
+            const foodItem = this.foodDatabase.find(food => 
+                food.name === this.portionCalculatorForm.foodName
+            );
+            
+            if (foodItem) {
+                // 计算指定重量的营养素含量
+                const weight = this.portionCalculatorForm.weight;
+                const weightRatio = weight / 100; // 食物数据库中的营养素含量是按每100克计算的
+                
+                // 计算营养素含量
+                this.portionNutrients = foodItem.nutrients.map(nutrient => ({
+                    name: nutrient.name,
+                    value: (nutrient.value * weightRatio).toFixed(1),
+                    unit: nutrient.unit,
+                    percentage: Math.round(nutrient.percentage * weightRatio)
+                }));
+                
+                // 计算宏量营养素分布
+                const nutrients = {};
+                foodItem.nutrients.forEach(n => {
+                    nutrients[n.name] = n.value * weightRatio;
+                });
+                
+                // 计算热量和宏量营养素
+                this.totalCalories = nutrients['热量'] ? Math.round(nutrients['热量']) : 0;
+                this.proteinGrams = nutrients['蛋白质'] ? nutrients['蛋白质'].toFixed(1) : 0;
+                this.fatGrams = nutrients['脂肪'] ? nutrients['脂肪'].toFixed(1) : 0;
+                this.carbGrams = nutrients['碳水化合物'] ? nutrients['碳水化合物'].toFixed(1) : 0;
+                
+                // 计算营养素占比
+                const totalEnergy = (this.proteinGrams * 4) + (this.fatGrams * 9) + (this.carbGrams * 4);
+                if (totalEnergy > 0) {
+                    this.proteinPercentage = Math.round((this.proteinGrams * 4 / totalEnergy) * 100);
+                    this.fatPercentage = Math.round((this.fatGrams * 9 / totalEnergy) * 100);
+                    this.carbPercentage = Math.round((this.carbGrams * 4 / totalEnergy) * 100);
+                }
+                
+                this.showPortionResults = true;
+            } else {
+                this.$message.warning('未找到该食物信息');
+            }
+        },
+        
+        handlePortionFoodSelect(item) {
+            // 处理食物选择后的逻辑
+            this.portionCalculatorForm.foodName = item.name;
+            // 自动计算
+            this.calculatePortionNutrients();
+        },
+        
+        getProgressColor(percentage) {
+            if (percentage < 30) {
+                return '#67C23A';
+            } else if (percentage < 60) {
+                return '#E6A23C';
+            } else {
+                return '#409EFF';
+            }
         }
     }
 };
@@ -528,5 +1015,149 @@ export default {
     color: #909399;
     font-size: 14px;
     margin: 0;
+}
+
+.food-nutrient-search-container {
+    padding: 20px 0;
+}
+
+.food-search-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.food-search-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.05);
+}
+
+.food-search-results {
+    margin-top: 20px;
+}
+
+.food-info-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.food-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.food-info-meta {
+    flex: 1;
+}
+
+.food-info-meta h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.food-info-meta p {
+    margin: 0;
+}
+
+.nutrient-section {
+    margin-top: 20px;
+    background-color: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.05);
+}
+
+.nutrient-section-title {
+    margin-bottom: 20px;
+    font-size: 18px;
+    color: #409EFF;
+    border-bottom: 1px dashed #eee;
+    padding-bottom: 10px;
+}
+
+.nutrient-table-container {
+    margin-top: 10px;
+}
+
+.portion-calculator-container {
+    padding: 20px 0;
+}
+
+.portion-calculator-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.05);
+}
+
+.portion-calculator-results {
+    margin-top: 20px;
+}
+
+.nutrition-summary {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.05);
+}
+
+.summary-header {
+    margin-bottom: 20px;
+    border-bottom: 1px dashed #eee;
+    padding-bottom: 10px;
+}
+
+.summary-header h4 {
+    color: #303133;
+    margin: 0;
+}
+
+.calorie-value {
+    font-weight: bold;
+    color: #409EFF;
+    font-size: 20px;
+}
+
+.macronutrient-distribution {
+    display: flex;
+    gap: 20px;
+}
+
+.macro-item {
+    flex: 1;
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.macro-label {
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #303133;
+}
+
+.macro-value {
+    margin-top: 10px;
+    text-align: center;
+    color: #606266;
+}
+
+.food-description {
+    color: #606266;
+    margin-top: 10px;
+    line-height: 1.6;
 }
 </style> 

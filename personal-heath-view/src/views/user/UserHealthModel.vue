@@ -835,7 +835,15 @@ export default {
                         bmr: this.bmrValue
                     });
                     
-                    this.$message.success(`健康指标计算完成! BMI: ${this.bmiValue}, 体脂率: ${this.bodyFatRate}%, BMR: ${this.bmrValue}kcal`);
+                    // 使用右下角小提示替代全屏消息
+                    this.$notify({
+                        title: '指标已更新',
+                        message: '健康指标计算已完成',
+                        position: 'bottom-right',
+                        duration: 1500,
+                        type: 'success',
+                        showClose: false
+                    });
                     
                     // 准备详细的计算信息
                     const detailInfo = `

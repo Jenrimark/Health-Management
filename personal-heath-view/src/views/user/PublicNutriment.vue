@@ -1,6 +1,12 @@
 <template>
     <el-row style="background-color: #FFFFFF;padding: 5px 0;border-radius: 5px;">
         <el-row style="padding: 10px;margin-left: 5px;">
+            <el-row style="display: flex;justify-content: left;gap: 6px;margin-bottom: 10px;">
+                <el-button type="primary" size="small" @click="showNutritionSearch">营养素需求查询</el-button>
+                <el-button type="success" size="small" @click="showFunctionalGoals">营养素功能目标</el-button>
+                <el-button type="warning" size="small" @click="showFoodsByNutrient">查询含特定营养素的食物</el-button>
+                <el-button type="danger" size="small" @click="showHealthEffects">健康功效查询</el-button>
+            </el-row>
             <el-row style="display: flex;justify-content: left;gap: 6px;">
                 <el-input size="small" style="width: 166px;" v-model="nutrimentQueryDto.name" placeholder="营养素名称"
                     clearable @clear="handleFilterClear">
@@ -20,12 +26,378 @@
                 <el-table-column prop="detail" label="描述" width="368"></el-table-column>
                 <el-table-column prop="unit" label="单位" width="108"></el-table-column>
                 <el-table-column prop="createTime" label="创建时间" :sortable="true" width="168"></el-table-column>
+                <el-table-column label="操作" width="120">
+                    <template slot-scope="scope">
+                        <span class="text-button" @click="viewNutrimentDetail(scope.row)">详情</span>
+                    </template>
+                </el-table-column>
             </el-table>
             <el-pagination style="margin:10px 0;float: right;" @size-change="handleSizeChange"
                 @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[20, 50]"
                 :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper"
                 :total="totalItems"></el-pagination>
         </el-row>
+
+        <!-- 营养素详情弹窗 -->
+        <el-dialog :visible.sync="nutrimentDetailVisible" custom-class="nutriment-detail-dialog" width="65%">
+            <div class="nutriment-detail-header">
+                <h2 class="nutriment-detail-title">营养素详细信息</h2>
+                <p class="nutriment-detail-subtitle">了解营养素功能与作用</p>
+            </div>
+            <div v-if="currentNutriment" class="nutriment-detail-container">
+                <div class="nutriment-detail-info">
+                    <div class="nutriment-detail-meta">
+                        <h3>{{currentNutriment.name}}</h3>
+                        <div class="nutriment-meta-items">
+                            <div class="nutriment-meta-item">
+                                <i class="el-icon-menu"></i>
+                                <span>单位: {{currentNutriment.unit}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nutriment-detail-section">
+                    <h4>基本介绍</h4>
+                    <p>{{currentNutriment.detail || '暂无介绍'}}</p>
+                </div>
+                <div class="nutriment-detail-section">
+                    <h4>主要功能与作用</h4>
+                    <p>{{getNutrimentFunction(currentNutriment.name)}}</p>
+                </div>
+                <div class="nutriment-detail-section">
+                    <h4>常见来源</h4>
+                    <div class="food-source-list">
+                        <div class="food-source-item" v-for="(food, index) in getFoodSources(currentNutriment.name)" :key="index">
+                            {{food}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </el-dialog>
+
+        <!-- 营养素需求查询弹窗 -->
+        <el-dialog :visible.sync="nutritionSearchVisible" custom-class="nutriment-detail-dialog" width="70%">
+            <div class="nutriment-detail-header">
+                <h2 class="nutriment-detail-title">每日营养素供给量查询</h2>
+                <p class="nutriment-detail-subtitle">根据个人信息获取推荐营养素摄入量 · 数据来源：中国居民膳食指南</p>
+            </div>
+            <div class="nutrition-search-container">
+                <div class="nutrition-search-form">
+                    <el-form :model="nutrientSearchForm" label-width="100px" class="form-card">
+                        <div class="form-row">
+                            <el-form-item label="性别">
+                                <el-radio-group v-model="nutrientSearchForm.gender">
+                                    <el-radio label="male">男性</el-radio>
+                                    <el-radio label="female">女性</el-radio>
+                                </el-radio-group>
+                            </el-form-item>
+                            <el-form-item label="年龄">
+                                <el-input-number v-model="nutrientSearchForm.age" :min="0" :max="120" size="small"></el-input-number>
+                            </el-form-item>
+                        </div>
+                        <div class="form-row">
+                            <el-form-item label="身高(cm)">
+                                <el-input-number v-model="nutrientSearchForm.height" :min="50" :max="250" size="small"></el-input-number>
+                            </el-form-item>
+                            <el-form-item label="体重(kg)">
+                                <el-input-number v-model="nutrientSearchForm.weight" :min="5" :max="250" size="small"></el-input-number>
+                            </el-form-item>
+                        </div>
+                        <div class="form-row">
+                            <el-form-item label="活动水平">
+                                <el-select v-model="nutrientSearchForm.activityLevel" size="small">
+                                    <el-option label="久坐不动" value="sedentary"></el-option>
+                                    <el-option label="轻度活动" value="light"></el-option>
+                                    <el-option label="中度活动" value="moderate"></el-option>
+                                    <el-option label="重度活动" value="active"></el-option>
+                                    <el-option label="非常活跃" value="very_active"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </div>
+                        <el-form-item>
+                            <el-button type="primary" @click="searchNutrientNeeds">查询</el-button>
+                        </el-form-item>
+                    </el-form>
+                </div>
+                <div v-if="showNutrientResults" class="nutrition-search-results">
+                    <div class="result-card">
+                        <div class="result-header">
+                            <h3>每日营养素推荐摄入量</h3>
+                            <div class="user-info-summary">
+                                <span class="info-item">
+                                    <i class="el-icon-user"></i> {{nutrientSearchForm.gender === 'male' ? '男性' : '女性'}}
+                                </span>
+                                <span class="info-item">
+                                    <i class="el-icon-date"></i> {{nutrientSearchForm.age}}岁
+                                </span>
+                                <span class="info-item">
+                                    <i class="el-icon-top"></i> {{nutrientSearchForm.height}}cm
+                                </span>
+                                <span class="info-item">
+                                    <i class="el-icon-goods"></i> {{nutrientSearchForm.weight}}kg
+                                </span>
+                                <span class="info-item">
+                                    <i class="el-icon-position"></i> {{getActivityLevelLabel()}}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="result-body">
+                            <el-table :data="nutrientNeedsResults" style="width: 100%">
+                                <el-table-column prop="name" label="营养素" width="150"></el-table-column>
+                                <el-table-column prop="amount" label="每日推荐摄入量"></el-table-column>
+                                <el-table-column prop="unit" label="单位" width="80"></el-table-column>
+                                <el-table-column prop="description" label="说明"></el-table-column>
+                            </el-table>
+                        </div>
+                        <div class="result-footer">
+                            <p class="result-note">注意：以上数据仅供参考，具体营养需求请咨询专业营养师</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </el-dialog>
+
+        <!-- 营养素功能目标弹窗 -->
+        <el-dialog :visible.sync="functionalGoalsVisible" custom-class="nutriment-detail-dialog" width="75%">
+            <div class="nutriment-detail-header">
+                <h2 class="nutriment-detail-title">营养素功能目标查询</h2>
+                <p class="nutriment-detail-subtitle">了解不同健康目标所需的关键营养素</p>
+            </div>
+            <div class="functional-goals-container">
+                <div class="functional-goals-selection">
+                    <el-tabs v-model="selectedFunctionalGoal" @tab-click="handleFunctionalGoalChange" type="card">
+                        <el-tab-pane label="皮肤健康" name="skin"></el-tab-pane>
+                        <el-tab-pane label="身材管理" name="weight"></el-tab-pane>
+                        <el-tab-pane label="精力/疲劳" name="energy"></el-tab-pane>
+                        <el-tab-pane label="睡眠" name="sleep"></el-tab-pane>
+                        <el-tab-pane label="免疫力" name="immune"></el-tab-pane>
+                        <el-tab-pane label="胃肠道功能" name="digestion"></el-tab-pane>
+                        <el-tab-pane label="脑力/注意力" name="brain"></el-tab-pane>
+                        <el-tab-pane label="情绪/压力" name="mood"></el-tab-pane>
+                        <el-tab-pane label="眼睛/视力" name="eye"></el-tab-pane>
+                        <el-tab-pane label="运动恢复" name="exercise"></el-tab-pane>
+                        <el-tab-pane label="骨骼关节" name="bone"></el-tab-pane>
+                    </el-tabs>
+                </div>
+                <div class="functional-goals-results">
+                    <div class="functional-goal-nutrients">
+                        <div class="goal-header">
+                            <h3>{{getFunctionalGoalTitle()}}</h3>
+                            <div class="goal-description">{{getFunctionalGoalDescription()}}</div>
+                        </div>
+                        
+                        <div class="goal-section">
+                            <h4 class="section-title">
+                                <i class="el-icon-star-on"></i>
+                                推荐营养素
+                            </h4>
+                            <div class="nutrient-cards-container">
+                                <div class="nutrient-card" v-for="(nutrient, index) in getFunctionalGoalNutrients()" :key="index">
+                                    <div class="nutrient-card-header">
+                                        <h5>{{nutrient.name}}</h5>
+                                    </div>
+                                    <div class="nutrient-card-body">
+                                        <p>{{nutrient.benefit}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="goal-section">
+                            <h4 class="section-title">
+                                <i class="el-icon-dish"></i>
+                                推荐食物
+                            </h4>
+                            <div class="food-cards-container">
+                                <div class="food-card" v-for="(food, index) in getFunctionalGoalFoods()" :key="index">
+                                    <span>{{food}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="goal-section">
+                            <h4 class="section-title">
+                                <i class="el-icon-info"></i>
+                                健康建议
+                            </h4>
+                            <div class="health-tips">
+                                <p>除了通过饮食摄入以上营养素外，还应注意：</p>
+                                <ul>
+                                    <li>保持充足的水分摄入，每天饮水1.5-2升</li>
+                                    <li>规律作息，保证充足睡眠</li>
+                                    <li>适当运动，增强身体机能</li>
+                                    <li>避免过度压力，保持良好心态</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </el-dialog>
+
+        <!-- 健康功效查询弹窗 -->
+        <el-dialog :visible.sync="healthEffectsVisible" custom-class="nutriment-detail-dialog" width="75%">
+            <div class="nutriment-detail-header">
+                <h2 class="nutriment-detail-title">健康功效查询</h2>
+                <p class="nutriment-detail-subtitle">了解不同健康功效所需的营养素和食物</p>
+            </div>
+            <div class="health-effects-container">
+                <div class="health-effects-selection">
+                    <el-tabs v-model="selectedHealthEffect" @tab-click="handleHealthEffectChange" type="card">
+                        <el-tab-pane label="降血压" name="lower_blood_pressure"></el-tab-pane>
+                        <el-tab-pane label="降血脂" name="lower_cholesterol"></el-tab-pane>
+                        <el-tab-pane label="降血糖" name="lower_blood_sugar"></el-tab-pane>
+                        <el-tab-pane label="抗氧化" name="antioxidant"></el-tab-pane>
+                        <el-tab-pane label="增强免疫" name="immune_boost"></el-tab-pane>
+                        <el-tab-pane label="抗炎" name="anti_inflammatory"></el-tab-pane>
+                        <el-tab-pane label="肠道健康" name="gut_health"></el-tab-pane>
+                        <el-tab-pane label="心脏健康" name="heart_health"></el-tab-pane>
+                        <el-tab-pane label="骨骼健康" name="bone_health"></el-tab-pane>
+                        <el-tab-pane label="肝脏保护" name="liver_protection"></el-tab-pane>
+                    </el-tabs>
+                </div>
+                <div class="health-effects-results">
+                    <div class="health-effect-details">
+                        <div class="effect-header">
+                            <div class="effect-icon">
+                                <i :class="getHealthEffectIcon()"></i>
+                            </div>
+                            <div class="effect-info">
+                                <h3>{{getHealthEffectTitle()}}</h3>
+                                <p class="effect-description">{{getHealthEffectDescription()}}</p>
+                            </div>
+                        </div>
+
+                        <el-divider content-position="center">关键营养素</el-divider>
+                        
+                        <div class="effect-nutrients">
+                            <el-row :gutter="20">
+                                <el-col :span="8" v-for="(nutrient, index) in getHealthEffectNutrients()" :key="index">
+                                    <div class="nutrient-card">
+                                        <div class="nutrient-card-header">
+                                            <h4>{{nutrient.name}}</h4>
+                                        </div>
+                                        <div class="nutrient-card-body">
+                                            <p>{{nutrient.effect}}</p>
+                                        </div>
+                                        <div class="nutrient-card-footer">
+                                            <p class="recommended-amount">推荐摄入量: {{nutrient.recommended}}</p>
+                                        </div>
+                                    </div>
+                                </el-col>
+                            </el-row>
+                        </div>
+
+                        <el-divider content-position="center">推荐食物</el-divider>
+                        
+                        <div class="effect-foods">
+                            <el-row :gutter="20">
+                                <el-col :span="6" v-for="(food, index) in getHealthEffectFoods()" :key="index">
+                                    <div class="food-card">
+                                        <div class="food-icon">
+                                            <i class="el-icon-food"></i>
+                                        </div>
+                                        <div class="food-name">{{food.name}}</div>
+                                        <div class="food-nutrients">{{food.nutrients}}</div>
+                                    </div>
+                                </el-col>
+                            </el-row>
+                        </div>
+
+                        <el-divider content-position="center">生活方式建议</el-divider>
+                        
+                        <div class="lifestyle-tips">
+                            <el-row :gutter="20">
+                                <el-col :span="8" v-for="(tip, index) in getHealthEffectLifestyleTips()" :key="index">
+                                    <div class="tip-card">
+                                        <div class="tip-icon">
+                                            <i :class="tip.icon"></i>
+                                        </div>
+                                        <div class="tip-content">
+                                            <h4>{{tip.title}}</h4>
+                                            <p>{{tip.content}}</p>
+                                        </div>
+                                    </div>
+                                </el-col>
+                            </el-row>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </el-dialog>
+
+        <!-- 含特定营养素的食物查询弹窗 -->
+        <el-dialog :visible.sync="foodsByNutrientVisible" custom-class="nutriment-detail-dialog" width="70%">
+            <div class="nutriment-detail-header">
+                <h2 class="nutriment-detail-title">含特定营养素的食物查询</h2>
+                <p class="nutriment-detail-subtitle">查找富含特定营养素的食物来源</p>
+            </div>
+            <div class="foods-by-nutrient-container">
+                <div class="foods-by-nutrient-selection">
+                    <el-form :inline="true" class="form-card">
+                        <el-form-item label="选择营养素">
+                            <el-select v-model="selectedNutrientForFoods" placeholder="请选择营养素" style="width: 250px">
+                                <el-option 
+                                    v-for="item in commonNutrients" 
+                                    :key="item.value" 
+                                    :label="item.label" 
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button class="search-button" type="primary" @click="searchFoodsByNutrient">查询</el-button>
+                        </el-form-item>
+                    </el-form>
+                </div>
+                <div v-if="showFoodsByNutrientResults" class="foods-by-nutrient-results">
+                    <div class="result-card">
+                        <div class="result-header">
+                            <div class="nutrient-info">
+                                <div class="nutrient-icon">
+                                    <i :class="getNutrientIcon(selectedNutrientForFoods)"></i>
+                                </div>
+                                <div class="nutrient-details">
+                                    <h3>含有<span class="highlight">{{getSelectedNutrientLabel()}}</span>的食物</h3>
+                                    <p class="nutrient-description">{{getNutrientDescription(selectedNutrientForFoods)}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="result-body">
+                            <p class="result-note">按含量从高到低排序</p>
+                            <div class="foods-list">
+                                <el-table :data="foodsByNutrientResults" style="width: 100%">
+                                    <el-table-column prop="name" label="食物名称" width="180"></el-table-column>
+                                    <el-table-column prop="amount" label="含量">
+                                        <template slot-scope="scope">
+                                            <div class="amount-cell">
+                                                <span class="amount-value">{{scope.row.amount}}</span>
+                                                <span class="amount-unit">{{scope.row.unit}}</span>
+                                            </div>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column prop="per" label="每份"></el-table-column>
+                                    <el-table-column label="含量比较" width="250">
+                                        <template slot-scope="scope">
+                                            <el-progress :percentage="getPercentageForFood(scope.row)" :color="getProgressColor(getPercentageForFood(scope.row))"></el-progress>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                            </div>
+                        </div>
+                        <div class="result-footer">
+                            <div class="food-tips">
+                                <h4>
+                                    <i class="el-icon-info"></i>
+                                    食用建议
+                                </h4>
+                                <p>{{getFoodTips(selectedNutrientForFoods)}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </el-dialog>
     </el-row>
 </template>
 
@@ -39,6 +411,146 @@ export default {
             totalItems: 0,
             tableData: [],
             nutrimentQueryDto: { isPublish: true }, // 只查询公开的营养素
+            nutrimentDetailVisible: false,
+            nutritionSearchVisible: false,
+            functionalGoalsVisible: false,
+            healthEffectsVisible: false,
+            foodsByNutrientVisible: false,
+            currentNutriment: null,
+            nutrientSearchForm: {
+                gender: 'male',
+                age: 25,
+                height: 175,
+                weight: 70,
+                activityLevel: 'moderate'
+            },
+            showNutrientResults: false,
+            nutrientNeedsResults: [],
+            selectedFunctionalGoal: 'skin',
+            selectedHealthEffect: 'lower_blood_pressure',
+            showHealthEffectsResults: false,
+            healthEffectNutrients: [],
+            healthEffectFoods: [],
+            selectedNutrientForFoods: 'vitamin_c',
+            showFoodsByNutrientResults: false,
+            foodsByNutrientResults: [],
+            commonNutrients: [
+                { value: 'vitamin_a', label: '维生素A' },
+                { value: 'vitamin_c', label: '维生素C' },
+                { value: 'vitamin_d', label: '维生素D' },
+                { value: 'vitamin_e', label: '维生素E' },
+                { value: 'vitamin_b1', label: '维生素B1' },
+                { value: 'vitamin_b2', label: '维生素B2' },
+                { value: 'vitamin_b6', label: '维生素B6' },
+                { value: 'vitamin_b12', label: '维生素B12' },
+                { value: 'calcium', label: '钙' },
+                { value: 'iron', label: '铁' },
+                { value: 'zinc', label: '锌' },
+                { value: 'magnesium', label: '镁' },
+                { value: 'potassium', label: '钾' },
+                { value: 'sodium', label: '钠' },
+                { value: 'fiber', label: '膳食纤维' },
+                { value: 'protein', label: '蛋白质' },
+                { value: 'fat', label: '脂肪' },
+                { value: 'carbohydrate', label: '碳水化合物' }
+            ],
+            // 营养素作用数据库
+            nutrientFunctions: {
+                '维生素A': '维生素A是人体必需的脂溶性维生素，对维持正常视力至关重要，参与视紫红质的合成。同时，它对皮肤和黏膜的健康、骨骼生长、生殖与免疫系统功能都起着重要作用。缺乏维生素A可能导致夜盲症、干眼症和免疫力下降。',
+                '维生素C': '维生素C（抗坏血酸）是人体必需的水溶性维生素，具有抗氧化、促进胶原蛋白合成、增强免疫力等核心作用。同时帮助铁元素吸收、保护心血管和皮肤健康，需通过饮食或补充剂获取。',
+                '维生素D': '维生素D是一种脂溶性维生素，主要通过皮肤在阳光照射下合成。它对钙和磷的吸收与代谢、骨骼健康和免疫系统功能至关重要。充足的维生素D可以预防佝偻病、骨质疏松症，并可能降低某些慢性疾病风险。',
+                '钙': '钙是人体最丰富的矿物质，主要存在于骨骼和牙齿中。它对骨骼健康、肌肉收缩、神经传导、血液凝固和酶的活化都至关重要。钙摄入不足可能导致骨质疏松、肌肉痉挛和其他健康问题。',
+                '铁': '铁是人体必需的微量元素，是血红蛋白和肌红蛋白的关键成分。它参与氧气的运输、能量代谢和DNA合成。铁缺乏可导致贫血、疲劳和免疫功能下降。',
+                '锌': '锌是参与200多种酶活性的必需微量元素，对免疫功能、蛋白质合成、伤口愈合、DNA合成和细胞分裂至关重要。它还支持正常生长发育和味觉感知。',
+                '膳食纤维': '膳食纤维是植物性食物中不能被人体消化酶分解的部分。它能促进肠道健康、预防便秘、调节血糖水平、降低胆固醇和帮助维持健康体重。'
+            },
+            // 营养素食物来源数据库
+            nutrientSources: {
+                '维生素A': ['胡萝卜', '菠菜', '甘薯', '南瓜', '芒果', '鱼肝油', '鸡蛋', '奶制品'],
+                '维生素C': ['柑橘类水果', '猕猴桃', '草莓', '辣椒', '西兰花', '西红柿', '土豆', '菠菜'],
+                '维生素D': ['鱼肝油', '鲑鱼', '金枪鱼', '蛋黄', '蘑菇', '强化牛奶', '强化谷物'],
+                '钙': ['牛奶', '酸奶', '奶酪', '豆腐', '杏仁', '芝麻', '绿叶蔬菜', '小鱼干'],
+                '铁': ['红肉', '肝脏', '豆类', '菠菜', '南瓜籽', '贝类', '全谷物', '干果'],
+                '锌': ['牡蛎', '红肉', '家禽', '豆类', '坚果', '种子', '全谷物', '奶酪'],
+                '膳食纤维': ['全谷物', '豆类', '水果', '蔬菜', '坚果', '种子']
+            },
+            // 功能目标数据库
+            functionalGoals: {
+                skin: {
+                    title: '皮肤健康',
+                    description: '皮肤是人体最大的器官，健康的皮肤需要充足的营养支持。以下营养素对维持皮肤弹性、保湿和防护功能非常重要。',
+                    nutrients: [
+                        { name: '维生素A', benefit: '帮助维持皮肤细胞更新，防止皮肤干燥和角质化' },
+                        { name: '维生素C', benefit: '是胶原蛋白合成的必需元素，有助于维持皮肤弹性和防止氧化损伤' },
+                        { name: '维生素E', benefit: '强效抗氧化剂，保护皮肤免受自由基损害，减少皮肤老化' },
+                        { name: '锌', benefit: '帮助伤口愈合和减少炎症反应，对控制痤疮有帮助' }
+                    ],
+                    foods: ['杏仁', '牛油果', '胡萝卜', '橙子', '南瓜籽', '鲑鱼', '菠菜', '核桃']
+                },
+                weight: {
+                    title: '身材管理',
+                    description: '健康的身材管理不仅仅是减轻体重，更在于保持肌肉质量和降低脂肪比例。以下营养素对控制体重和提升代谢率有益。',
+                    nutrients: [
+                        { name: '蛋白质', benefit: '增加饱腹感，保持肌肉质量，提高代谢率' },
+                        { name: '膳食纤维', benefit: '增加饱腹感，减缓碳水化合物吸收，稳定血糖水平' },
+                        { name: '钙', benefit: '研究表明钙摄入充足可能与较低的体脂率相关' },
+                        { name: '维生素D', benefit: '帮助钙吸收，可能影响体重调节相关激素' }
+                    ],
+                    foods: ['瘦肉蛋白', '豆类和扁豆', '全谷物', '水果', '蔬菜', '希腊酸奶', '坚果', '燕麦']
+                },
+                energy: {
+                    title: '精力/疲劳管理',
+                    description: '保持充沛的精力需要均衡摄入宏量和微量营养素。以下营养素对能量代谢和减轻疲劳尤为重要。',
+                    nutrients: [
+                        { name: '铁', benefit: '是血红蛋白的关键成分，帮助携带氧气到身体各处，预防疲劳' },
+                        { name: '维生素B群', benefit: '参与能量代谢过程，帮助将食物转化为能量' },
+                        { name: '镁', benefit: '参与产能代谢，有助于减轻肌肉疲劳' },
+                        { name: '辅酶Q10', benefit: '在细胞能量产生中发挥关键作用' }
+                    ],
+                    foods: ['富铁食物(瘦肉、菠菜)', '全谷物', '坚果种子', '深绿色蔬菜', '香蕉', '鱼类', '鸡蛋', '乳制品']
+                },
+                immune: {
+                    title: '免疫力增强',
+                    description: '强大的免疫系统是预防疾病的第一道防线。以下营养素对增强免疫功能尤为重要。',
+                    nutrients: [
+                        { name: '维生素C', benefit: '支持多种免疫细胞功能，增强抗氧化能力' },
+                        { name: '维生素D', benefit: '调节免疫系统，可能预防上呼吸道感染' },
+                        { name: '锌', benefit: '支持免疫细胞生长和活性，缺乏会影响免疫反应' },
+                        { name: '硒', benefit: '具有抗氧化特性，支持免疫系统功能' }
+                    ],
+                    foods: ['柑橘类水果', '红椒', '西兰花', '大蒜', '生姜', '蘑菇', '酸奶', '坚果和种子']
+                }
+            },
+            // 健康功效数据库
+            healthBenefits: {
+                lower_blood_lipids: {
+                    title: '降血脂食物与营养素',
+                    nutrients: [
+                        { name: '不饱和脂肪酸', description: '尤其是Omega-3脂肪酸，能降低甘油三酯水平，改善心血管健康' },
+                        { name: '膳食纤维', description: '可结合胆固醇并帮助排出体外，降低LDL胆固醇' },
+                        { name: '植物固醇', description: '能抑制肠道对胆固醇的吸收，降低血液中的胆固醇水平' }
+                    ],
+                    foods: ['鱼油', '亚麻籽油', '橄榄油', '燕麦', '大豆', '扁豆', '杏仁', '核桃', '苹果', '山楂']
+                },
+                lower_blood_pressure: {
+                    title: '降血压食物与营养素',
+                    nutrients: [
+                        { name: '钾', description: '帮助平衡体内钠含量，放松血管壁并降低血压' },
+                        { name: '镁', description: '帮助血管放松，参与调节血压的多种生理过程' },
+                        { name: '钙', description: '适量摄入钙有助于维持正常血压水平' }
+                    ],
+                    foods: ['香蕉', '土豆', '菠菜', '西红柿', '甜菜', '全谷物', '大蒜', '坚果', '低脂乳制品', '深色巧克力']
+                },
+                lower_blood_sugar: {
+                    title: '降血糖食物与营养素',
+                    nutrients: [
+                        { name: '铬', description: '可能增强胰岛素敏感性，帮助控制血糖' },
+                        { name: '膳食纤维', description: '减缓碳水化合物吸收，稳定血糖水平' },
+                        { name: '镁', description: '参与葡萄糖代谢，缺乏可能增加2型糖尿病风险' }
+                    ],
+                    foods: ['肉桂', '苦瓜', '黄秋葵', '燕麦', '扁豆', '豆类', '藜麦', '鱼类', '发酵食品']
+                }
+            }
         };
     },
     created() {
@@ -85,15 +597,832 @@ export default {
         handleCurrentChange(val) {
             this.currentPage = val;
             this.fetchFreshData();
+        },
+
+        showNutritionSearch() {
+            this.nutritionSearchVisible = true;
+        },
+
+        showFunctionalGoals() {
+            this.functionalGoalsVisible = true;
+        },
+
+        showFoodsByNutrient() {
+            this.foodsByNutrientVisible = true;
+        },
+
+        showHealthEffects() {
+            this.healthEffectsVisible = true;
+        },
+
+        viewNutrimentDetail(nutriment) {
+            this.currentNutriment = nutriment;
+            this.nutrimentDetailVisible = true;
+        },
+
+        searchNutrientNeeds() {
+            // 根据用户输入的年龄、性别、体重等计算营养素需求
+            // 通常这需要专业的营养数据库和计算公式
+            this.showNutrientResults = true;
+            
+            // 这里使用简化版的推荐营养素摄入量
+            // 实际应用中应使用完整的计算公式或从API获取
+            let gender = this.nutrientSearchForm.gender;
+            let age = this.nutrientSearchForm.age;
+            let weight = this.nutrientSearchForm.weight;
+            
+            this.nutrientNeedsResults = [
+                { name: '蛋白质', amount: gender === 'male' ? weight * 0.8 : weight * 0.75, unit: '克', description: '每千克体重0.75-0.8克' },
+                { name: '钙', amount: age > 50 ? 1200 : 1000, unit: '毫克', description: '维持骨骼健康' },
+                { name: '铁', amount: gender === 'female' && age < 50 ? 18 : 8, unit: '毫克', description: '预防贫血' },
+                { name: '维生素C', amount: 75, unit: '毫克', description: '增强免疫力' },
+                { name: '维生素D', amount: 15, unit: '微克', description: '促进钙吸收' },
+                { name: '膳食纤维', amount: gender === 'male' ? 38 : 25, unit: '克', description: '促进肠道健康' }
+            ];
+        },
+
+        handleFunctionalGoalChange(tab) {
+            // 当用户选择不同功能目标时更新显示内容
+            this.selectedFunctionalGoal = tab.name;
+        },
+
+        searchHealthEffects() {
+            // 搜索特定健康功效的食物和营养素
+            this.showHealthEffectsResults = true;
+            
+            const benefit = this.healthBenefits[this.selectedHealthEffect];
+            if (benefit) {
+                this.healthEffectNutrients = benefit.nutrients;
+                this.healthEffectFoods = benefit.foods;
+            }
+        },
+
+        searchFoodsByNutrient() {
+            // 搜索含有特定营养素的食物
+            this.showFoodsByNutrientResults = true;
+            
+            // 获取选中的营养素标签
+            const nutrientLabel = this.getSelectedNutrientLabel();
+            
+            // 模拟从数据库获取食物列表
+            // 实际应用中应从API或数据库获取
+            switch(this.selectedNutrientForFoods) {
+                case 'vitamin_a':
+                    this.foodsByNutrientResults = [
+                        { name: '胡萝卜', amount: 835, unit: 'μg', per: '100克' },
+                        { name: '甘薯', amount: 709, unit: 'μg', per: '100克' },
+                        { name: '菠菜', amount: 469, unit: 'μg', per: '100克' },
+                        { name: '南瓜', amount: 426, unit: 'μg', per: '100克' },
+                        { name: '羽衣甘蓝', amount: 241, unit: 'μg', per: '100克' }
+                    ];
+                    break;
+                case 'vitamin_c':
+                    this.foodsByNutrientResults = [
+                        { name: '鲜枣', amount: 243, unit: 'mg', per: '100克' },
+                        { name: '黄椒', amount: 183.5, unit: 'mg', per: '100克' },
+                        { name: '猕猴桃', amount: 92.7, unit: 'mg', per: '100克' },
+                        { name: '西兰花', amount: 89.2, unit: 'mg', per: '100克' },
+                        { name: '草莓', amount: 58.8, unit: 'mg', per: '100克' }
+                    ];
+                    break;
+                case 'calcium':
+                    this.foodsByNutrientResults = [
+                        { name: '芝麻酱', amount: 1057, unit: 'mg', per: '100克' },
+                        { name: '干紫菜', amount: 400, unit: 'mg', per: '100克' },
+                        { name: '奶酪', amount: 367, unit: 'mg', per: '100克' },
+                        { name: '豆腐干', amount: 350, unit: 'mg', per: '100克' },
+                        { name: '牛奶', amount: 120, unit: 'mg', per: '100克' }
+                    ];
+                    break;
+                default:
+                    this.foodsByNutrientResults = [
+                        { name: '请选择营养素', amount: '-', unit: '', per: '' }
+                    ];
+            }
+        },
+
+        getNutrimentFunction(name) {
+            // 根据营养素名称获取其功能描述
+            return this.nutrientFunctions[name] || '暂无相关功能信息';
+        },
+
+        getFoodSources(name) {
+            // 根据营养素名称获取食物来源
+            return this.nutrientSources[name] || ['暂无相关食物信息'];
+        },
+
+        getFunctionalGoalTitle() {
+            // 获取当前选择的功能目标标题
+            const goal = this.functionalGoals[this.selectedFunctionalGoal];
+            return goal ? goal.title : '';
+        },
+
+        getFunctionalGoalDescription() {
+            // 获取当前选择的功能目标描述
+            const goal = this.functionalGoals[this.selectedFunctionalGoal];
+            return goal ? goal.description : '';
+        },
+
+        getFunctionalGoalNutrients() {
+            // 获取当前选择的功能目标相关营养素
+            const goal = this.functionalGoals[this.selectedFunctionalGoal];
+            return goal ? goal.nutrients : [];
+        },
+
+        getFunctionalGoalFoods() {
+            // 获取当前选择的功能目标推荐食物
+            const goal = this.functionalGoals[this.selectedFunctionalGoal];
+            return goal ? goal.foods : [];
+        },
+
+        getHealthEffectTitle() {
+            // 获取当前选择的健康功效标题
+            const benefit = this.healthBenefits[this.selectedHealthEffect];
+            return benefit ? benefit.title : '';
+        },
+
+        getSelectedNutrientLabel() {
+            // 获取当前选择的营养素标签
+            const nutrient = this.commonNutrients.find(n => n.value === this.selectedNutrientForFoods);
+            return nutrient ? nutrient.label : '';
+        },
+
+        getActivityLevelLabel() {
+            // 获取活动水平标签
+            const activityLevel = this.nutrientSearchForm.activityLevel;
+            switch(activityLevel) {
+                case 'sedentary':
+                    return '久坐不动';
+                case 'light':
+                    return '轻度活动';
+                case 'moderate':
+                    return '中度活动';
+                case 'active':
+                    return '重度活动';
+                case 'very_active':
+                    return '非常活跃';
+                default:
+                    return '未知活动水平';
+            }
+        },
+
+        getNutrientIcon(nutrient) {
+            // 根据营养素获取对应的图标
+            const icons = {
+                vitamin_a: 'el-icon-vitamin-a',
+                vitamin_c: 'el-icon-vitamin-c',
+                vitamin_d: 'el-icon-vitamin-d',
+                vitamin_e: 'el-icon-vitamin-e',
+                vitamin_b1: 'el-icon-vitamin-b1',
+                vitamin_b2: 'el-icon-vitamin-b2',
+                vitamin_b6: 'el-icon-vitamin-b6',
+                vitamin_b12: 'el-icon-vitamin-b12',
+                calcium: 'el-icon-calcium',
+                iron: 'el-icon-iron',
+                zinc: 'el-icon-zinc',
+                magnesium: 'el-icon-magnesium',
+                potassium: 'el-icon-potassium',
+                sodium: 'el-icon-sodium',
+                fiber: 'el-icon-fiber',
+                protein: 'el-icon-protein',
+                fat: 'el-icon-fat',
+                carbohydrate: 'el-icon-carbohydrate'
+            };
+            return icons[nutrient] || 'el-icon-question';
+        },
+
+        getNutrientDescription(nutrient) {
+            // 根据营养素获取描述
+            const descriptions = {
+                vitamin_a: '维生素A是人体必需的脂溶性维生素，对维持正常视力至关重要，参与视紫红质的合成。同时，它对皮肤和黏膜的健康、骨骼生长、生殖与免疫系统功能都起着重要作用。缺乏维生素A可能导致夜盲症、干眼症和免疫力下降。',
+                vitamin_c: '维生素C（抗坏血酸）是人体必需的水溶性维生素，具有抗氧化、促进胶原蛋白合成、增强免疫力等核心作用。同时帮助铁元素吸收、保护心血管和皮肤健康，需通过饮食或补充剂获取。',
+                vitamin_d: '维生素D是一种脂溶性维生素，主要通过皮肤在阳光照射下合成。它对钙和磷的吸收与代谢、骨骼健康和免疫系统功能至关重要。充足的维生素D可以预防佝偻病、骨质疏松症，并可能降低某些慢性疾病风险。',
+                calcium: '钙是人体最丰富的矿物质，主要存在于骨骼和牙齿中。它对骨骼健康、肌肉收缩、神经传导、血液凝固和酶的活化都至关重要。钙摄入不足可能导致骨质疏松、肌肉痉挛和其他健康问题。',
+                iron: '铁是人体必需的微量元素，是血红蛋白和肌红蛋白的关键成分。它参与氧气的运输、能量代谢和DNA合成。铁缺乏可导致贫血、疲劳和免疫功能下降。',
+                zinc: '锌是参与200多种酶活性的必需微量元素，对免疫功能、蛋白质合成、伤口愈合、DNA合成和细胞分裂至关重要。它还支持正常生长发育和味觉感知。',
+                fiber: '膳食纤维是植物性食物中不能被人体消化酶分解的部分。它能促进肠道健康、预防便秘、调节血糖水平、降低胆固醇和帮助维持健康体重。'
+            };
+            return descriptions[nutrient] || '暂无相关描述信息';
+        },
+
+        getFoodTips(nutrient) {
+            // 根据营养素获取食物食用建议
+            const tips = {
+                vitamin_a: '维生素A主要来源于动物性食物，如肝脏、鱼类和奶制品。过量摄入可能导致中毒，建议每天不超过1000μg（视黄醇当量）。',
+                vitamin_c: '维生素C主要来源于新鲜水果和蔬菜。过量摄入可能导致腹泻，建议每天不超过2000mg。',
+                vitamin_d: '维生素D主要来源于阳光照射和食物。过量摄入可能导致中毒，建议每天不超过4000IU。',
+                vitamin_e: '维生素E主要来源于植物性食物。过量摄入可能导致中毒，建议每天不超过1500IU。',
+                vitamin_b1: '维生素B1主要来源于全谷物、豆类和瘦肉。过量摄入可能导致中毒，建议每天不超过2.5mg。',
+                vitamin_b2: '维生素B2主要来源于动物性食物和全谷物。过量摄入可能导致中毒，建议每天不超过2.5mg。',
+                vitamin_b6: '维生素B6主要来源于全谷物、豆类和瘦肉。过量摄入可能导致中毒，建议每天不超过2.5mg。',
+                vitamin_b12: '维生素B12主要来源于动物性食物和强化食品。过量摄入可能导致中毒，建议每天不超过2.5μg。',
+                calcium: '钙主要来源于牛奶、酸奶、奶酪和绿叶蔬菜。过量摄入可能导致肾结石，建议每天不超过2000mg。',
+                iron: '铁主要来源于红肉、肝脏和豆类。过量摄入可能导致便秘和消化不良，建议每天不超过45mg。',
+                zinc: '锌主要来源于瘦肉、肝脏和全谷物。过量摄入可能导致铜缺乏，建议每天不超过40mg。',
+                magnesium: '镁主要来源于绿叶蔬菜、全谷物和坚果。过量摄入可能导致腹泻，建议每天不超过400mg。',
+                potassium: '钾主要来源于香蕉、土豆和绿叶蔬菜。过量摄入可能导致腹泻，建议每天不超过5600mg。',
+                sodium: '钠主要来源于食盐。过量摄入可能导致高血压，建议每天不超过2300mg。',
+                fiber: '膳食纤维主要来源于全谷物、豆类和水果。过量摄入可能导致消化不良，建议每天摄入25-35g。',
+                protein: '蛋白质主要来源于瘦肉、鱼类、豆类和奶制品。过量摄入可能导致肾脏负担，建议每天不超过1.2g/kg体重。',
+                fat: '脂肪主要来源于动物性食物和植物油。过量摄入可能导致肥胖和心血管疾病，建议每天摄入20-35%的能量。',
+                carbohydrate: '碳水化合物主要来源于全谷物、豆类和水果。过量摄入可能导致肥胖和糖尿病，建议每天摄入50-100g。'
+            };
+            return tips[nutrient] || '暂无相关食用建议';
+        },
+
+        getPercentageForFood(food) {
+            // 根据食物含量计算百分比
+            const nutrient = this.commonNutrients.find(n => n.value === this.selectedNutrientForFoods);
+            if (nutrient) {
+                const amount = food.amount;
+                const unit = food.unit;
+                const nutrientAmount = nutrient.value === 'calcium' ? amount * 1000 : amount;
+                const totalAmount = this.foodsByNutrientResults.reduce((total, f) => total + (f.amount * 1000), 0);
+                return (nutrientAmount / totalAmount) * 100;
+            }
+            return 0;
+        },
+
+        getProgressColor(percentage) {
+            // 根据百分比获取进度条颜色
+            if (percentage < 30) {
+                return '#409EFF';
+            } else if (percentage < 60) {
+                return '#67C23A';
+            } else {
+                return '#F56C6C';
+            }
+        },
+
+        getHealthEffectIcon() {
+            // 根据健康功效获取对应的图标
+            const icons = {
+                lower_blood_pressure: 'el-icon-blood-pressure',
+                lower_cholesterol: 'el-icon-cholesterol',
+                lower_blood_sugar: 'el-icon-blood-sugar',
+                antioxidant: 'el-icon-antioxidant',
+                immune_boost: 'el-icon-immune-boost',
+                anti_inflammatory: 'el-icon-anti-inflammatory',
+                gut_health: 'el-icon-gut-health',
+                heart_health: 'el-icon-heart-health',
+                bone_health: 'el-icon-bone-health',
+                liver_protection: 'el-icon-liver-protection'
+            };
+            return icons[this.selectedHealthEffect] || 'el-icon-question';
+        },
+
+        getHealthEffectDescription() {
+            // 获取当前选择的健康功效描述
+            const benefit = this.healthBenefits[this.selectedHealthEffect];
+            return benefit ? benefit.description : '';
+        },
+
+        getHealthEffectNutrients() {
+            // 获取当前选择的健康功效相关营养素
+            const benefit = this.healthBenefits[this.selectedHealthEffect];
+            return benefit ? benefit.nutrients : [];
+        },
+
+        getHealthEffectFoods() {
+            // 获取当前选择的健康功效推荐食物
+            const benefit = this.healthBenefits[this.selectedHealthEffect];
+            return benefit ? benefit.foods : [];
+        },
+
+        getHealthEffectLifestyleTips() {
+            // 获取当前选择的健康功效生活方式建议
+            // 这里可以根据实际需求添加更多的生活方式建议
+            return [
+                {
+                    icon: 'el-icon-water',
+                    title: '多喝水',
+                    content: '保持充足的水分摄入，每天饮水1.5-2升'
+                },
+                {
+                    icon: 'el-icon-sleep',
+                    title: '规律作息',
+                    content: '保证充足睡眠'
+                },
+                {
+                    icon: 'el-icon-exercise',
+                    title: '适当运动',
+                    content: '增强身体机能'
+                },
+                {
+                    icon: 'el-icon-mood',
+                    title: '保持良好心态',
+                    content: '避免过度压力'
+                }
+            ];
+        },
+
+        handleHealthEffectChange(tab) {
+            // 当用户选择不同健康功效时更新显示内容
+            this.selectedHealthEffect = tab.name;
         }
     }
 };
 </script>
 
-<style scoped>
-.text-button {
+<style scoped lang="scss">
+/* 通用样式 */
+.nutriment-detail-dialog {
+    .el-dialog__header {
+        padding: 0;
+    }
+    .el-dialog__body {
+        padding: 0;
+    }
+}
+
+.nutriment-detail-header {
+    background: linear-gradient(135deg, #409EFF, #67C23A);
+    padding: 20px;
+    color: white;
+    border-radius: 8px 8px 0 0;
+}
+
+.nutriment-detail-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.nutriment-detail-subtitle {
+    margin: 5px 0 0;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.form-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.result-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.result-header {
+    background-color: #f5f7fa;
+    padding: 15px;
+    border-bottom: 1px solid #ebeef5;
+}
+
+.result-header h3 {
+    margin: 0;
+    color: #303133;
+}
+
+.result-body {
+    padding: 15px;
+}
+
+.result-footer {
+    padding: 10px 15px;
+    border-top: 1px solid #ebeef5;
+    background-color: #f5f7fa;
+}
+
+.result-note {
+    color: #909399;
+    font-size: 12px;
+    margin: 0;
+}
+
+.user-info-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #606266;
+    font-size: 14px;
+}
+
+.highlight {
     color: #409EFF;
-    margin-right: 10px;
-    cursor: pointer;
+    font-weight: bold;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #303133;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed #ebeef5;
+}
+
+.section-title i {
+    color: #409EFF;
+}
+
+.amount-cell {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.amount-value {
+    font-weight: bold;
+}
+
+.amount-unit {
+    color: #909399;
+    font-size: 12px;
+}
+
+/* 营养素详情相关样式 */
+.nutriment-detail-container {
+    padding: 20px;
+}
+
+.nutriment-info {
+    margin-bottom: 20px;
+}
+
+.nutriment-name {
+    font-size: 24px;
+    color: #303133;
+    margin-bottom: 10px;
+}
+
+.nutriment-description {
+    color: #606266;
+    margin-bottom: 15px;
+}
+
+.nutriment-properties {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.property-item {
+    background-color: #f5f7fa;
+    padding: 10px 15px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.property-label {
+    color: #909399;
+    font-size: 12px;
+}
+
+.property-value {
+    color: #303133;
+    font-weight: bold;
+}
+
+.food-sources {
+    margin-bottom: 20px;
+}
+
+.food-sources-title {
+    font-size: 18px;
+    color: #303133;
+    margin-bottom: 15px;
+}
+
+.food-sources-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.food-source-item {
+    background-color: #ecf5ff;
+    color: #409EFF;
+    padding: 8px 12px;
+    border-radius: 4px;
+}
+
+/* 营养素需求查询相关样式 */
+.nutrition-search-container {
+    padding: 20px;
+}
+
+.nutrition-search-form {
+    margin-bottom: 20px;
+}
+
+.nutrition-search-results {
+    margin-top: 20px;
+}
+
+/* 营养素功能目标相关样式 */
+.functional-goals-container {
+    padding: 20px;
+}
+
+.functional-goals-selection {
+    margin-bottom: 20px;
+}
+
+.functional-goals-results {
+    margin-top: 20px;
+}
+
+.goal-header {
+    margin-bottom: 20px;
+}
+
+.goal-description {
+    color: #606266;
+    margin-top: 10px;
+    line-height: 1.6;
+}
+
+.goal-section {
+    margin-bottom: 30px;
+}
+
+.nutrient-cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.nutrient-card {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.food-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.food-card {
+    background-color: #ecf5ff;
+    color: #409EFF;
+    padding: 8px 15px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.health-tips {
+    background-color: #f5f7fa;
+    padding: 15px;
+    border-radius: 8px;
+    color: #606266;
+}
+
+.health-tips ul {
+    padding-left: 20px;
+    margin: 10px 0 0;
+}
+
+.health-tips li {
+    margin-bottom: 5px;
+}
+
+/* 食物营养素查询相关样式 */
+.foods-by-nutrient-container {
+    padding: 20px;
+}
+
+.foods-by-nutrient-selection {
+    margin-bottom: 20px;
+}
+
+.foods-by-nutrient-results {
+    margin-top: 20px;
+}
+
+.nutrient-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.nutrient-icon {
+    width: 50px;
+    height: 50px;
+    background-color: #ecf5ff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #409EFF;
+    font-size: 24px;
+}
+
+.nutrient-details {
+    flex: 1;
+}
+
+.nutrient-description {
+    color: #606266;
+    font-size: 14px;
+    margin-top: 5px;
+    line-height: 1.6;
+}
+
+.food-tips {
+    margin-top: 10px;
+}
+
+.food-tips h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #303133;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.food-tips p {
+    color: #606266;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* 健康功效相关样式 */
+.health-effects-container {
+    padding: 20px;
+}
+
+.health-effects-selection {
+    margin-bottom: 20px;
+}
+
+.health-effects-results {
+    margin-top: 20px;
+}
+
+.health-effect-details {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.effect-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.effect-icon {
+    width: 60px;
+    height: 60px;
+    background-color: #ecf5ff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #409EFF;
+    font-size: 30px;
+    margin-right: 15px;
+}
+
+.effect-info {
+    flex: 1;
+}
+
+.effect-info h3 {
+    color: #409EFF;
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.effect-description {
+    color: #606266;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.effect-nutrients {
+    margin-bottom: 15px;
+}
+
+.nutrient-card {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+    height: 100%;
+}
+
+.nutrient-card-header {
+    margin-bottom: 10px;
+}
+
+.nutrient-card-header h4 {
+    margin: 0;
+    color: #409EFF;
+}
+
+.nutrient-card-body {
+    color: #606266;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.nutrient-card-footer {
+    text-align: right;
+    color: #909399;
+    font-size: 12px;
+    margin-top: 10px;
+}
+
+.effect-foods {
+    margin-bottom: 15px;
+}
+
+.food-card {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-bottom: 15px;
+    height: 100%;
+}
+
+.food-icon {
+    font-size: 24px;
+    color: #409EFF;
+    margin-bottom: 10px;
+}
+
+.food-name {
+    font-weight: bold;
+    color: #303133;
+    margin-bottom: 5px;
+}
+
+.food-nutrients {
+    color: #909399;
+    font-size: 12px;
+}
+
+.lifestyle-tips {
+    margin-top: 15px;
+}
+
+.tip-card {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 15px;
+    height: 100%;
+}
+
+.tip-icon {
+    font-size: 24px;
+    color: #409EFF;
+}
+
+.tip-content {
+    flex: 1;
+}
+
+.tip-content h4 {
+    color: #409EFF;
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.tip-content p {
+    color: #606266;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
 }
 </style> 

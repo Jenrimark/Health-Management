@@ -104,7 +104,36 @@ export default {
             try {
                 const response = await this.$axios.get(`/nutriment/querySelectedItemsUser`);
                 if (response.data.code === 200) {
-                    this.nutrimentItems = response.data.data;
+                    // 获取原始数据
+                    const originalItems = response.data.data;
+                    
+                    // 用于存储去重后的结果
+                    const uniqueNutriments = new Map();
+                    
+                    // 处理每个营养素项
+                    originalItems.forEach(item => {
+                        // 移除前缀（"私人营养素 - "或"公开营养素 - "）
+                        const originalName = item.name;
+                        let cleanName = originalName;
+                        
+                        if (originalName.startsWith('私人营养素 - ')) {
+                            cleanName = originalName.substring('私人营养素 - '.length);
+                        } else if (originalName.startsWith('公开营养素 - ')) {
+                            cleanName = originalName.substring('公开营养素 - '.length);
+                        }
+                        
+                        // 使用清洁后的名称作为键，优先保留私人营养素
+                        if (!uniqueNutriments.has(cleanName) || originalName.startsWith('私人营养素 - ')) {
+                            // 创建新对象，使用原始ID但清洁后的名称
+                            uniqueNutriments.set(cleanName, {
+                                id: item.id,
+                                name: cleanName
+                            });
+                        }
+                    });
+                    
+                    // 转换回数组形式
+                    this.nutrimentItems = Array.from(uniqueNutriments.values());
                 }
             } catch (error) {
                 console.log(error);
