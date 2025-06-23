@@ -2,7 +2,7 @@
     <div class="login-container">
         <div class="login-panel">
             <div class="logo">
-                <Logo :bag="colorLogo" sysName="个人健康管理系统"/>
+                <Logo :bag="colorLogo" sysName="爱健康"/>
             </div>
             <div class="text">
                 <input v-model="act" class="act" placeholder="账号" />

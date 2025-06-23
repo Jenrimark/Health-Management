@@ -3,7 +3,7 @@
         <div style="line-height: 70px;padding: 0 50px;">
             <el-row>
                 <el-col :span="6">
-                    <Logo sysName="个人健康管理系统" />
+                    <Logo sysName="爱健康" />
                 </el-col>
                 <el-col :span="18">
                     <span style="float: right;display: flex; align-items: center; flex-wrap: wrap;">

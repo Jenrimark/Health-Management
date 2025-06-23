@@ -1,6 +1,6 @@
 <template>
     <div class="nav">
-        <Logo sysName="健康管理系统" />
+        <Logo sysName="爱健康" />
         <div v-if="!item.isHidden" :style="{
             color: selectedIndex === index ? '#1c1c1c' : 'rgb(102 102 102)'
         }" class="menu-item" v-for="(item, index) in menus" :key="index" @click="menuClick(`${item.path}`, index)">
@@ -52,7 +52,7 @@ export default {
             selectedIndex: 0,
             messagePath: '/message',
             loginPath: '/login',
-            sysName: '个人健康管理系统',
+            sysName: '爱健康',
             defaultPath: '/user-health-model',
             filterText: '',
             noReadMsg: 0,

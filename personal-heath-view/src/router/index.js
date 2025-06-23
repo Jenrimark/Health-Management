@@ -161,7 +161,7 @@ const routes = [
         },
       },
       {
-        name: '智能问诊',
+        name: '智能问答',
         path: "/aiDiagnosis",
         component: () => import(`@/views/user/Aicheck.vue`),
         meta: {

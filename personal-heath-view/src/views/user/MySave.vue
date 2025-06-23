@@ -310,7 +310,19 @@ export default {
     }
     
     .action-buttons {
-        display: flex;
+        .el-button {
+            margin-left: 8px;
+            
+            &.el-button--primary {
+                background-color: #0f753f;
+                border-color: #0f753f;
+                
+                &:hover {
+                    background-color: #0b5e32;
+                    border-color: #0b5e32;
+                }
+            }
+        }
     }
     
     .read-btn {

@@ -3,7 +3,7 @@
         <!-- Header Banner -->
         <div class="dashboard-header">
             <div class="dashboard-title">
-                <h1>健康指标中心</h1>
+                <h1>健康中心</h1>
                 <p>健康生活，健康人生，从此刻开始！每一点改变，都值得被记录。</p>
                 <div class="action-button" @click="toRecord">
                     <span>前去记录</span>

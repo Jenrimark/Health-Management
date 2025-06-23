@@ -142,7 +142,7 @@ export default {
     },
     created() {
         this.fetchFreshCategories();
-        document.title = "创建内容 - 健康管理";
+      
     },
     methods: {
         // 发布帖子
