@@ -44,6 +44,7 @@
                             <div class="score-container">
                                 <div class="score-ball" :class="scoreClass">
                                     <span class="score-text">{{ healthScore }}</span>
+                                    <div class="score-highlight"></div>
                                 </div>
                                 <div class="score-description">{{ scoreDescription }}</div>
                             </div>
@@ -600,21 +601,458 @@ export default {
         },
         // 计算健康评分
         calculateHealthScore() {
-            // 这里是计算健康评分的逻辑，可以根据后端数据或本地计算
-            // 示例逻辑：根据用户的健康记录数据计算
-            // 实际项目中，您可能需要根据各种指标（如BMI、血压、血糖等）综合计算
-            if (this.tableData.length > 0) {
-                // 统计异常指标的数量
-                const abnormalCount = this.tableData.filter(item => !this.statusCheck(item)).length;
-                // 根据异常指标数量计算评分
-                const totalCount = this.tableData.length;
-                const normalRate = (totalCount - abnormalCount) / totalCount;
-                this.healthScore = Math.round(normalRate * 100);
-            } else {
-                // 默认评分
-                this.healthScore = 85;
+            // 显示加载提示
+            const loading = this.$loading({
+                lock: true,
+                text: '正在计算健康评分...',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
+            
+            // 获取用户信息
+            const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+            if (!userInfo) {
+                this.$message.error('未获取到用户信息，请先登录');
+                loading.close();
+                return;
             }
+            
+            const userId = userInfo.id;
+            const userAge = userInfo.age || 30; // 默认年龄为30岁
+            const userGender = userInfo.gender; // 0表示女性，1表示男性
+            
+            // 获取所有健康指标的最新记录
+            this.$axios.post(`/user-health/query`, {
+                current: 1,
+                size: 1000, // 设置较大的数量以确保获取全部记录
+                userId: userId
+            }).then(response => {
+                const { data } = response;
+                if (data.code === 200 && data.data && data.data.length > 0) {
+                    const allHealthData = data.data;
+                    
+                    // 根据健康模型配置ID对记录进行分组，只保留每组中最新的一条记录
+                    const modelConfigMap = {};
+                    const latestRecords = [];
+                    
+                    // 按健康模型配置ID分组
+                    allHealthData.forEach(record => {
+                        const modelId = record.health_model_config_id || record.healthModelConfigId;
+                        if (!modelId) return;
+                        
+                        if (!modelConfigMap[modelId]) {
+                            modelConfigMap[modelId] = [];
+                        }
+                        modelConfigMap[modelId].push(record);
+                    });
+                    
+                    // 对每个分组，按时间排序并取最新的一条
+                    Object.keys(modelConfigMap).forEach(modelId => {
+                        const records = modelConfigMap[modelId];
+                        if (records.length === 0) return;
+                        
+                        // 按创建时间降序排序
+                        records.sort((a, b) => {
+                            const dateA = new Date(a.createTime || a.create_time);
+                            const dateB = new Date(b.createTime || b.create_time);
+                            return dateB - dateA; // 降序，最新的在前
+                        });
+                        
+                        // 取每组最新的一条记录
+                        latestRecords.push(records[0]);
+                    });
+                    
+                    console.log('每个指标的最新记录:', latestRecords);
+                    
+                    // 为每个记录根据年龄和性别调整正常值范围
+                    latestRecords.forEach(record => {
+                        if (!record.valueRange) return;
+                        
+                        // 获取原始正常值范围
+                        const originalRange = record.valueRange.split(',');
+                        if (originalRange.length !== 2) return;
+                        
+                        let minValue = parseFloat(originalRange[0]);
+                        let maxValue = parseFloat(originalRange[1]);
+                        
+                        // 根据指标类型、用户年龄和性别调整范围
+                        // 只针对用户提供的指标列表进行调整
+                        const modelName = record.name ? record.name.toLowerCase() : '';
+                        const symbol = record.symbol ? record.symbol.toLowerCase() : '';
+                        
+                        // 1. 夜间血压 (72,145 mmHg)
+                        if (modelName.includes('夜间血压') || (modelName.includes('血压') && modelName.includes('夜'))) {
+                            if (userAge > 60) {
+                                maxValue = maxValue * 1.05; // 上限放宽至152 mmHg (+5%)
+                            } else if (userAge < 18) {
+                                minValue = minValue * 0.95; // 下限降至68 mmHg (-5%)
+                                maxValue = maxValue * 0.95; // 上限降至138 mmHg (-5%)
+                            }
+                            
+                            // 女性血压标准略低
+                            if (userGender === 0) { // 女性
+                                minValue = minValue * 0.97;
+                                maxValue = maxValue * 0.98;
+                            }
+                        }
+                        
+                        // 2. 运动心率 (75,197 次/分)
+                        if (modelName.includes('运动心率') || (modelName.includes('心率') && modelName.includes('运动'))) {
+                            if (userAge < 18) {
+                                minValue = minValue * 0.9; // 下限降至68 (-10%)
+                                maxValue = maxValue * 1.1; // 上限升至217 (+10%)
+                            } else if (userAge > 60) {
+                                minValue = minValue * 0.95; // 下限降至71 (-5%)
+                            }
+                            
+                            // 女性心率一般略高
+                            if (userGender === 0) { // 女性
+                                minValue = minValue * 0.98; // 略微降低下限
+                                maxValue = maxValue * 1.02; // 略微提高上限
+                            }
+                        }
+                        
+                        // 3. 刷牙记录 (1,2 次) - 无需根据年龄性别调整
+                        
+                        // 4. 每日睡眠时长 (5,10 小时)
+                        if (modelName.includes('睡眠时长') || modelName.includes('睡眠')) {
+                            if (userAge < 18) {
+                                minValue = minValue * 1.2; // 下限提高至6小时 (+20%)
+                                maxValue = maxValue * 1.1; // 上限提高至11小时 (+10%)
+                            } else if (userAge > 60) {
+                                minValue = minValue * 0.9; // 下限降至4.5小时 (-10%)
+                                maxValue = maxValue * 0.9; // 上限降至9小时 (-10%)
+                            }
+                        }
+                        
+                        // 5. 谷丙转氨酶 (108,258 U/L)
+                        if (modelName.includes('谷丙转氨酶') || symbol === 'alt') {
+                            if (userAge > 60) {
+                                maxValue = maxValue * 1.05; // 上限放宽至271 U/L (+5%)
+                            }
+                            
+                            // 女性标准略低
+                            if (userGender === 0) { // 女性
+                                minValue = minValue * 0.95;
+                                maxValue = maxValue * 0.95;
+                            }
+                        }
+                        
+                        // 6. 每日喝水量 (1000,2000 ml)
+                        if (modelName.includes('喝水量') || modelName.includes('饮水量')) {
+                            if (userAge < 18) {
+                                minValue = 800; // 下限调整为800ml
+                                maxValue = 1800; // 上限调整为1800ml
+                            } else if (userAge > 60) {
+                                minValue = 1100; // 下限调整为1100ml
+                                maxValue = 2100; // 上限调整为2100ml
+                            }
+                            
+                            // 男性需水量略高
+                            if (userGender === 1) { // 男性
+                                minValue = minValue * 1.05; 
+                                maxValue = maxValue * 1.05;
+                            }
+                        }
+                        
+                        // 7. 体重 (根据身高计算BMI标准)
+                        if (modelName.includes('体重') || symbol === 'weight') {
+                            // 如果存在身高数据，可以计算BMI标准范围内的体重
+                            const height = userInfo.height; // 厘米
+                            if (height && height > 0) {
+                                const heightInMeters = height / 100;
+                                
+                                // 根据年龄段和性别调整BMI范围
+                                let minBMI = 18.5;
+                                let maxBMI = 24;
+                                
+                                if (userAge > 60) {
+                                    minBMI = 18;
+                                    maxBMI = 25; // 老年人BMI范围更宽松
+                                }
+                                
+                                if (userGender === 0) { // 女性
+                                    maxBMI = maxBMI * 0.98; // 女性BMI上限略低
+                                }
+                                
+                                // 根据调整后的BMI范围计算体重范围
+                                minValue = minBMI * (heightInMeters * heightInMeters);
+                                maxValue = maxBMI * (heightInMeters * heightInMeters);
+                            }
+                        }
+                        
+                        // 8. 身高 (0,500 cm) - 仅作为参考值，不需调整标准范围
+                        
+                        // 9. 内脏脂肪等级 (1,9 级)
+                        if (modelName.includes('内脏脂肪') || symbol === 'vfl') {
+                            if (userAge > 50) {
+                                maxValue = maxValue * 1.05; // 上限放宽至9.5级 (+5%)
+                            }
+                            
+                            // 女性内脏脂肪标准略低
+                            if (userGender === 0) { // 女性
+                                minValue = minValue * 0.9;
+                                maxValue = maxValue * 0.95;
+                            }
+                        }
+                        
+                        // 10. 肌肉 (20,60 千克)
+                        if (modelName.includes('肌肉') || symbol === 'mm') {
+                            if (userAge > 50) {
+                                minValue = minValue * 0.95; // 下限降低5%
+                                maxValue = maxValue * 0.9; // 上限降低10%
+                            }
+                            
+                            // 女性肌肉范围约为男性的70-80%
+                            if (userGender === 0) { // 女性
+                                minValue = minValue * 0.75;
+                                maxValue = maxValue * 0.8;
+                            }
+                        }
+                        
+                        // 11. 蛋白质 (65,180 克)
+                        if (modelName.includes('蛋白质') || symbol === 'pro') {
+                            if (userAge > 60) {
+                                minValue = 60; // 下限调整为60克
+                                maxValue = 165; // 上限调整为165克
+                            } else if (userAge < 18) {
+                                minValue = 70; // 下限调整为70克
+                                maxValue = 190; // 上限调整为190克
+                            }
+                            
+                            // 女性蛋白质需求约为男性的85-90%
+                            if (userGender === 0) { // 女性
+                                minValue = minValue * 0.85;
+                                maxValue = maxValue * 0.9;
+                            }
+                        }
+                        
+                        // 12. 脂肪 (7000,20000 克/百分比)
+                        if (modelName.includes('脂肪') && !modelName.includes('内脏脂肪') || symbol === 'bf') {
+                            if (userAge > 50) {
+                                maxValue = maxValue * 1.08; // 上限放宽8%
+                            }
+                            
+                            // 女性体脂率正常范围高于男性
+                            if (userGender === 0) { // 女性
+                                minValue = minValue * 1.3; // 女性体脂下限高约30%
+                                maxValue = maxValue * 1.3; // 女性体脂上限高约30%
+                            }
+                        }
+                        
+                        // 13. 身体总水分 (40,60 千克)
+                        if (modelName.includes('总水分') || modelName.includes('水分') || symbol === 'tbw') {
+                            if (userAge > 60) {
+                                minValue = 38; // 下限调整为38千克
+                                maxValue = 57; // 上限调整为57千克
+                            }
+                            
+                            // 女性水分含量约为男性的85-90%
+                            if (userGender === 0) { // 女性
+                                minValue = minValue * 0.85;
+                                maxValue = maxValue * 0.9;
+                            }
+                        }
+                        
+                        // 14. 硫酸母 (200,300 mcg) - 无明显年龄性别差异
+                        
+                        // 15. 体温 (36,38 °C)
+                        if (modelName.includes('体温') || (symbol && symbol.includes('摄氏度'))) {
+                            // 年龄差异不明显
+                            // 女性体温可能因生理周期有轻微波动，但基础范围相同
+                        }
+                        
+                        // 16. 血脂 (2,5 毫摩尔/升)
+                        if (modelName.includes('血脂') || modelName.includes('胆固醇')) {
+                            if (userAge > 55) {
+                                maxValue = maxValue * 1.06; // 上限放宽至5.3 (+6%)
+                            }
+                            
+                            // 女性HDL胆固醇标准高于男性
+                            if (userGender === 0 && modelName.includes('高密度')) { // 女性HDL
+                                minValue = minValue * 1.15;
+                                maxValue = maxValue * 1.15;
+                            }
+                        }
+                        
+                        // 17. 心率 (60,100 次/分) - 静息心率
+                        if ((modelName.includes('心率') && !modelName.includes('运动')) || symbol === 'bpm') {
+                            if (userAge < 18) {
+                                minValue = 55; // 下限调整为55
+                                maxValue = 110; // 上限调整为110
+                            } else if (userAge > 60) {
+                                minValue = 55; // 下限可降至55
+                            }
+                            
+                            // 女性静息心率平均值略高于男性
+                            if (userGender === 0) { // 女性
+                                minValue = minValue * 1.02;
+                                maxValue = maxValue * 1.05;
+                            }
+                        }
+                        
+                        // 18. 空腹血糖 (4,6 毫摩尔/升)
+                        if (modelName.includes('血糖') && (modelName.includes('空腹') || !modelName.includes('餐后'))) {
+                            if (userAge > 60) {
+                                maxValue = maxValue * 1.03; // 上限放宽至6.2 (+3%)
+                            }
+                            // 性别差异不明显
+                        }
+                        
+                        // 更新记录的调整后范围
+                        record.adjustedValueRange = [minValue, maxValue];
+                    });
+                    
+                    // 使用调整后的范围检查异常指标数量
+                    const checkStatus = (record) => {
+                        const inputValue = parseFloat(record.value);
+                        
+                        // 使用调整后的范围(如果有)，否则使用原始范围
+                        if (record.adjustedValueRange) {
+                            const [minValue, maxValue] = record.adjustedValueRange;
+                            return inputValue >= minValue && inputValue <= maxValue;
+                        } else if (record.valueRange) {
+                            const aryValueRange = record.valueRange.split(',');
+                            const minValue = parseFloat(aryValueRange[0]);
+                            const maxValue = parseFloat(aryValueRange[1]);
+                            return inputValue >= minValue && inputValue <= maxValue;
+                        }
+                        
+                        return true; // 如果没有范围信息，默认为正常
+                    };
+                    
+                    // 统计异常指标数量
+                    const abnormalCount = latestRecords.filter(record => !checkStatus(record)).length;
+                    const totalCount = latestRecords.length;
+                    
+                    if (totalCount > 0) {
+                        // 基础健康评分计算
+                        const normalRate = (totalCount - abnormalCount) / totalCount;
+                        let baseScore = Math.round(normalRate * 100);
+                        
+                        // 添加加权调整
+                        // 对重要指标赋予更高权重
+                        const weightedAdjustment = this.calculateWeightedAdjustment(latestRecords, checkStatus);
+                        
+                        // 最终评分
+                        this.healthScore = Math.min(100, Math.max(0, Math.round(baseScore + weightedAdjustment)));
+                        
+                        console.log(`健康评分计算: 基础分数=${baseScore}, 加权调整=${weightedAdjustment}, 最终分数=${this.healthScore}`);
+                    } else {
+                        // 没有健康记录，给出默认评分
+                        this.healthScore = 85;
+                        console.log('未找到健康记录，使用默认评分85分');
+                    }
+                } else {
+                    // 没有健康记录，给出默认评分
+                    this.healthScore = 85;
+                    console.log('未找到健康记录，使用默认评分85分');
+                }
+                
+                // 关闭加载提示
+                loading.close();
+            }).catch(error => {
+                console.error('获取健康记录失败:', error);
+                this.healthScore = 85; // 出错时使用默认评分
+                loading.close();
+                this.$message.error('获取健康记录失败，使用默认评分');
+            });
         },
+
+        // 计算不同指标的加权调整值
+        calculateWeightedAdjustment(records, statusCheckFn) {
+            // 定义不同指标类型的权重 - 只包含用户提供的健康指标
+            const weights = {
+                // 血压相关
+                '夜间血压': 3.5,
+                '血压': 3,
+                
+                // 心率相关
+                '运动心率': 2.5,
+                '心率': 2.5,
+                
+                // 基础生活习惯
+                '刷牙记录': 1,
+                '睡眠时长': 3,
+                '喝水量': 2,
+                
+                // 身体基本指标
+                '体重': 2.5,
+                '身高': 1,
+                
+                // 肝功能
+                '谷丙转氨酶': 3,
+                'alt': 3,
+                
+                // 身体成分
+                '内脏脂肪': 3,
+                '肌肉': 2,
+                '蛋白质': 2,
+                '脂肪': 2.5,
+                '身体总水分': 2,
+                
+                // 血液指标
+                '血脂': 3,
+                '血糖': 3.5,
+                '空腹血糖': 3.5,
+                '胆固醇': 3,
+                
+                // 其他生理指标
+                '硫酸母': 1.5,
+                '体温': 2,
+            };
+            
+            let weightedSum = 0;
+            let totalWeight = 0;
+            
+            records.forEach(record => {
+                if (!record.name) return;
+                
+                // 找到匹配的权重
+                let weight = 1; // 默认权重
+                const recordName = record.name.toLowerCase();
+                const recordSymbol = record.symbol ? record.symbol.toLowerCase() : '';
+                
+                // 先检查是否可以通过名称直接匹配
+                for (const [key, value] of Object.entries(weights)) {
+                    if (recordName.includes(key.toLowerCase())) {
+                        weight = value;
+                        break;
+                    }
+                }
+                
+                // 如果通过名称没找到，尝试通过symbol匹配
+                if (weight === 1 && recordSymbol) {
+                    for (const [key, value] of Object.entries(weights)) {
+                        if (key.toLowerCase() === recordSymbol) {
+                            weight = value;
+                            break;
+                        }
+                    }
+                }
+                
+                // 计算该指标的贡献
+                const isNormal = statusCheckFn(record);
+                const contribution = isNormal ? 0 : -weight; // 异常指标会减分，权重越高，扣分越多
+                
+                weightedSum += contribution;
+                totalWeight += weight;
+                
+                console.log(`指标: ${record.name}, 权重: ${weight}, 是否正常: ${isNormal}, 贡献值: ${contribution}`);
+            });
+            
+            // 如果没有记录，返回0
+            if (totalWeight === 0) return 0;
+            
+            // 计算最终加权调整值 (最大影响±20分)
+            const maxAdjustment = 20;
+            const adjustment = (weightedSum / totalWeight) * maxAdjustment;
+            
+            console.log(`加权总和: ${weightedSum}, 总权重: ${totalWeight}, 最终调整值: ${adjustment}`);
+            
+            return adjustment;
+        },
+        
         // 安全地获取记录的值
         getRecordValue(record) {
             if (!record) return null;
@@ -1612,40 +2050,89 @@ export default {
     background: linear-gradient(135deg, #42b983 0%, #33a06f 100%);
     color: white;
     text-align: center;
-    border-radius: 0 0 10px 10px;
+    border-radius: 0 0 20px 20px;
     margin-bottom: 30px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 20px rgba(66, 185, 131, 0.2);
+    position: relative;
+    overflow: hidden;
+    
+    &::before {
+        content: '';
+        position: absolute;
+        top: -10%;
+        left: -10%;
+        width: 120%;
+        height: 120%;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.05)"/></svg>');
+        background-size: 100px 100px;
+        opacity: 0.4;
+        animation: pulse 8s infinite linear;
+    }
+    
+    @keyframes pulse {
+        0% {
+            opacity: 0.3;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 0.5;
+            transform: scale(1.05);
+        }
+        100% {
+            opacity: 0.3;
+            transform: scale(1);
+        }
+    }
 }
 
 .dashboard-title {
+    position: relative;
+    z-index: 1;
+    
     h1 {
-        font-size: 32px;
+        font-size: 36px;
         margin-bottom: 10px;
         font-weight: 600;
+        letter-spacing: 2px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
+    
     p {
         font-size: 16px;
-        margin-bottom: 20px;
+        margin-bottom: 30px;
         opacity: 0.9;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
     }
 }
 
 .action-button {
-    display: inline-block;
-    padding: 10px 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 26px;
     background-color: rgba(255, 255, 255, 0.2);
     border-radius: 30px;
     cursor: pointer;
     transition: all 0.3s ease;
     font-size: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     
     &:hover {
         background-color: rgba(255, 255, 255, 0.3);
-        transform: translateY(-2px);
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
     }
     
     i {
-        margin-left: 5px;
+        margin-left: 8px;
+        font-weight: bold;
+        transition: transform 0.3s ease;
+    }
+    
+    &:hover i {
+        transform: translateX(4px);
     }
 }
 
@@ -1807,44 +2294,171 @@ export default {
 }
 
 .score-ball {
-    width: 180px;
-    height: 180px;
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: all 0.5s ease;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+    background-size: 400% 400%;
+    animation: gradientMove 10s ease infinite;
+    
+    /* 外发光效果 */
+    &::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: inherit;
+        filter: blur(15px);
+        opacity: 0.6;
+        z-index: -1;
+    }
+    
+    /* 添加顶部高光 */
+    &::after {
+        content: '';
+        position: absolute;
+        top: 5%;
+        left: 10%;
+        width: 80%;
+        height: 40%;
+        background: linear-gradient(to bottom, rgba(255,255,255,0.25), rgba(255,255,255,0));
+        border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    }
+    
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    }
 }
 
 .score-text {
-    font-size: 54px;
-    font-weight: bold;
-    color: #fff;
+    font-size: 76px;
+    font-weight: 800;
+    color: white;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 2;
+    font-family: 'Arial', sans-serif;
+    letter-spacing: -2px;
+    animation: float 3s ease-in-out infinite;
 }
 
 .score-description {
     font-size: 16px;
     text-align: center;
-    color: #666;
-    max-width: 200px;
+    color: #555;
+    max-width: 220px;
+    font-weight: 600;
+    background-color: white;
+    padding: 12px 18px;
+    border-radius: 30px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    margin-top: 10px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
 }
 
 .score-excellent {
-    background: linear-gradient(135deg, #4caf50, #2e7d32);
+    background: linear-gradient(45deg, #4caf50, #8bc34a);
 }
 
 .score-good {
-    background: linear-gradient(135deg, #2196f3, #1565c0);
+    background: linear-gradient(45deg, #2196f3, #03a9f4, #4fc3f7);
 }
 
 .score-average {
-    background: linear-gradient(135deg, #ff9800, #e65100);
+    background: linear-gradient(45deg, #ff9800, #ffb74d);
 }
 
 .score-poor {
-    background: linear-gradient(135deg, #f44336, #b71c1c);
+    background: linear-gradient(45deg, #f44336, #ff7043);
+}
+
+/* 现代动画效果 */
+@keyframes gradientMove {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+@keyframes appear {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 添加高亮光晕元素样式 */
+.score-highlight {
+    position: absolute;
+    top: -30%;
+    left: -30%;
+    width: 160%;
+    height: 160%;
+    background: radial-gradient(ellipse at center, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+    pointer-events: none;
+    z-index: 2;
+    animation: shine 4s infinite;
+}
+
+@keyframes shine {
+    0% {
+        opacity: 0;
+        transform: translateX(-100%) translateY(-100%) rotate(0deg);
+    }
+    20% {
+        opacity: 0.2;
+    }
+    35% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 0;
+        transform: translateX(100%) translateY(100%) rotate(40deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(100%) translateY(100%) rotate(40deg);
+    }
+}
+
+/* 添加加载动画 */
+.score-container {
+    animation: appear 0.8s cubic-bezier(0.26, 0.53, 0.74, 1.48);
 }
 
 /* Health Metrics */

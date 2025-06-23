@@ -42,66 +42,108 @@
                 :current-page="currentPage" :page-sizes="[10, 20]" :page-size="pageSize"
                 layout="total, sizes, prev, pager, next, jumper" :total="totalItems"></el-pagination>
         </el-row>
-        <el-dialog :show-close="false" :visible.sync="dialogUserOperaion" width="26%">
-            <div slot="title">
-                <p class="dialog-title">{{ !isOperation ? '健康模型新增' : '健康模型修改' }}</p>
+        <!-- 健康模型新增/修改弹窗 -->
+        <el-dialog :visible.sync="dialogUserOperaion" width="35%" :show-close="true" custom-class="model-dialog">
+            <div slot="title" class="dialog-title">
+                <h3>{{ !isOperation ? '健康模型新增' : '健康模型修改' }}</h3>
+                <p class="dialog-subtitle">{{ !isOperation ? '添加新的健康指标监测模型' : '更新已有健康指标模型' }}</p>
             </div>
-            <div style="padding:0 20px;">
-                <p>*图标</p>
-                <!-- 图标 -->
-                <el-row style="margin-top: 10px;">
-                    <el-upload class="avatar-uploader" action="http://localhost:8080/api/personal-heath/v1.0/file/upload"
-                        :show-file-list="false" :on-success="handleAvatarSuccess">
-                        <img v-if="data.cover" :src="data.cover" style="height: 64px;width: 64px;">
-                        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                    </el-upload>
-                </el-row>
-                <!-- 配置名 -->
-                <el-row style="padding: 0 10px 0 0;">
-                    <p>
-                        <span class="modelName">*配置名</span>
-                    </p>
-                    <input class="input-title" v-model="data.name" placeholder="请输入">
-                </el-row>
-                <!-- 单位 -->
-                <el-row style="padding: 0 10px 0 0;">
-                    <p style="font-size: 12px;padding: 3px 0;">
-                        <span class="modelName">*单位</span>
-                    </p>
-                    <input class="input-title" v-model="data.unit" placeholder="请输入">
-                </el-row>
-                <!-- 符号 -->
-                <el-row style="padding: 0 10px 0 0;">
-                    <p style="font-size: 12px;padding: 3px 0;">
-                        <span class="modelName">*符号</span>
-                    </p>
-                    <input class="input-title" v-model="data.symbol" placeholder="请输入">
-                </el-row>
-                <!-- 正常值 -->
-                <el-row style="padding: 0 20px 0 0;">
-                    <p style="font-size: 12px;padding: 3px 0;">
-                        <span class="modelName">*阈值（格式：最小值,最大值）</span>
-                    </p>
-                    <input class="input-title" v-model="data.valueRange" placeholder="请输入">
-                </el-row>
-                <!-- 简介 -->
-                <el-row style="padding: 0 10px 0 0;">
-                    <p style="font-size: 12px;padding: 3px 0;">
-                        <span class="modelName">*简介</span>
-                    </p>
-                    <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 3 }" placeholder="简介"
-                        v-model="data.detail">
+            <div class="model-form">
+                <div class="form-group">
+                    <label class="form-label required">图标</label>
+                    <div class="upload-wrapper">
+                        <el-upload 
+                            class="avatar-uploader" 
+                            action="http://localhost:8080/api/personal-heath/v1.0/file/upload"
+                            :show-file-list="false" 
+                            :on-success="handleAvatarSuccess">
+                            <img v-if="data.cover" :src="data.cover" class="avatar">
+                            <div v-else class="upload-placeholder">
+                                <i class="el-icon-plus"></i>
+                                <p>点击上传</p>
+                            </div>
+                        </el-upload>
+                        <div v-if="data.cover" class="upload-actions">
+                            <el-button size="mini" type="text" icon="el-icon-refresh" @click="data.cover = ''">
+                                重新上传
+                            </el-button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label required">配置名</label>
+                    <el-input 
+                        v-model="data.name" 
+                        placeholder="请输入配置名" 
+                        class="enhanced-input"
+                        prefix-icon="el-icon-edit">
                     </el-input>
-                </el-row>
+                </div>
+                
+                <div class="form-group form-row">
+                    <div class="form-col">
+                        <label class="form-label required">单位</label>
+                        <el-input 
+                            v-model="data.unit" 
+                            placeholder="请输入单位" 
+                            class="enhanced-input"
+                            prefix-icon="el-icon-set-up">
+                        </el-input>
+                    </div>
+                    <div class="form-col">
+                        <label class="form-label required">符号</label>
+                        <el-input 
+                            v-model="data.symbol" 
+                            placeholder="请输入符号" 
+                            class="enhanced-input"
+                            prefix-icon="el-icon-reading">
+                        </el-input>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label required">阈值范围</label>
+                    <div class="range-input-wrapper">
+                        <el-input 
+                            v-model="data.valueRange" 
+                            placeholder="格式：最小值,最大值，如: 60,100" 
+                            class="enhanced-input"
+                            prefix-icon="el-icon-data-line">
+                        </el-input>
+                        <div class="range-hint">指定健康指标的正常值范围</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label required">简介</label>
+                    <el-input 
+                        type="textarea" 
+                        v-model="data.detail" 
+                        placeholder="请输入健康模型的简要说明..." 
+                        :rows="3"
+                        class="enhanced-textarea">
+                    </el-input>
+                </div>
             </div>
-            <span slot="footer" class="dialog-footer">
-                <el-button size="small" v-if="!isOperation" style="background-color: rgb(43, 121, 203);border: none;"
-                    class="customer" type="info" @click="addOperation">新增</el-button>
-                <el-button size="small" v-else style="background-color: rgb(43, 121, 203);border: none;"
-                    class="customer" type="info" @click="updateOperation">修改</el-button>
-                <el-button class="customer" size="small" style="background-color: rgb(241, 241, 241);border: none;"
-                    @click="cannel()">取消</el-button>
-            </span>
+            
+            <div slot="footer" class="dialog-footer">
+                <el-button plain @click="cannel()">取消</el-button>
+                <el-button 
+                    type="primary" 
+                    class="confirm-button" 
+                    v-if="!isOperation" 
+                    @click="addOperation">
+                    <i class="el-icon-check"></i> 确认新增
+                </el-button>
+                <el-button 
+                    type="primary" 
+                    class="confirm-button" 
+                    v-else 
+                    @click="updateOperation">
+                    <i class="el-icon-check"></i> 确认修改
+                </el-button>
+            </div>
         </el-dialog>
     </el-row>
 </template>
@@ -181,7 +223,10 @@ export default {
         },
         // 修改信息
         async updateOperation() {
-            this.$axios.put('/health-model-config/update', this.data).then(res => {
+            if (!this.validateForm()) return;
+
+            try {
+                const res = await this.$axios.put('/health-model-config/update', this.data);
                 if (res.data.code === 200) {
                     this.cannel();
                     this.fetchFreshData();
@@ -192,42 +237,102 @@ export default {
                         type: 'success'
                     });
                 }
-            }).catch(error => {
+            } catch (error) {
                 console.log('模型修改异常=>', error);
-            })
+                this.$notify({
+                    duration: 2000,
+                    title: '修改操作',
+                    message: '失败，请稍后再试',
+                    type: 'error'
+                });
+            }
         },
         cannel() {
             this.dialogUserOperaion = false;
             this.isOperation = false;
-            this.data = {};
+            this.data = { cover: '' };
             this.valueRange = null;
         },
         // 模型新增
-      // 修改 addOperation 方法
-addOperation() {
-    if (!this.data.cover || !this.data.name || !this.data.unit || !this.data.valueRange ) {
-        this.$notify({
-            duration: 1000,
-            title: '模型新增',
-            message: '请填写所有必填字段（图标、配置名、单位、阈值）',
-            type: 'error'
-        });
-        return;
-    }
-
-    this.$axios.post('/health-model-config/config/save', this.data).then(res => {
-        this.cannel();
-        this.fetchFreshData();
-        this.$notify({
-            duration: 2000,
-            title: '新增操作',
-            message: '成功',
-            type: 'success'
-        });
-    }).catch(error => {
-        console.log('模型新增异常=>', error);
-    })
-},
+        addOperation() {
+            if (!this.validateForm()) return;
+            
+            this.$axios.post('/health-model-config/config/save', this.data).then(res => {
+                this.cannel();
+                this.fetchFreshData();
+                this.$notify({
+                    duration: 2000,
+                    title: '新增操作',
+                    message: '成功',
+                    type: 'success'
+                });
+            }).catch(error => {
+                console.log('模型新增异常=>', error);
+                this.$notify({
+                    duration: 2000,
+                    title: '新增操作',
+                    message: '失败，请稍后再试',
+                    type: 'error'
+                });
+            })
+        },
+        
+        // 表单验证
+        validateForm() {
+            if (!this.data.cover) {
+                this.$notify({
+                    duration: 2000,
+                    title: '表单验证',
+                    message: '请上传图标',
+                    type: 'warning'
+                });
+                return false;
+            }
+            
+            if (!this.data.name) {
+                this.$notify({
+                    duration: 2000,
+                    title: '表单验证',
+                    message: '请输入配置名',
+                    type: 'warning'
+                });
+                return false;
+            }
+            
+            if (!this.data.unit) {
+                this.$notify({
+                    duration: 2000,
+                    title: '表单验证',
+                    message: '请输入单位',
+                    type: 'warning'
+                });
+                return false;
+            }
+            
+            if (!this.data.valueRange) {
+                this.$notify({
+                    duration: 2000,
+                    title: '表单验证',
+                    message: '请输入阈值范围',
+                    type: 'warning'
+                });
+                return false;
+            }
+            
+            // 验证阈值格式
+            const valueRangeRegex = /^\d+(\.\d+)?,\d+(\.\d+)?$/;
+            if (!valueRangeRegex.test(this.data.valueRange)) {
+                this.$notify({
+                    duration: 2000,
+                    title: '表单验证',
+                    message: '阈值格式不正确，请使用格式：最小值,最大值',
+                    type: 'warning'
+                });
+                return false;
+            }
+            
+            return true;
+        },
 
         // 模型查询
         async fetchFreshData() {
@@ -288,4 +393,216 @@ addOperation() {
     },
 };
 </script>
-<style scoped lang="scss"></style>
+
+<style scoped lang="scss">
+.model-dialog {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.dialog-title {
+    margin: 0;
+    padding: 0 0 15px 0;
+    border-bottom: 1px solid #f0f0f0;
+    
+    h3 {
+        font-size: 20px;
+        font-weight: 600;
+        color: #333;
+        margin: 0 0 8px 0;
+    }
+    
+    .dialog-subtitle {
+        font-size: 14px;
+        color: #888;
+        margin: 0;
+    }
+}
+
+.model-form {
+    padding: 20px 5px 10px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: flex;
+    gap: 12px;
+    
+    .form-col {
+        flex: 1;
+    }
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+    
+    &.required:before {
+        content: '*';
+        color: #F56C6C;
+        margin-right: 4px;
+    }
+}
+
+.upload-wrapper {
+    display: flex;
+    align-items: flex-start;
+}
+
+.avatar-uploader {
+    border: 1px dashed #d9d9d9;
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s;
+    background: #fafafa;
+    
+    &:hover {
+        border-color: #42b983;
+        background: #f0f9f4;
+    }
+}
+
+.upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    
+    i {
+        font-size: 28px;
+        color: #8c939d;
+        margin-bottom: 5px;
+    }
+    
+    p {
+        margin: 0;
+        font-size: 12px;
+        color: #8c939d;
+    }
+}
+
+.avatar {
+    width: 100px;
+    height: 100px;
+    display: block;
+    object-fit: cover;
+}
+
+.upload-actions {
+    margin-left: 12px;
+    padding-top: 8px;
+}
+
+.enhanced-input {
+    .el-input__inner {
+        padding-left: 35px;
+        height: 42px;
+        font-size: 14px;
+        transition: all 0.3s;
+        border-radius: 8px;
+        
+        &:focus {
+            border-color: #42b983;
+            box-shadow: 0 0 0 2px rgba(66, 185, 131, 0.2);
+        }
+    }
+    
+    .el-input__prefix {
+        left: 10px;
+        color: #42b983;
+    }
+}
+
+.enhanced-textarea {
+    .el-textarea__inner {
+        border-radius: 8px;
+        transition: all 0.3s;
+        padding: 10px 15px;
+        font-size: 14px;
+        
+        &:focus {
+            border-color: #42b983;
+            box-shadow: 0 0 0 2px rgba(66, 185, 131, 0.2);
+        }
+    }
+}
+
+.range-input-wrapper {
+    position: relative;
+    
+    .range-hint {
+        font-size: 12px;
+        color: #999;
+        margin-top: 5px;
+    }
+}
+
+.dialog-footer {
+    margin-top: 10px;
+    text-align: right;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.confirm-button {
+    padding: 10px 20px;
+    background: #42b983;
+    border-color: #42b983;
+    transition: all 0.3s;
+    
+    &:hover {
+        background: #33a06f;
+        border-color: #33a06f;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(66, 185, 131, 0.2);
+    }
+    
+    i {
+        margin-right: 5px;
+    }
+}
+
+.text-button {
+    color: #42b983;
+    margin-right: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.3s;
+    
+    &:hover {
+        color: #33a06f;
+        text-decoration: underline;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.model-form {
+    animation: fadeIn 0.4s ease;
+}
+</style>

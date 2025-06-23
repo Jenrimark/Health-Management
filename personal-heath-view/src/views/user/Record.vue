@@ -1,158 +1,152 @@
 <template>
-    <div>
-        <div style="padding: 0 50px;">
-            <div>
-                <p style="font-size: 24px;padding: 10px 0;font-weight: bolder;">
-                    <span @click="goBack" style="cursor: pointer;;display: inline-block;padding: 0 20px 0 0;">
-                        <i class="el-icon-arrow-left"></i>
-                        返回首页
-                    </span>
-                    健康记录
-                </p>
+    <div class="record-container">
+        <div class="record-header">
+            <div class="header-content">
+                <div class="back-button" @click="goBack">
+                    <i class="el-icon-arrow-left"></i>
+                    <span>返回首页</span>
+                </div>
+                <h1 class="page-title">健康记录</h1>
             </div>
         </div>
-        <div style="height: 6px;background-color: rgb(248, 248, 248);"></div>
-        <div style="padding: 10px 50px;">
-            <el-row>
-                <el-col :span="6" style="border-right: 1px solid #f1f1f1;min-height: calc(100vh - 250px);">
-                    <el-tabs v-model="activeName" @tab-click="handleClick" style="margin-right: 40px;">
-                        <el-tab-pane label="全局模型" name="first"></el-tab-pane>
-                        <el-tab-pane label="我的模型" name="second"></el-tab-pane>
-                    </el-tabs>
-                    <div style="padding: 20px 0 30px 0;">
-                        <span @click="addModel"
-                            style="cursor: pointer;;padding: 10px 20px;background-color: #000;border-radius: 5px;color: #fff;">
-                            新增模型
-                            <i class="el-icon-right"></i>
-                        </span>
-                    </div>
-                    <div>
-                        <span style="margin-right: 20px;">配置名</span>
-                        <el-input style="width: 148px;" v-model="userHealthModel.name" placeholder="输入处" clearable
-                            @clear="handleFilterClear">
-                        </el-input>
-                        <el-button class="customer"
-                            style="margin-left: 20px;background-color: rgb(43, 121, 203);border: none;" type="primary"
-                            @click="searModel">搜索</el-button>
-                    </div>
-                    <div
-                        style="padding: 10px 6px;margin-right: 40px;height: 500px;overflow-y: scroll;overflow-x: hidden;">
-                        <div @click="modelSelected(model)" class="item-model" v-for="(model, index) in modelList"
-                            :key="index">
-                            <el-tooltip class="item" effect="dark" :content="'该项配置【' + model.name + '】，点击即可选中'"
-                                placement="bottom">
-                                <el-row style="padding: 20px 0;">
-                                    <el-col :span="4">
-                                        <img :src="model.cover" style="width: 50px;height: 50px;margin-top: 5px;">
-                                    </el-col>
-                                    <el-col :span="20">
-                                        <div style="padding: 0 10px;">
-                                            <div style="font-size: 24px;font-weight: bolder;">{{ model.name }}</div>
-                                            <div style="font-size: 14px;margin-top: 5px;">
-                                                <span>{{ model.unit }}</span>
-                                                <span style="margin-left: 10px;">{{ model.symbol }}</span>
-                                                <span @click="updateModel(model)" v-if="!model.isGlobal"
-                                                    style="margin-left: 10px;color: #333;">修改</span>
-                                                <span @click="deleteModel(model)" v-if="!model.isGlobal"
-                                                    style="margin-left: 10px;color: red;">删除</span>
-                                            </div>
-                                        </div>
-                                    </el-col>
-                                </el-row>
-                            </el-tooltip>
+        
+        <div class="main-content">
+            <div class="left-panel">
+                <el-tabs v-model="activeName" @tab-click="handleClick" class="model-tabs">
+                    <el-tab-pane label="全局模型" name="first"></el-tab-pane>
+                    <el-tab-pane label="我的模型" name="second"></el-tab-pane>
+                </el-tabs>
+                
+                <div class="action-bar">
+                    <el-button type="primary" class="add-model-btn" @click="addModel">
+                        <i class="el-icon-plus"></i> 新增模型
+                    </el-button>
+                </div>
+                
+                <div class="search-bar">
+                    <el-input 
+                        placeholder="搜索模型" 
+                        v-model="userHealthModel.name" 
+                        prefix-icon="el-icon-search"
+                        clearable 
+                        @clear="handleFilterClear"
+                        @keyup.enter.native="searModel">
+                    </el-input>
+                    <el-button type="primary" @click="searModel">搜索</el-button>
+                </div>
+                
+                <div class="models-list">
+                    <div 
+                        v-for="(model, index) in modelList" 
+                        :key="index"
+                        class="model-item"
+                        :class="{ 'active': selectedModel.some(m => m.id === model.id) }"
+                        @click="modelSelected(model)">
+                        <div class="model-icon">
+                            <img :src="model.cover" alt="模型图标">
+                        </div>
+                        <div class="model-info">
+                            <div class="model-name">{{ model.name }}</div>
+                            <div class="model-details">
+                                <span class="model-unit">{{ model.unit }}</span>
+                                <span class="model-symbol">{{ model.symbol }}</span>
+                                <div class="model-actions" v-if="!model.isGlobal" @click.stop>
+                                    <el-button type="text" @click="updateModel(model)" class="action-btn edit-btn">
+                                        <i class="el-icon-edit"></i> 修改
+                                    </el-button>
+                                    <el-button type="text" @click="deleteModel(model)" class="action-btn delete-btn">
+                                        <i class="el-icon-delete"></i> 删除
+                                    </el-button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </el-col>
-                <el-col :span="18">
-                    <div style="padding: 0 150px;box-sizing: border-box;">
-                        <div style="padding: 15px 0;font-size:24px;">
-                            数据录入面板
-                            <span @click="clearData" style="font-size: 14px;margin-left: 20px;">重置</span>
-                        </div>
-                        <el-row>
-                            <el-row v-if="selectedModel.length === 0">
-                                <el-empty description="快选中模型记录吧"></el-empty>
-                            </el-row>
-                            <el-row>
-                                <el-col :span="12" v-for="(model, index) in selectedModel" :key="index">
-                                    <h3>{{ model.name }}({{ model.unit }})</h3>
-                                    <input type="text" v-model="model.value" class="input-model"
-                                        :placeholder="'正常值范围：' + model.valueRange">
-                                </el-col>
-                            </el-row>
-                        </el-row>
-
-                    </div>
-                    <div style="padding: 50px 150px;">
-                        <span @click="toRecord"
-                            style="cursor: pointer;padding: 10px 20px;background-color: #000;border-radius: 5px;color: #fff;">
-                            立即记录
-                            <i class="el-icon-right"></i>
-                        </span>
-                    </div>
-                </el-col>
-            </el-row>
-        </div>
-        <el-dialog :show-close="false" :visible.sync="dialogUserOperaion" width="26%">
-            <div slot="title">
-                <p class="dialog-title">{{ !isOperation ? '健康模型新增' : '健康模型修改' }}</p>
+                </div>
             </div>
-            <div style="padding:0 20px;">
-                <p>*图标</p>
-                <!-- 图标 -->
-                <el-row style="margin-top: 10px;">
-                    <el-upload class="avatar-uploader" action="http://localhost:8080/api/personal-heath/v1.0/file/upload"
-                        :show-file-list="false" :on-success="handleAvatarSuccess">
-                        <img v-if="data.cover" :src="data.cover" style="height: 64px;width: 64px;">
+            
+            <div class="right-panel">
+                <div class="panel-header">
+                    <h2>数据录入面板</h2>
+                    <el-button type="text" @click="clearData" class="reset-btn">
+                        <i class="el-icon-refresh"></i> 重置
+                    </el-button>
+                </div>
+                
+                <div class="data-entry-area">
+                    <el-empty v-if="selectedModel.length === 0" description="请选择左侧模型进行记录"></el-empty>
+                    
+                    <div v-else class="selected-models">
+                        <div v-for="(model, index) in selectedModel" :key="index" class="model-entry-card">
+                            <div class="model-entry-header">
+                                <h3>{{ model.name }}</h3>
+                                <span class="model-unit-label">{{ model.unit }}</span>
+                            </div>
+                            <div class="input-area">
+                                <input type="text" v-model="model.value" class="input-model" 
+                                       :placeholder="'正常值范围：' + model.valueRange">
+                            </div>
+                            <div class="normal-range">正常值范围: {{ model.valueRange }}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="submit-area" v-if="selectedModel.length > 0">
+                    <el-button type="primary" @click="toRecord" class="submit-btn">
+                        立即记录 <i class="el-icon-right"></i>
+                    </el-button>
+                </div>
+            </div>
+        </div>
+        
+        <el-dialog :visible.sync="dialogUserOperaion" width="30%" :show-close="true" custom-class="model-dialog">
+            <div slot="title" class="dialog-title">
+                {{ !isOperation ? '健康模型新增' : '健康模型修改' }}
+            </div>
+            
+            <div class="model-form">
+                <div class="form-group">
+                    <label class="form-label required">图标</label>
+                    <el-upload 
+                        class="avatar-uploader" 
+                        action="http://localhost:8080/api/personal-heath/v1.0/file/upload"
+                        :show-file-list="false" 
+                        :on-success="handleAvatarSuccess">
+                        <img v-if="data.cover" :src="data.cover" class="avatar">
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                     </el-upload>
-                </el-row>
-                <!-- 配置名 -->
-                <el-row style="padding: 0 10px 0 0;">
-                    <p>
-                        <span class="modelName">*配置名</span>
-                    </p>
-                    <input class="input-title" v-model="data.name" placeholder="请输入">
-                </el-row>
-                <!-- 单位 -->
-                <el-row style="padding: 0 10px 0 0;">
-                    <p style="font-size: 12px;padding: 3px 0;">
-                        <span class="modelName">*单位</span>
-                    </p>
-                    <input class="input-title" v-model="data.unit" placeholder="请输入">
-                </el-row>
-                <!-- 符号 -->
-                <el-row style="padding: 0 10px 0 0;">
-                    <p style="font-size: 12px;padding: 3px 0;">
-                        <span class="modelName">*符号</span>
-                    </p>
-                    <input class="input-title" v-model="data.symbol" placeholder="请输入">
-                </el-row>
-                <!-- 正常值 -->
-                <el-row style="padding: 0 20px 0 0;">
-                    <p style="font-size: 12px;padding: 3px 0;">
-                        <span class="modelName">*阈值（格式：最小值,最大值）</span>
-                    </p>
-                    <input class="input-title" v-model="data.valueRange" placeholder="请输入">
-                </el-row>
-                <!-- 简介 -->
-                <el-row style="padding: 0 10px 0 0;">
-                    <p style="font-size: 12px;padding: 3px 0;">
-                        <span class="modelName">*简介</span>
-                    </p>
-                    <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 3 }" placeholder="简介"
-                        v-model="data.detail">
-                    </el-input>
-                </el-row>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label required">配置名</label>
+                    <el-input v-model="data.name" placeholder="请输入配置名"></el-input>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label required">单位</label>
+                    <el-input v-model="data.unit" placeholder="请输入单位"></el-input>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label required">符号</label>
+                    <el-input v-model="data.symbol" placeholder="请输入符号"></el-input>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label required">阈值（格式：最小值,最大值）</label>
+                    <el-input v-model="data.valueRange" placeholder="例如: 60,100"></el-input>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label required">简介</label>
+                    <el-input type="textarea" v-model="data.detail" placeholder="请输入简介" :rows="3"></el-input>
+                </div>
             </div>
-            <span slot="footer" class="dialog-footer">
-                <el-button size="small" v-if="!isOperation" style="background-color: rgb(43, 121, 203);border: none;"
-                    class="customer" type="info" @click="addOperation">新增</el-button>
-                <el-button size="small" v-else style="background-color: rgb(43, 121, 203);border: none;"
-                    class="customer" type="info" @click="updateOperation">修改</el-button>
-                <el-button class="customer" size="small" style="background-color: rgb(241, 241, 241);border: none;"
-                    @click="cannel()">取消</el-button>
-            </span>
+            
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="cannel()">取消</el-button>
+                <el-button type="primary" v-if="!isOperation" @click="addOperation">新增</el-button>
+                <el-button type="primary" v-else @click="updateOperation">修改</el-button>
+            </div>
         </el-dialog>
     </div>
 </template>
@@ -371,28 +365,463 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-.item-model:hover {
-    cursor: pointer;
-    background-color: #fafafa;
-    border-radius: 5px;
+.record-container {
+    background-color: #f5f7fa;
+    min-height: 100vh;
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
 
-.item-model{
-    padding: 8px;
-    box-sizing: border-box;
+.record-header {
+    background: linear-gradient(135deg, #42b983 0%, #33a06f 100%);
+    padding: 20px 0;
+    color: white;
+    box-shadow: 0 4px 12px rgba(66, 185, 131, 0.2);
+    margin-bottom: 20px;
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+}
+
+.back-button {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    margin-right: 20px;
+    
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+        transform: translateX(-5px);
+    }
+    
+    i {
+        margin-right: 8px;
+    }
+}
+
+.page-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+    flex: 1;
+    letter-spacing: 1px;
+}
+
+.main-content {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    gap: 20px;
+}
+
+.left-panel {
+    width: 30%;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 180px);
+}
+
+.right-panel {
+    flex: 1;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 180px);
+}
+
+.model-tabs {
+    margin-bottom: 15px;
+}
+
+.action-bar {
+    margin-bottom: 15px;
+}
+
+.add-model-btn {
+    width: 100%;
+    background: #42b983;
+    border-color: #42b983;
+    
+    &:hover, &:focus {
+        background: #33a06f;
+        border-color: #33a06f;
+    }
+}
+
+.search-bar {
+    display: flex;
+    margin-bottom: 15px;
+    gap: 10px;
+    
+    .el-input {
+        flex: 1;
+    }
+    
+    .el-button {
+        background: #42b983;
+        border-color: #42b983;
+        
+        &:hover, &:focus {
+            background: #33a06f;
+            border-color: #33a06f;
+        }
+    }
+}
+
+.models-list {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 10px;
+    }
+    
+    &::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+}
+
+.model-item {
+    display: flex;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+    
+    &:hover {
+        background-color: #f0f0f0;
+        transform: translateX(5px);
+    }
+    
+    &.active {
+        background-color: #e8f5ee;
+        border-left-color: #42b983;
+    }
+}
+
+.model-icon {
+    width: 50px;
+    height: 50px;
+    margin-right: 15px;
+    
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+}
+
+.model-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.model-name {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 5px;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.model-details {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 14px;
+    color: #666;
+}
+
+.model-unit, .model-symbol {
+    margin-right: 10px;
+    background: #f0f0f0;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.model-actions {
+    margin-left: auto;
+    margin-top: 5px;
+    
+    .action-btn {
+        padding: 2px 6px;
+        font-size: 12px;
+    }
+    
+    .edit-btn {
+        color: #409EFF;
+    }
+    
+    .delete-btn {
+        color: #F56C6C;
+    }
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    
+    h2 {
+        margin: 0;
+        font-size: 18px;
+        flex: 1;
+    }
+    
+    .reset-btn {
+        font-size: 14px;
+        color: #666;
+        
+        &:hover {
+            color: #42b983;
+        }
+    }
+}
+
+.data-entry-area {
+    flex: 1;
+    overflow-y: auto;
+    
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 10px;
+    }
+    
+    &::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+}
+
+.selected-models {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 15px;
+}
+
+.model-entry-card {
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    padding: 15px;
+    transition: all 0.3s ease;
+    border-top: 3px solid #42b983;
+    
+    &:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        transform: translateY(-3px);
+    }
+}
+
+.model-entry-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    
+    h3 {
+        margin: 0;
+        font-size: 16px;
+        flex: 1;
+        color: #333;
+    }
+    
+    .model-unit-label {
+        background: #e8f5ee;
+        color: #42b983;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+    }
+}
+
+.input-area {
+    margin-bottom: 8px;
 }
 
 .input-model {
-    font-size: 20px;
+    font-size: 18px;
+    padding: 12px;
     box-sizing: border-box;
-    font-weight: bold;
-    padding: 20px;
-    user-select: none;
-    border-radius: 5px;
-    border: none;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
     outline: none;
-    background-color: #f1f1f1;
-    height: 50px;
-    width: 85%;
+    background-color: white;
+    width: 100%;
+    transition: all 0.3s ease;
+    
+    &:focus {
+        border-color: #42b983;
+        box-shadow: 0 0 0 2px rgba(66, 185, 131, 0.2);
+    }
+    
+    &::placeholder {
+        color: #bbb;
+        font-size: 14px;
+    }
+}
+
+.normal-range {
+    font-size: 12px;
+    color: #888;
+}
+
+.submit-area {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.submit-btn {
+    background: #42b983;
+    border-color: #42b983;
+    font-size: 16px;
+    padding: 12px 25px;
+    border-radius: 30px;
+    
+    &:hover, &:focus {
+        background: #33a06f;
+        border-color: #33a06f;
+        transform: translateY(-2px);
+    }
+    
+    i {
+        margin-left: 8px;
+        transition: transform 0.3s ease;
+    }
+    
+    &:hover i {
+        transform: translateX(4px);
+    }
+}
+
+.model-dialog {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.dialog-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.model-form {
+    padding: 10px 0;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #333;
+    
+    &.required:before {
+        content: '*';
+        color: #F56C6C;
+        margin-right: 4px;
+    }
+}
+
+.avatar-uploader {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    &:hover {
+        border-color: #42b983;
+    }
+}
+
+.avatar {
+    width: 80px;
+    height: 80px;
+    display: block;
+    object-fit: cover;
+}
+
+.avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+    text-align: center;
+}
+
+@media screen and (max-width: 768px) {
+    .main-content {
+        flex-direction: column;
+    }
+    
+    .left-panel {
+        width: 100%;
+        height: auto;
+        margin-bottom: 20px;
+    }
+    
+    .models-list {
+        max-height: 300px;
+    }
+    
+    .right-panel {
+        height: auto;
+    }
+    
+    .selected-models {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
