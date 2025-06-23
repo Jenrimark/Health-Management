@@ -1,9 +1,10 @@
 <template>
     <div class="nav">
         <Logo sysName="蝶启新生" />
-        <div v-if="!item.isHidden" :style="{
-            color: selectedIndex === index ? '#1c1c1c' : 'rgb(102 102 102)'
-        }" class="menu-item" v-for="(item, index) in menus" :key="index" @click="menuClick(`${item.path}`, index)">
+        <div v-for="(item, index) in visibleMenus" :key="index" 
+            :style="{ color: selectedIndex === index ? '#1c1c1c' : 'rgb(102 102 102)' }"
+            class="menu-item" 
+            @click="menuClick(`${item.path}`, index)">
             <span>
                 <i :class="item.icon"></i>
                 <span>&nbsp; {{ item.name }}</span>
@@ -77,6 +78,11 @@ export default {
     mounted() {
         this.pathToDo(this.defaultPath);
         this.loadMsgCount();
+    },
+    computed: {
+        visibleMenus() {
+            return this.menus.filter(item => !item.isHidden);
+        }
     },
     methods: {
         // 搜索关键词，返回父组件处理
@@ -166,11 +172,11 @@ export default {
 <style scoped lang="scss">
 .nav {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    gap: 20px;
+    gap: 30px;
     height: 80px;
-    padding: 6px 130px;
+    padding: 6px 80px;
 
     .menu-item {
         font-size: 14px;
