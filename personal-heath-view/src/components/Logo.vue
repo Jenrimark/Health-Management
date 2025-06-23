@@ -3,7 +3,7 @@
     <div class="logo-wrapper">
       <img src="/LOGO0.png" alt="健康图标" class="logo-icon" />
       <div class="logo-text">
-        <span class="brand-text">爱健康</span>
+        <span class="brand-text">{{ sysName }}</span>
       </div>
     </div>
   </div>
@@ -15,7 +15,7 @@ export default {
   props: {
     sysName: {
       type: String,
-      default: "健康管理系统"
+      default: "蝶启新生"
     }
   }
 };
@@ -26,17 +26,20 @@ export default {
   display: flex;
   align-items: center;
   padding: 10px 0;
+  justify-content: flex-start;
+  width: 100%;
 }
 
 .logo-wrapper {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 15px;
+  justify-content: flex-start;
 }
 
 .logo-icon {
-  width: 36px;
-  height: 36px;
+  width: 48px;
+  height: 48px;
   object-fit: contain;
 }
 
@@ -52,15 +55,20 @@ export default {
 }
 
 .brand-text {
-  font-size: 28px;
-  font-family: 'FangSong', '方正行楷简体', '华文行楷', 'STXingkai', '华文楷体', serif;
+  font-size: 32px;
+  font-family: '行楷', '华文行楷', 'STXingkai', '行书', '楷体', serif;
   font-weight: 600;
-  color: #0f753f;
+  color: #3498db;
   text-shadow: 
-    1px 1px 2px rgba(82, 200, 115, 0.4),
-    0px 0px 6px rgba(255, 255, 255, 0.5);
+    0 0 8px rgba(52, 152, 219, 0.6),
+    0 0 12px rgba(52, 152, 219, 0.4),
+    -1px -1px 0 rgba(255, 255, 255, 0.6),
+    1px -1px 0 rgba(255, 255, 255, 0.6),
+    -1px 1px 0 rgba(255, 255, 255, 0.6),
+    1px 1px 0 rgba(255, 255, 255, 0.6);
+  -webkit-text-stroke: 0.3px rgba(255, 255, 255, 0.7);
   background-image: 
-    linear-gradient(to right, #0f753f, #38b169, #52c873, #38b169, #0f753f);
+    linear-gradient(to right, #2980b9, #3498db, #5dade2, #3498db, #2980b9);
   background-size: 200% auto;
   background-clip: text;
   -webkit-background-clip: text;
@@ -77,7 +85,7 @@ export default {
   left: 2px;
   width: 90%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(15, 117, 63, 0.4), rgba(82, 200, 115, 0.6), rgba(15, 117, 63, 0.4), transparent);
+  background: linear-gradient(90deg, transparent, rgba(52, 152, 219, 0.4), rgba(52, 152, 219, 0.7), rgba(52, 152, 219, 0.4), transparent);
   filter: blur(1px);
 }
 

@@ -1,8 +1,16 @@
 <template>
     <div class="login-container">
+        <video class="background-video" autoplay loop muted playsinline>
+            <source src="/background.mp4" type="video/mp4">
+        </video>
         <div class="login-panel">
-            <div class="logo">
-                <Logo :bag="colorLogo" sysName="爱健康"/>
+            <div class="login-logo">
+                <div class="large-logo-wrapper">
+                    <img src="/LOGO0.png" alt="健康图标" class="large-logo-icon" />
+                    <div class="large-logo-text">
+                        <span class="large-brand-text">蝶启新生</span>
+                    </div>
+                </div>
             </div>
             <div class="text">
                 <input v-model="act" class="act" placeholder="账号" />
@@ -27,10 +35,8 @@ const DELAY_TIME = 1300;
 import request from "@/utils/request.js";
 import { setToken } from "@/utils/storage.js";
 import md5 from 'js-md5';
-import Logo from '@/components/Logo.vue';
 export default {
     name: "Login",
-    components: { Logo },
     data() {
         return {
             act: '',
@@ -108,107 +114,207 @@ export default {
 * {
     user-select: none;
 }
+
+/* 直接创建更大尺寸的Logo而不是调整组件样式 */
+.login-logo {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  margin-bottom: 20px;
+}
+
+.large-logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  justify-content: flex-start;
+}
+
+.large-logo-icon {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+.large-logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.large-brand-text {
+  font-size: 48px;
+  font-family: '行楷', '华文行楷', 'STXingkai', '行书', '楷体', serif;
+  font-weight: 600;
+  color: #3498db;
+  text-shadow: 
+    0 0 8px rgba(52, 152, 219, 0.6),
+    0 0 12px rgba(52, 152, 219, 0.4);
+  -webkit-text-stroke: 0.001px rgba(255, 255, 255, 0.7);
+  background-image: 
+    linear-gradient(to right, #2980b9, #3498db, #5dade2, #3498db, #2980b9);
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 2px;
+  position: relative;
+  animation: shimmer 8s ease infinite;
+}
+
+.large-brand-text::after {
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  left: 2px;
+  width: 90%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(52, 152, 219, 0.4), rgba(52, 152, 219, 0.7), rgba(52, 152, 219, 0.4), transparent);
+  filter: blur(1px);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 0% center;
+  }
+  50% {
+    background-position: 100% center;
+  }
+  100% {
+    background-position: 0% center;
+  }
+}
+
 .login-container {
-    // background-image: url('/bag.png');
-    // background-repeat:repeat;
     width: 100%;
     min-height: 100vh;
-    background-color: rgb(255,255,255);
     display: flex;
-    /* 启用Flexbox布局 */
-    justify-content: center;
-    /* 水平居中 */
+    justify-content: flex-end;
     align-items: center;
-    /* 垂直居中 */
     flex-direction: column;
-    /* 如果需要垂直居中，确保子元素也是这样排列 */
+    position: relative;
+    overflow: hidden;
+}
 
-    .login-panel {
-        width: 263px;
-        height: auto;
-        padding: 40px 30px 16px 30px;
+.background-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+}
+
+.login-panel {
+    width: 350px;
+    height: auto;
+    padding: 50px 35px 25px 35px;
+    border-radius: 16px;
+    background-color: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 4px 30px rgba(31, 38, 135, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    z-index: 1;
+    position: absolute;
+    right: 5%;
+    top: 50%;
+    transform: translateY(-50%);
+
+    .logo {
+        margin: 10px 0 35px 0;
+        text-align: left;
+    }
+
+    .act,
+    .pwd {
+        margin: 8px 0;
+        height: 53px;
+        line-height: 53px;
+        width: 100%;
+        padding: 0 8px;
+        background-color: rgba(255, 255, 255, 0.2);
+        box-sizing: border-box;
+        border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 10px;
-        background-color: rgb(255,255,255);
-        box-shadow: 0 4px 6px rgba(36, 36, 36, 0.1), 0 1px 3px rgba(40, 40, 40, 0.06);
+        font-weight: 600;
+        font-size: 18px;
+        padding: 0 15px;
+        margin-top: 13px;
+        color: rgb(255, 255, 255);
+        transition: all 0.3s ease;
+    }
 
-        .logo {
-            margin: 10px 0 30px 0;
+    .act:focus,
+    .pwd:focus {
+        outline: none;
+        background-color: rgba(255, 255, 255, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .role {
+        display: inline-block;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 14px;
+        padding-right: 10px;
+    }
+}
+
+.login-btn {
+    display: inline-block;
+    text-align: center;
+    border-radius: 10px;
+    margin-top: 20px;
+    height: 48px;
+    line-height: 48px;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    font-size: 16px !important;
+    font-weight: 600;
+    border: none;
+    color: rgba(25, 30, 110, 0.9);
+    padding: 0 !important;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.login-btn:hover {
+    background-color: rgba(255, 255, 255, 0.95);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.tip {
+    margin: 20px 0;
+
+    p {
+        padding: 3px 0;
+        margin: 0;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 500;
+
+        i{
+            margin-right: 3px;
         }
 
-        .act,
-        .pwd {
-            margin: 8px 0;
-            height: 53px;
-            line-height: 53px;
-            width: 100%;
-            padding: 0 8px;
-            background-color: rgb(248,248,248);
-            box-sizing: border-box;
-            border: 1px solid rgb(248,248,248);
-            border-radius: 5px;
-            font-weight: 800;
-            font-size: 18px;
-            padding: 0 15px;
-            margin-top: 13px;
-        }
-
-        .act:focus,
-        .pwd:focus {
-            outline: none;
-            background-color: rgb(242,243,244);
-            transition: 1.2s;
+        span {
+            color: rgba(255, 255, 255, 1);
+            border-radius: 2px;
+            margin: 0 6px;
+            transition: all 0.3s ease;
         }
         
-        .role {
-            display: inline-block;
-            color: rgb(30, 102, 147);
-            font-size: 14px;
-            padding-right: 10px;
+        .no-act:hover{
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            text-decoration: underline;
         }
     }
-
-    .login-btn {
-        display: inline-block;
-        text-align: center;
-        border-radius: 3px;
-        margin-top: 20px;
-        height: 43px;
-        line-height: 43px;
-        width: 100%;
-        background-color: rgb(128, 158, 76);
-        font-size: 14px !important;
-        border: none;
-        color: rgb(250,250,250);
-        padding: 0 !important;
-        cursor: pointer;
-        user-select: none;
-    }
-
-    .tip {
-        margin: 20px 0;
-
-        p {
-            padding: 3px 0;
-            margin: 0;
-            font-size: 14px;
-            color: #647897;
-
-            i{
-                margin-right: 3px;
-            }
-
-            span {
-                color: #3b3c3e;
-                border-radius: 2px;
-                margin: 0 6px;
-            }
-            .no-act:hover{
-                color: #3e77c2;
-                cursor: pointer;
-            }
-
-        }
-    }
-
 }
 </style>
