@@ -1,118 +1,295 @@
 <template>
-    <div>
-        <div style="border-radius: 5px;padding: 20px 0 60px 0;width: 100%;background-color: #fafafa;">
-            <div style="height: 100px;line-height: 100px;text-align: center;font-size: 24px;">
-                健康生活，健康人生，从此刻开始！
-            </div>
-            <div style="height: 50px;line-height: 50px;text-align: center;font-size: 30px;font-weight: bolder;">
-                每一点改变，都值得被记录。
-                <span @click="toRecord"
-                    style="cursor: pointer;;padding: 5px 10px;background-color: #000;border-radius: 5px;color: #fff;">
-                    前去记录
+    <div class="health-dashboard">
+        <!-- Header Banner -->
+        <div class="dashboard-header">
+            <div class="dashboard-title">
+                <h1>健康指标中心</h1>
+                <p>健康生活，健康人生，从此刻开始！每一点改变，都值得被记录。</p>
+                <div class="action-button" @click="toRecord">
+                    <span>前去记录</span>
                     <i class="el-icon-right"></i>
-                </span>
+                </div>
             </div>
         </div>
-        <div style="display: flex;justify-content: space-between;padding: 20px 50px;">
-            <div style="flex: 1;min-width: 50%;margin-right: 20px;">
-                <div style="margin-bottom: 20px;">
-                    <!-- 选择具体的指标模型 -->
-                    <el-select size="small" @change="modelChange" v-model="userHealthQueryDto.healthModelConfigId"
-                        placeholder="请选择">
-                        <el-option v-for="model in usersHealthModelConfig" :key="model.id" :label="model.name"
-                            :value="model.id">
-                        </el-option>
-                    </el-select>
-                </div>
-                <div>
-                    <LineChart @on-selected="onSelectedTime" height="500px" tag="" :values="values" :date="dates" />
-                </div>
-                <!-- 添加身体评分可视化组件 -->
-                <div class="score-container">
-                    <div class="score-title">身体健康评分</div>
-                    <div class="score-ball" :class="scoreClass">
-                        <span class="score-text">{{ healthScore }}</span>
-                    </div>
-                    <div class="score-description">{{ scoreDescription }}</div>
-                </div>
 
-                <!-- 添加健康指标计算数据 -->
-                <div class="health-metrics-container">
-                    <h3>健康指标计算</h3>
-                    <el-button type="primary" size="small" class="calculate-btn" @click="showCalculationDetails">计算详情</el-button>
-                    <div class="health-metrics">
-                        <div class="metric-item">
-                            <div class="metric-title">BMI指数</div>
-                            <div class="metric-value">{{ bmiValue || '-- --' }}</div>
-                            <div class="metric-desc">{{ bmiDescription }}</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-title">体脂率</div>
-                            <div class="metric-value">{{ bodyFatRate || '-- --' }}%</div>
-                            <div class="metric-desc">{{ bodyFatDescription }}</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-title">基础代谢率</div>
-                            <div class="metric-value">{{ bmrValue || '-- --' }} kcal</div>
-                            <div class="metric-desc">每日消耗的最低热量</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div style="flex: 1;min-width: 50%;">
-                <h2 style="padding-left: 20px;border-left: 2px solid rgb(43, 121, 203);">健康指标数据</h2>
-                <el-row style="padding: 10px;margin-left: 10px;">
-                    <el-row style="display: flex;justify-content: left;align-items: center;gap: 10px;">
-                        <el-select size="small" @change="fetchFreshData" v-model="healthModelConfigId" placeholder="请选择模型项">
-                            <el-option :key="null" label="全部" :value="null">
-                            </el-option>
+        <!-- Main Dashboard Container -->
+        <div class="dashboard-container">
+            <!-- Left Column - Health Trend Chart -->
+            <div class="dashboard-column">
+                <div class="dashboard-card primary-card">
+                    <div class="card-header">
+                        <h2>健康趋势</h2>
+                        <el-select size="small" @change="modelChange" v-model="userHealthQueryDto.healthModelConfigId"
+                            placeholder="选择指标项">
                             <el-option v-for="model in usersHealthModelConfig" :key="model.id" :label="model.name"
                                 :value="model.id">
                             </el-option>
                         </el-select>
-                        <el-date-picker size="small" @change="timeChange" style="width: 220px;" v-model="searchTime"
-                            type="daterange" range-separator="至" start-placeholder="记录开始" end-placeholder="记录结束">
-                        </el-date-picker>
-                    </el-row>
-                </el-row>
-                <el-row style="margin: 0 20px;border-top: 1px solid rgb(245,245,245);">
-                    <el-table row-key="id" @selection-change="handleSelectionChange" :data="filteredTableData">
-                        <el-table-column prop="name" label="指标项">
-                            <template slot-scope="scope">
-                                <span><i class="el-icon-paperclip" style="margin-right: 3px;"></i>{{ scope.row.name
-                                    }}</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="value" width="148" label="数值" sortable>
-                            <template slot-scope="scope">
-                                <span style="font-weight: 800;">{{ scope.row.value }}&nbsp;{{ scope.row.unit }}</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="symbol" width="108" label="模型符号"></el-table-column>
-                        <!-- <el-table-column prop="valueRange" width="128" label="阈值"></el-table-column> -->
-                        <el-table-column prop="name" width="88" label="状态">
-                            <template slot-scope="scope">
-                                <i v-if="!statusCheck(scope.row)" style="margin-right: 5px;" class="el-icon-warning"></i>
-                                <i v-else style="margin-right: 5px;color: rgb(253, 199, 50);" class="el-icon-success"></i>
-                                <el-tooltip v-if="!statusCheck(scope.row)" class="item" effect="dark"
-                                    content="异常指标，提醒用户及时处理" placement="bottom-end">
-                                    <span style="text-decoration: underline;text-decoration-style: dashed;">异常</span>
-                                </el-tooltip>
-                                <span v-else>正常</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="createTime" width="178" label="记录时间" sortable></el-table-column>
-                        <el-table-column label="操作" width="80">
-                            <template slot-scope="scope">
-                                <span class="text-button" @click="handleDelete(scope.row)">删除</span>
-                            </template>
-                        </el-table-column>
-                    </el-table>
-                    <el-pagination style="margin: 20px 0;" @size-change="handleSizeChange"
-                        @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[10, 20]"
-                        :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper"
-                        :total="totalItems"></el-pagination>
-                </el-row>
+                    </div>
+                    <div class="chart-container">
+                        <LineChart @on-selected="onSelectedTime" height="350px" tag="" :values="values" :date="dates" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Health Score and Metrics Combined -->
+            <div class="dashboard-column">
+                <div class="dashboard-card combined-card">
+                    <div class="card-header">
+                        <h2>健康评估</h2>
+                        <el-button type="primary" size="small" class="calculate-btn" @click="showCalculationDetails">计算详情</el-button>
+                    </div>
+                    <div class="combined-content">
+                        <div class="score-section">
+                            <div class="score-container">
+                                <div class="score-ball" :class="scoreClass">
+                                    <span class="score-text">{{ healthScore }}</span>
+                                </div>
+                                <div class="score-description">{{ scoreDescription }}</div>
+                            </div>
+                        </div>
+                        <div class="health-metrics">
+                            <div class="metric-item">
+                                <div class="metric-icon">
+                                    <i class="el-icon-data-analysis"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <div class="metric-title">BMI指数</div>
+                                    <div class="metric-value">{{ bmiValue || '-- --' }}</div>
+                                    <div class="metric-desc">{{ bmiDescription }}</div>
+                                </div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-icon">
+                                    <i class="el-icon-pie-chart"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <div class="metric-title">体脂率</div>
+                                    <div class="metric-value">{{ bodyFatRate || '-- --' }}%</div>
+                                    <div class="metric-desc">{{ bodyFatDescription }}</div>
+                                </div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-icon">
+                                    <i class="el-icon-s-data"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <div class="metric-title">基础代谢率</div>
+                                    <div class="metric-value">{{ bmrValue || '-- --' }} kcal</div>
+                                    <div class="metric-desc">每日消耗的最低热量</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Second Row Layout -->
+        <div class="dashboard-container">
+            <!-- Left Column - Exercise and Diet Summary (1/3 width) -->
+            <div class="dashboard-column summary-column">
+                <!-- 健康指标摘要卡片 -->
+                <div class="dashboard-card summary-highlight-card">
+                    <div class="card-header">
+                        <h2>健康指标摘要</h2>
+                        <el-button type="text" class="custom-text-button" @click="toRecord">记录指标 <i class="el-icon-plus"></i></el-button>
+                    </div>
+                    <div class="summary-highlights-content">
+                        <div class="summary-highlight-item">
+                            <div class="highlight-icon weight-icon">
+                                <i class="el-icon-shopping-cart-full"></i>
+                            </div>
+                            <div class="highlight-info">
+                                <div class="highlight-title">最新体重</div>
+                                <div class="highlight-value">{{ latestWeightValue || '-- --' }} kg</div>
+                            </div>
+                            <div class="highlight-change" :class="weightTrend === 'up' ? 'trend-up' : weightTrend === 'down' ? 'trend-down' : ''">
+                                <i v-if="weightTrend === 'up'" class="el-icon-top"></i>
+                                <i v-if="weightTrend === 'down'" class="el-icon-bottom"></i>
+                                {{ weightChange || '无变化' }}
+                            </div>
+                        </div>
+                        <div class="summary-highlight-item">
+                            <div class="highlight-icon heart-icon">
+                                <i class="el-icon-watch"></i>
+                            </div>
+                            <div class="highlight-info">
+                                <div class="highlight-title">心率状况</div>
+                                <div class="highlight-value">{{ latestHeartRate || '-- --' }} 次/分</div>
+                            </div>
+                            <div class="highlight-desc">{{ heartRateStatus }}</div>
+                        </div>
+                        <div class="summary-highlight-item">
+                            <div class="highlight-icon sleep-icon">
+                                <i class="el-icon-moon-night"></i>
+                            </div>
+                            <div class="highlight-info">
+                                <div class="highlight-title">睡眠质量</div>
+                                <div class="highlight-value">{{ sleepHours || '-- --' }} 小时</div>
+                            </div>
+                            <div class="highlight-desc">{{ sleepQuality }}</div>
+                        </div>
+                        <div class="summary-highlight-item">
+                            <div class="highlight-icon pressure-icon">
+                                <i class="el-icon-odometer"></i>
+                            </div>
+                            <div class="highlight-info">
+                                <div class="highlight-title">血压</div>
+                                <div class="highlight-value">{{ bloodPressure || '-- --' }}</div>
+                            </div>
+                            <div class="highlight-desc">{{ bloodPressureStatus }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercise Summary -->
+                <div class="dashboard-card summary-card">
+                    <div class="card-header">
+                        <h2>运动摘要</h2>
+                        <el-button type="text" @click="$router.push('/daily-health')">查看详情 <i class="el-icon-right"></i></el-button>
+                    </div>
+                    <div class="summary-content">
+                        <!-- 图表先显示 -->
+                        <div class="summary-chart">
+                            <div ref="exerciseChart" class="chart-container-responsive"></div>
+                        </div>
+                        <!-- 数据竖向排列 -->
+                        <div class="summary-stats vertical">
+                            <div class="summary-stat-item">
+                                <div class="stat-icon exercise-icon">
+                                    <i class="el-icon-position"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-value">{{ latestExerciseStats.steps || '0' }}</div>
+                                    <div class="stat-label">今日步数</div>
+                                </div>
+                            </div>
+                            <div class="summary-stat-item">
+                                <div class="stat-icon time-icon">
+                                    <i class="el-icon-time"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-value">{{ latestExerciseStats.minutes || '0' }}</div>
+                                    <div class="stat-label">运动时长(分钟)</div>
+                                </div>
+                            </div>
+                            <div class="summary-stat-item">
+                                <div class="stat-icon calories-icon">
+                                    <i class="el-icon-pie-chart"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-value">{{ latestExerciseStats.calories || '0' }}</div>
+                                    <div class="stat-label">消耗热量(kcal)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diet Summary -->
+                <div class="dashboard-card summary-card">
+                    <div class="card-header">
+                        <h2>饮食摘要</h2>
+                        <el-button type="text" @click="$router.push('/dietHistory')">查看详情 <i class="el-icon-right"></i></el-button>
+                    </div>
+                    <div class="summary-content">
+                        <!-- 图表先显示 -->
+                        <div class="summary-chart">
+                            <div ref="dietChart" class="chart-container-responsive"></div>
+                        </div>
+                        <!-- 数据竖向排列 -->
+                        <div class="summary-stats vertical">
+                            <div class="summary-stat-item">
+                                <div class="stat-icon calorie-icon">
+                                    <i class="el-icon-food"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-value">{{ latestDietStats.calories || '0' }}</div>
+                                    <div class="stat-label">今日摄入(kcal)</div>
+                                </div>
+                            </div>
+                            <div class="summary-stat-item">
+                                <div class="stat-icon protein-icon">
+                                    <i class="el-icon-sugar"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-value">{{ latestDietStats.protein || '0' }}g</div>
+                                    <div class="stat-label">蛋白质</div>
+                                </div>
+                            </div>
+                            <div class="summary-stat-item">
+                                <div class="stat-icon water-icon">
+                                    <i class="el-icon-potato-strips"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-value">{{ latestDietStats.water || '0' }}ml</div>
+                                    <div class="stat-label">饮水量</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Health Records Table (2/3 width) -->
+            <div class="dashboard-column data-column">
+                <div class="dashboard-card table-card">
+                    <div class="card-header">
+                        <h2>健康指标数据</h2>
+                        <div class="filter-group">
+                            <el-select size="small" @change="fetchFreshData" v-model="healthModelConfigId" placeholder="选择模型项">
+                                <el-option :key="null" label="全部" :value="null">
+                                </el-option>
+                                <el-option v-for="model in usersHealthModelConfig" :key="model.id" :label="model.name"
+                                    :value="model.id">
+                                </el-option>
+                            </el-select>
+                            <el-date-picker size="small" @change="timeChange" style="margin-left: 10px;" v-model="searchTime"
+                                type="daterange" range-separator="至" start-placeholder="记录开始" end-placeholder="记录结束">
+                            </el-date-picker>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <el-table row-key="id" 
+                                  @selection-change="handleSelectionChange" 
+                                  :data="filteredTableData"
+                                  class="custom-table" 
+                                  size="small" 
+                                  :cell-style="{padding: '5px 0'}"
+                                  :header-cell-style="{background: '#f9f9f9', color: '#333', fontWeight: 600, padding: '8px 0'}">
+                            <el-table-column prop="name" width="120" label="指标项">
+                                <template slot-scope="scope">
+                                    <span class="indicator-name"><i class="el-icon-paperclip"></i>{{ scope.row.name }}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="value" min-width="148" label="数值" sortable>
+                                <template slot-scope="scope">
+                                    <span class="indicator-value">{{ scope.row.value }}&nbsp;{{ scope.row.unit }}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="symbol" width="88" label="模型符号"></el-table-column>
+                            <el-table-column prop="name" width="108" label="状态">
+                                <template slot-scope="scope">
+                                    <div class="status-indicator" :class="statusCheck(scope.row) ? 'status-normal' : 'status-abnormal'">
+                                        <i :class="statusCheck(scope.row) ? 'el-icon-success' : 'el-icon-warning'"></i>
+                                        <span>{{ statusCheck(scope.row) ? '正常' : '异常' }}</span>
+                                    </div>
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="createTime" width="178" label="记录时间" sortable></el-table-column>
+                            <el-table-column label="操作" width="70" fixed="right">
+                                <template slot-scope="scope">
+                                    <el-button type="text" @click="handleDelete(scope.row)">删除</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                        <el-pagination class="custom-pagination" @size-change="handleSizeChange"
+                            @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[10, 20]"
+                            :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper"
+                            :total="totalItems"></el-pagination>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -120,6 +297,8 @@
 
 <script>
 import LineChart from '@/components/LineChart.vue';
+import * as echarts from 'echarts';
+
 export default {
     components: { LineChart },
     data() {
@@ -142,6 +321,28 @@ export default {
             bodyFatRate: null,
             bodyFatDescription: '',
             bmrValue: null,
+            // 新增数据字段
+            latestExerciseStats: {
+                steps: 0,
+                minutes: 0,
+                calories: 0,
+            },
+            latestDietStats: {
+                calories: 0,
+                protein: 0,
+                water: 0,
+            },
+            exerciseChart: null,
+            dietChart: null,
+            latestWeightValue: null,
+            weightTrend: null,
+            weightChange: null,
+            latestHeartRate: null,
+            heartRateStatus: '',
+            sleepHours: null,
+            sleepQuality: '',
+            bloodPressure: null,
+            bloodPressureStatus: '',
         }
     },
     computed: {
@@ -188,6 +389,30 @@ export default {
         this.fetchFreshData(); //从后端获取最新的健康记录数据并更新页面显示
         this.calculateHealthScore(); // 计算健康评分
         this.calculateHealthMetrics(false); // 计算健康指标但不显示弹窗
+        this.fetchExerciseData(); // 获取运动数据
+        this.fetchDietData(); // 获取饮食数据
+        this.loadHealthSummary(); // 加载健康摘要数据
+    },
+    mounted() {
+        this.$nextTick(() => {
+            this.initExerciseChart();
+            this.initDietChart();
+        });
+    },
+    beforeDestroy() {
+        // 移除窗口resize事件监听器
+        window.removeEventListener('resize', this.resizeExerciseChart);
+        window.removeEventListener('resize', this.resizeDietChart);
+        
+        // 销毁图表实例
+        if(this.exerciseChart) {
+            this.exerciseChart.dispose();
+            this.exerciseChart = null;
+        }
+        if(this.dietChart) {
+            this.dietChart.dispose();
+            this.dietChart = null;
+        }
     },
     methods: {
         timeChange() {
@@ -1007,124 +1232,594 @@ export default {
             
             this.bmrValue = Math.round(bmr);
         },
+        
+        // 新增获取运动数据方法
+        fetchExerciseData() {
+            // 实际项目中这里应该调用API获取运动数据
+            // 这里使用模拟数据
+            this.latestExerciseStats = {
+                steps: 6500,
+                minutes: 45,
+                calories: 320,
+            };
+            
+            // 更新图表数据
+            this.$nextTick(() => {
+                if (this.exerciseChart) {
+                    this.updateExerciseChart();
+                }
+            });
+        },
+        
+        // 新增获取饮食数据方法
+        fetchDietData() {
+            // 实际项目中这里应该调用API获取饮食数据
+            // 这里使用模拟数据
+            this.latestDietStats = {
+                calories: 1800,
+                protein: 65,
+                water: 1500,
+            };
+            
+            // 更新图表数据
+            this.$nextTick(() => {
+                if (this.dietChart) {
+                    this.updateDietChart();
+                }
+            });
+        },
+        
+        // 初始化运动图表
+        initExerciseChart() {
+            if (!this.$refs.exerciseChart) return;
+            
+            // 确保容器已经渲染完成并有尺寸
+            setTimeout(() => {
+                this.exerciseChart = echarts.init(this.$refs.exerciseChart);
+                this.updateExerciseChart();
+                
+                // 监听窗口大小变化，自适应调整图表大小
+                window.addEventListener('resize', this.resizeExerciseChart);
+            }, 100);
+        },
+        
+        // 响应式调整运动图表大小
+        resizeExerciseChart() {
+            if (this.exerciseChart) {
+                this.exerciseChart.resize();
+            }
+        },
+        
+        // 更新运动图表数据
+        updateExerciseChart() {
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    top: '10%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+                    axisLine: { show: false },
+                    axisTick: { show: false },
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLine: { show: false },
+                    axisTick: { show: false },
+                    splitLine: { show: false }
+                },
+                series: [{
+                    data: [5000, 7200, 3600, 8000, 5600, 6200, 6500],
+                    type: 'line',
+                    smooth: true,
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    itemStyle: {
+                        color: '#4CAF50'
+                    },
+                    lineStyle: {
+                        color: '#4CAF50',
+                        width: 3
+                    },
+                    areaStyle: {
+                        color: {
+                            type: 'linear',
+                            x: 0,
+                            y: 0,
+                            x2: 0,
+                            y2: 1,
+                            colorStops: [{
+                                offset: 0,
+                                color: 'rgba(76, 175, 80, 0.3)'
+                            }, {
+                                offset: 1,
+                                color: 'rgba(76, 175, 80, 0.05)'
+                            }]
+                        }
+                    }
+                }]
+            };
+            this.exerciseChart.setOption(option);
+        },
+        
+        // 初始化饮食图表
+        initDietChart() {
+            if (!this.$refs.dietChart) return;
+            
+            // 确保容器已经渲染完成并有尺寸
+            setTimeout(() => {
+                this.dietChart = echarts.init(this.$refs.dietChart);
+                this.updateDietChart();
+                
+                // 监听窗口大小变化，自适应调整图表大小
+                window.addEventListener('resize', this.resizeDietChart);
+            }, 100);
+        },
+        
+        // 响应式调整饮食图表大小
+        resizeDietChart() {
+            if (this.dietChart) {
+                this.dietChart.resize();
+            }
+        },
+        
+        // 更新饮食图表数据
+        updateDietChart() {
+            const option = {
+                tooltip: {
+                    trigger: 'item'
+                },
+                series: [
+                    {
+                        name: '营养分布',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        center: ['50%', '50%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: '14',
+                                fontWeight: 'bold'
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: [
+                            { value: 35, name: '蛋白质', itemStyle: { color: '#FF9800' } },
+                            { value: 45, name: '碳水化合物', itemStyle: { color: '#2196F3' } },
+                            { value: 20, name: '脂肪', itemStyle: { color: '#F44336' } }
+                        ]
+                    }
+                ]
+            };
+            this.dietChart.setOption(option);
+        },
+        
+        // 加载健康摘要数据
+        async loadHealthSummary() {
+            try {
+                // 从健康数据中提取体重信息
+                await this.extractWeightData();
+                
+                // 提取心率信息
+                await this.extractHeartRateData();
+                
+                // 提取睡眠信息
+                await this.extractSleepData();
+                
+                // 提取血压信息
+                await this.extractBloodPressureData();
+            } catch (error) {
+                console.error('加载健康摘要数据失败:', error);
+            }
+        },
+        
+        // 提取体重数据
+        async extractWeightData() {
+            try {
+                // 查找体重相关的健康模型
+                const weightModel = this.usersHealthModelConfig.find(model => 
+                    model.name === '体重' || model.name.includes('体重')
+                );
+                
+                if (weightModel) {
+                    // 获取体重数据
+                    const response = await this.$axios.get(`/user-health/timeQuery/${weightModel.id}/30`);
+                    const { data } = response;
+                    if (data.code === 200 && data.data.length > 0) {
+                        // 获取最新体重数据
+                        const weightData = data.data;
+                        const latestWeight = weightData[0];
+                        
+                        // 设置最新体重值
+                        this.latestWeightValue = parseFloat(latestWeight.value);
+                        
+                        // 计算变化趋势
+                        if (weightData.length > 1) {
+                            const previousWeight = parseFloat(weightData[1].value);
+                            const diff = this.latestWeightValue - previousWeight;
+                            this.weightChange = Math.abs(diff).toFixed(1) + ' kg';
+                            if (diff > 0) {
+                                this.weightTrend = 'up';
+                            } else if (diff < 0) {
+                                this.weightTrend = 'down';
+                            } else {
+                                this.weightTrend = null;
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('提取体重数据失败:', error);
+            }
+        },
+        
+        // 提取心率数据
+        async extractHeartRateData() {
+            try {
+                // 查找心率相关的健康模型
+                const heartRateModel = this.usersHealthModelConfig.find(model => 
+                    model.name === '心率' || model.name.includes('心率') || model.name.includes('脉搏')
+                );
+                
+                if (heartRateModel) {
+                    // 获取心率数据
+                    const response = await this.$axios.get(`/user-health/timeQuery/${heartRateModel.id}/7`);
+                    const { data } = response;
+                    if (data.code === 200 && data.data.length > 0) {
+                        // 获取最新心率数据
+                        const latestHeartRate = data.data[0];
+                        this.latestHeartRate = parseFloat(latestHeartRate.value);
+                        
+                        // 简单评估心率状况
+                        if (this.latestHeartRate < 60) {
+                            this.heartRateStatus = '偏低';
+                        } else if (this.latestHeartRate > 100) {
+                            this.heartRateStatus = '偏高';
+                        } else {
+                            this.heartRateStatus = '正常范围';
+                        }
+                    }
+                } else {
+                    // 模拟数据
+                    this.latestHeartRate = 75;
+                    this.heartRateStatus = '正常范围';
+                }
+            } catch (error) {
+                console.error('提取心率数据失败:', error);
+                // 模拟数据
+                this.latestHeartRate = 75;
+                this.heartRateStatus = '正常范围';
+            }
+        },
+        
+        // 提取睡眠数据
+        async extractSleepData() {
+            try {
+                // 查找睡眠相关的健康模型
+                const sleepModel = this.usersHealthModelConfig.find(model => 
+                    model.name === '睡眠' || model.name.includes('睡眠') || model.name.includes('睡眠时长')
+                );
+                
+                if (sleepModel) {
+                    // 获取睡眠数据
+                    const response = await this.$axios.get(`/user-health/timeQuery/${sleepModel.id}/7`);
+                    const { data } = response;
+                    if (data.code === 200 && data.data.length > 0) {
+                        // 获取最新睡眠数据
+                        const latestSleep = data.data[0];
+                        this.sleepHours = parseFloat(latestSleep.value);
+                        
+                        // 评估睡眠质量
+                        if (this.sleepHours < 6) {
+                            this.sleepQuality = '睡眠不足';
+                        } else if (this.sleepHours > 9) {
+                            this.sleepQuality = '睡眠过多';
+                        } else {
+                            this.sleepQuality = '睡眠良好';
+                        }
+                    }
+                } else {
+                    // 模拟数据
+                    this.sleepHours = 7.5;
+                    this.sleepQuality = '睡眠良好';
+                }
+            } catch (error) {
+                console.error('提取睡眠数据失败:', error);
+                // 模拟数据
+                this.sleepHours = 7.5;
+                this.sleepQuality = '睡眠良好';
+            }
+        },
+        
+        // 提取血压数据
+        async extractBloodPressureData() {
+            try {
+                // 查找血压相关的健康模型
+                const bpModel = this.usersHealthModelConfig.find(model => 
+                    model.name === '血压' || model.name.includes('血压') || model.name.includes('收缩压')
+                );
+                
+                if (bpModel) {
+                    // 获取血压数据
+                    const response = await this.$axios.get(`/user-health/timeQuery/${bpModel.id}/7`);
+                    const { data } = response;
+                    if (data.code === 200 && data.data.length > 0) {
+                        // 获取最新血压数据
+                        const latestBP = data.data[0];
+                        // 假设血压值存储为"收缩压/舒张压"格式
+                        this.bloodPressure = latestBP.value;
+                        
+                        // 评估血压状况
+                        const bpParts = this.bloodPressure.split('/');
+                        if (bpParts.length === 2) {
+                            const systolic = parseFloat(bpParts[0]);
+                            const diastolic = parseFloat(bpParts[1]);
+                            
+                            if (systolic < 90 || diastolic < 60) {
+                                this.bloodPressureStatus = '低血压';
+                            } else if (systolic > 140 || diastolic > 90) {
+                                this.bloodPressureStatus = '高血压';
+                            } else {
+                                this.bloodPressureStatus = '正常范围';
+                            }
+                        }
+                    }
+                } else {
+                    // 模拟数据
+                    this.bloodPressure = '120/80';
+                    this.bloodPressureStatus = '正常范围';
+                }
+            } catch (error) {
+                console.error('提取血压数据失败:', error);
+                // 模拟数据
+                this.bloodPressure = '120/80';
+                this.bloodPressureStatus = '正常范围';
+            }
+        },
     }
 };
 </script>
 
 <style scoped lang="scss">
-.status-success {
-    display: inline-block;
-    padding: 1px 5px;
-    border-radius: 2px;
-    background-color: rgb(201, 237, 249);
-    color: rgb(111, 106, 196);
-    font-size: 12px;
+.health-dashboard {
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background-color: #f5f7fa;
+    padding-bottom: 30px;
 }
 
-.status-error {
-    display: inline-block;
-    padding: 1px 5px;
-    border-radius: 2px;
-    background-color: rgb(233, 226, 134);
-    color: rgb(131, 138, 142);
-    color: rgb(111, 106, 196);
-    font-size: 12px;
-}
-
-h2 {
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 20px;
-}
-
-.el-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.el-table-column {
-    border: 1px solid #ddd;
-    padding: 10px;
+/* Header Banner */
+.dashboard-header {
+    padding: 40px 0;
+    background: linear-gradient(135deg, #42b983 0%, #33a06f 100%);
+    color: white;
     text-align: center;
+    border-radius: 0 0 10px 10px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.el-pagination {
-    text-align: right;
-    margin-top: 20px;
+.dashboard-title {
+    h1 {
+        font-size: 32px;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+    p {
+        font-size: 16px;
+        margin-bottom: 20px;
+        opacity: 0.9;
+    }
 }
 
-.el-select {
-    width: 200px;
-}
-
-.el-date-picker {
-    width: 200px;
-}
-
-.el-input {
-    width: 200px;
-}
-
-.el-button {
-    margin-left: 10px;
-}
-
-.item-model {
-    padding: 10px;
-    border-bottom: 1px solid #f1f1f1;
+.action-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 30px;
     cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+    }
+    
+    i {
+        margin-left: 5px;
+    }
 }
 
-.item-model:hover {
-    background-color: #f5f5f5;
+/* Dashboard Layout */
+.dashboard-container {
+    display: flex;
+    gap: 20px;
+    margin: 0 30px 0;
+    
+    @media screen and (max-width: 1200px) {
+        flex-direction: column;
+    }
 }
 
-.dialog-title {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 20px;
+/* 确保第二行容器内容完整显示 */
+.dashboard-container:nth-child(3) {
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 1;
 }
 
-.input-title {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+/* 调整第二行的左右列宽比例为更接近截图效果 */
+.summary-column {
+    flex: 0.8; /* 减小摘要列的宽度比例 */
+    max-width: 22%; /* 减小摘要部分的最大宽度 */
+    margin-right: 20px; /* 保持与第一行相同的间距 */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
+.data-column {
+    flex: 5.2; /* 增加数据列的宽度比例 */
+    min-width: calc(78% - 20px); /* 增加健康指标数据部分的宽度 */
+    position: relative;
+    z-index: 1;
+    display: flex; /* 确保内容能够填充整个高度 */
+    flex-direction: column;
+}
 
+.dashboard-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0; /* 防止内容溢出 */
+}
 
-/* 身体评分可视化组件样式 */
+/* 调整摘要列的间距 */
+.summary-column {
+    gap: 12px; /* 减小摘要卡片之间的间距 */
+}
+
+/* Cards */
+.dashboard-card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    }
+}
+
+.primary-card {
+    flex: 1.5;
+}
+
+.score-card, .metrics-card {
+    flex: 1;
+}
+
+.table-card {
+    flex: 1;
+    height: 100%; /* 确保表格卡片占满整个高度 */
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    
+    h2 {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+        position: relative;
+        padding-left: 12px;
+        
+        &:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 16px;
+            width: 3px;
+            background: #42b983;
+            border-radius: 2px;
+        }
+    }
+    
+    .el-button--text {
+        color: #42b983;
+        font-size: 14px;
+        padding: 5px 10px;
+        border-radius: 15px;
+        transition: all 0.3s ease;
+        
+        &:hover {
+            background-color: rgba(66, 185, 131, 0.1);
+            color: #2c9e6a;
+        }
+        
+        i {
+            margin-left: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    }
+}
+
+.chart-container {
+    height: 350px;
+}
+
+/* Score Ball */
+.combined-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    height: calc(100% - 60px);
+}
+
+.score-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .score-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 30px;
-    padding: 20px;
 }
 
-.score-title {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    color: #333;
+@media screen and (max-width: 1300px) {
+    .combined-content {
+        flex-direction: column;
+    }
 }
 
 .score-ball {
-    width: 240px;
-    height: 240px;
+    width: 180px;
+    height: 180px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .score-text {
-    font-size: 72px;
+    font-size: 54px;
     font-weight: bold;
     color: #fff;
 }
@@ -1133,63 +1828,736 @@ h2 {
     font-size: 16px;
     text-align: center;
     color: #666;
+    max-width: 200px;
 }
 
 .score-excellent {
-    background: linear-gradient(to bottom right, #4caf50, #2e7d32);
+    background: linear-gradient(135deg, #4caf50, #2e7d32);
 }
 
 .score-good {
-    background: linear-gradient(to bottom right, #2196f3, #1565c0);
+    background: linear-gradient(135deg, #2196f3, #1565c0);
 }
 
 .score-average {
-    background: linear-gradient(to bottom right, #ff9800, #e65100);
+    background: linear-gradient(135deg, #ff9800, #e65100);
 }
 
 .score-poor {
-    background: linear-gradient(to bottom right, #f44336, #b71c1c);
+    background: linear-gradient(135deg, #f44336, #b71c1c);
 }
 
-/* 健康指标计算数据样式 */
-.health-metrics-container {
-    margin-top: 30px;
-    padding: 20px;
-    position: relative;
-}
-
-.calculate-btn {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-}
-
+/* Health Metrics */
 .health-metrics {
+    flex: 1;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 20px;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .metric-item {
-    text-align: center;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+    
+    &:hover {
+        background-color: #f0f0f0;
+        transform: translateX(5px);
+    }
+}
+
+.metric-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: rgba(66, 185, 131, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 15px;
+    
+    i {
+        font-size: 24px;
+        color: #42b983;
+    }
+}
+
+.metric-content {
+    flex: 1;
 }
 
 .metric-title {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 5px;
     color: #333;
 }
 
 .metric-value {
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 2px;
+    color: #42b983;
 }
 
 .metric-desc {
-    font-size: 14px;
+    font-size: 12px;
+    color: #999;
+}
+
+/* Table */
+.table-container {
+    overflow-x: auto;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    
+    .el-table__header {
+        th {
+            background-color: #f9f9f9;
+            color: #333;
+            font-weight: 600;
+        }
+    }
+    
+    .el-table__row {
+        transition: all 0.3s ease;
+        
+        &:hover {
+            background-color: #f0f7f4;
+        }
+    }
+}
+
+.indicator-name {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    
+    i {
+        margin-right: 5px;
+        color: #42b983;
+        font-size: 14px;
+    }
+}
+
+.indicator-value {
+    font-weight: 600;
+    color: #333;
+    font-size: 13px;
+}
+
+.status-indicator {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-size: 12px;
+    white-space: nowrap;
+    
+    i {
+        margin-right: 4px;
+        font-size: 13px;
+    }
+}
+
+.status-normal {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: #4caf50;
+}
+
+.status-abnormal {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+}
+
+.custom-pagination {
+    margin-top: 12px;
+    margin-bottom: 0;
+    display: flex;
+    justify-content: flex-end;
+    padding: 8px 0;
+}
+
+/* Filter */
+.filter-group {
+    display: flex;
+    align-items: center;
+}
+
+/* Combined Card */
+.combined-card {
+    height: 100%;
+}
+
+/* Table Card */
+.table-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 12px; /* 减少底部内边距 */
+}
+
+.table-container {
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 第二行布局样式调整 */
+.dashboard-container + .dashboard-container {
+    margin-top: 20px;
+}
+
+.dashboard-container + .dashboard-container .dashboard-column {
+    min-height: auto;
+}
+
+/* 确保表格区域可滚动 */
+.custom-table {
+    flex: 1;
+    min-height: 350px; /* 确保表格有足够的最小高度 */
+    overflow-y: auto;
+}
+
+.summary-card {
+    width: 100%;
+    height: auto;
+    flex: 1;
+    margin-bottom: 0;
+    padding: 15px;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.summary-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 5px;
+    align-items: center;
+    justify-content: center;
+    flex: 1; /* 使内容填充整个卡片高度 */
+}
+
+/* 响应式调整 */
+@media screen and (max-width: 1400px) {
+    .summary-stats.vertical {
+        gap: 10px;
+    }
+    
+    .stat-content .stat-value {
+        font-size: 16px;
+    }
+    
+    .stat-content .stat-label {
+        font-size: 11px;
+    }
+}
+
+.summary-stats {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* 竖向排列的摘要统计 */
+.summary-stats.vertical {
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 5px;
+    margin: 15px auto 5px;
+    padding: 0;
+    width: 100%;
+}
+
+.summary-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 10px 5px;
+    width: 30%;
+    transition: all 0.2s ease;
+    
+    &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+}
+
+.stat-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    
+    i {
+        font-size: 18px;
+        color: white;
+    }
+}
+
+.exercise-icon {
+    background: linear-gradient(135deg, #4CAF50, #2E7D32);
+}
+
+.time-icon {
+    background: linear-gradient(135deg, #2196F3, #0D47A1);
+}
+
+.calories-icon {
+    background: linear-gradient(135deg, #FF9800, #E65100);
+}
+
+.calorie-icon {
+    background: linear-gradient(135deg, #E91E63, #880E4F);
+}
+
+.protein-icon {
+    background: linear-gradient(135deg, #9C27B0, #4A148C);
+}
+
+.water-icon {
+    background: linear-gradient(135deg, #03A9F4, #01579B);
+}
+
+.stat-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stat-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 2px;
+}
+
+.stat-label {
+    font-size: 12px;
     color: #666;
+    white-space: nowrap;
+}
+
+.summary-chart {
+    margin: 15px auto 10px;
+    overflow: hidden;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.chart-container-responsive {
+    width: 100%;
+    height: 150px; /* 增加图表高度 */
+    max-width: 280px;
+    margin: 0 auto;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .dashboard-header {
+        padding: 30px 0;
+    }
+    
+    .dashboard-title h1 {
+        font-size: 24px;
+    }
+    
+    .dashboard-container, .summary-section {
+        margin: 0 15px 20px;
+    }
+    
+    .summary-stats {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .filter-group {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
+
+/* 健康指标摘要卡片样式 */
+.health-summary-column {
+    width: 100%;
+}
+
+.summary-highlight-card {
+    margin-bottom: 12px;
+    padding: 12px;
+    height: auto;
+    width: 100%; /* 确保宽度一致 */
+    max-width: 320px; /* 限制最大宽度 */
+    margin-left: auto;
+    margin-right: auto;
+    flex: 1;
+    border-radius: 15px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border-top: 3px solid #42b983;
+    background: linear-gradient(to bottom, #ffffff, #fafafa);
+}
+
+.summary-highlights-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* 减少间距 */
+    padding: 3px 0;
+    width: 100%; /* 确保宽度 */
+    overflow: visible; /* 允许内容溢出 */
+}
+
+/* 调整卡片头部样式 */
+.summary-highlight-card .card-header {
+    margin-bottom: 10px;
+}
+
+.summary-highlight-card .card-header h2 {
+    font-size: 15px;
+}
+
+.summary-highlight-item {
+    flex: none;
+    width: calc(100% - 20px); /* 保持宽度不变 */
+    max-width: 240px; /* 保持最大宽度不变 */
+    margin: 0 auto; /* 居中显示 */
+    padding: 15px 12px 15px 10px; /* 进一步增加上下内边距 */
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    border-radius: 10px;
+    background: linear-gradient(to right, #f9f9f9, #f5f5f5);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    overflow: visible;
+    border-left: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    position: relative;
+    
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 10px; /* 减小圆角 */
+        opacity: 0;
+        background: linear-gradient(to right, rgba(255,255,255,0.1), rgba(255,255,255,0.2));
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+    }
+    
+    &:hover {
+        background: linear-gradient(to right, #f0f0f0, #e8e8e8);
+        transform: translateY(-2px);
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        
+        &::before {
+            opacity: 1;
+        }
+        
+        .highlight-icon {
+            transform: scale(1.05);
+        }
+    }
+    
+    &:nth-child(1) {
+        border-left: 4px solid #3498db; /* 增加左侧边框宽度 */
+        .highlight-icon {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+    }
+    
+    &:nth-child(2) {
+        border-left: 4px solid #e74c3c; /* 增加左侧边框宽度 */
+        .highlight-icon {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+    }
+    
+    &:nth-child(3) {
+        border-left: 4px solid #9b59b6; /* 增加左侧边框宽度 */
+        .highlight-icon {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+        }
+    }
+    
+    &:nth-child(4) {
+        border-left: 4px solid #2ecc71; /* 增加左侧边框宽度 */
+        .highlight-icon {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+    }
+}
+
+.highlight-icon {
+    width: 42px; /* 进一步增加图标尺寸 */
+    height: 42px;
+    min-width: 42px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 12px; /* 增加右侧间距 */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.3), transparent);
+    }
+    
+    i {
+        font-size: 20px; /* 增加图标字体大小 */
+        color: white;
+        position: relative;
+        z-index: 1;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+}
+
+.highlight-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    padding-right: 0; /* 移除右侧内边距 */
+    margin-right: 5px; /* 添加右侧外边距 */
+}
+
+.highlight-title {
+    font-size: 13px; /* 增加标题字体大小 */
+    color: #666;
+    white-space: nowrap;
+    margin-bottom: 6px; /* 增加标题和值之间的间距 */
+    font-weight: 500;
+}
+
+.highlight-value {
+    font-size: 17px; /* 增加值的字体大小 */
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+    letter-spacing: 0.3px;
+    line-height: 1.4; /* 增加行高 */
+    margin-right: 8px;
+}
+
+.summary-highlights-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* 增加条条之间的间距 */
+    padding: 5px 0;
+    width: 100%;
+    overflow: visible;
+}
+
+/* 调整卡片的整体尺寸 */
+.summary-highlight-card {
+    margin-bottom: 12px;
+    padding: 12px;
+    height: auto;
+    width: 100%; /* 确保宽度一致 */
+    max-width: 300px; /* 限制最大宽度 */
+    margin-left: auto;
+    margin-right: auto;
+    flex: 1;
+    border-radius: 15px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border-top: 3px solid #42b983;
+    background: linear-gradient(to bottom, #ffffff, #fafafa);
+}
+
+.highlight-desc, .highlight-change {
+    font-size: 12px;
+    color: #888;
+    white-space: nowrap;
+    min-width: 60px; /* 减小最小宽度 */
+    text-align: right;
+    overflow: visible; /* 确保文字可见 */
+    padding: 3px 8px; /* 调整内边距 */
+    border-radius: 12px; /* 调整圆角 */
+    background-color: rgba(0, 0, 0, 0.03);
+    transition: all 0.3s ease;
+    margin-left: auto; /* 添加左侧外边距自动，将元素推到右侧 */
+    margin-right: 8px; /* 增加右侧外边距，避免贴近右边线 */
+    
+    i {
+        margin-right: 2px; /* 减小图标右侧间距 */
+        font-size: 11px; /* 减小图标大小 */
+    }
+}
+
+.trend-up {
+    color: #e74c3c;
+    background-color: rgba(231, 76, 60, 0.1);
+}
+
+.trend-down {
+    color: #2ecc71;
+    background-color: rgba(46, 204, 113, 0.1);
+}
+
+/* 根据不同的状态设置不同的背景色 */
+.summary-highlight-item:nth-child(1) .highlight-desc,
+.summary-highlight-item:nth-child(1) .highlight-change {
+    background-color: rgba(52, 152, 219, 0.08);
+}
+
+.summary-highlight-item:nth-child(2) .highlight-desc {
+    background-color: rgba(231, 76, 60, 0.08);
+}
+
+.summary-highlight-item:nth-child(3) .highlight-desc {
+    background-color: rgba(155, 89, 182, 0.08);
+}
+
+.summary-highlight-item:nth-child(4) .highlight-desc {
+    background-color: rgba(46, 204, 113, 0.08);
+}
+
+/* 移除原来的图标背景样式 */
+.weight-icon, .heart-icon, .sleep-icon, .pressure-icon {
+    background: none;
+}
+
+@media screen and (max-width: 1400px) {
+    .summary-column {
+        max-width: 24%; /* 在较小屏幕上略微增加宽度 */
+    }
+    
+    .data-column {
+        min-width: calc(76% - 20px);
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .summary-column {
+        max-width: 100%;
+        flex: 1;
+    }
+    
+    .data-column {
+        min-width: 100%;
+        flex: 1;
+    }
+    
+    .summary-highlight-card {
+        max-width: 100%;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .summary-highlights-content {
+        flex-direction: column;
+    }
+    
+    .summary-highlight-item {
+        width: 100%;
+        padding: 10px 8px;
+    }
+    
+    .highlight-icon {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        margin-right: 8px;
+    }
+    
+    .highlight-info {
+        padding-right: 5px;
+    }
+    
+    .highlight-desc, .highlight-change {
+        min-width: 60px;
+        font-size: 12px;
+    }
+}
+
+.weight-icon {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+.heart-icon {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.sleep-icon {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+}
+
+.pressure-icon {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+}
+
+/* 自定义文本按钮样式 */
+.custom-text-button {
+    color: #42b983;
+    font-size: 14px;
+    padding: 5px 10px;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+        background-color: rgba(66, 185, 131, 0.1);
+        color: #2c9e6a;
+    }
+    
+    i {
+        margin-left: 4px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+}
+
+/* 卡片标题样式增强 */
+.card-header h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    position: relative;
+    padding-left: 12px;
+    
+    &:before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 16px;
+        width: 3px;
+        background: #42b983;
+        border-radius: 2px;
+    }
 }
 </style>
