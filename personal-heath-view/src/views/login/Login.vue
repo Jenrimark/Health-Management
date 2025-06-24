@@ -8,7 +8,7 @@
                 <div class="large-logo-wrapper">
                     <img src="/LOGO0.png" alt="健康图标" class="large-logo-icon" />
                     <div class="large-logo-text">
-                        <span class="large-brand-text">蝶启新生</span>
+                        <img src="/logoz4.png" alt="蝶启新生" class="large-brand-image" />
                     </div>
                 </div>
             </div>
@@ -141,13 +141,19 @@ export default {
 .large-logo-wrapper {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 0;
   justify-content: flex-start;
 }
 
+.large-logo-text {
+  display: flex;
+  flex-direction: column;
+  margin-left: -10px;
+}
+
 .large-logo-icon {
-  width: 50px;
-  height: 50px;
+  width: 70px;
+  height: 70px;
   object-fit: contain;
   border-radius: 10px;
 }
@@ -155,6 +161,13 @@ export default {
 .large-logo-text {
   display: flex;
   flex-direction: column;
+}
+
+.large-brand-image {
+  height: 120px;
+  object-fit: contain;
+  display: block;
+  border-radius: 12px;
 }
 
 .large-brand-text {

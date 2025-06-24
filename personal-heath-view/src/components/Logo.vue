@@ -3,7 +3,7 @@
     <div class="logo-wrapper hoverable">
       <img src="/LOGO0.png" alt="健康图标" class="logo-icon" />
       <div class="logo-text">
-        <span class="brand-text">{{ sysName }}</span>
+        <img src="/logoz2.png" alt="蝶启新生" class="brand-image" />
       </div>
     </div>
   </div>
@@ -58,6 +58,7 @@ export default {
   object-fit: contain;
   display: flex;
   align-self: center;
+  border-radius: 10px;
 }
 
 .logo-text {
@@ -65,6 +66,16 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-self: center;
+  margin-left: -10px;
+}
+
+.brand-image {
+  height: 50px;
+  object-fit: contain;
+  display: block;
+  margin: 0;
+  padding: 0;
+  border-radius: 8px;
 }
 
 @font-face {
