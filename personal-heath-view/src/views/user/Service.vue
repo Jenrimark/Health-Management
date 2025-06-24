@@ -1,7 +1,11 @@
 <template>
     <div class="service-container">
+        <div class="page-header">
+            <h2 class="page-title">内容中心</h2>
+            <p class="page-subtitle">分享您的健康经验与见解，管理个人创作与收藏</p>
+        </div>
+        
         <div class="content-panel">
-            <h1 class="page-title">内容中心</h1>
             <el-tabs v-model="activeName" @tab-click="handleClick" class="custom-tabs">
                 <el-tab-pane label="我的帖子" name="first">
                     <div class="empty-placeholder" v-if="gourmetList.length === 0">
@@ -182,30 +186,40 @@ export default {
     padding: 30px;
 }
 
+.page-header {
+    background: linear-gradient(135deg, #42b983, #2c9e6a);
+    color: white;
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.page-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 10px;
+    color: white;
+    
+    &:after {
+        display: none;
+    }
+}
+
+.page-subtitle {
+    font-size: 14px;
+    margin: 0;
+    opacity: 0.9;
+}
+
 .content-panel {
     background-color: white;
     border-radius: 12px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
     padding: 25px;
-}
-
-.page-title {
-    font-size: 28px;
-    font-weight: 700;
-    color: #1f2937;
-    margin-bottom: 25px;
-    position: relative;
-    
-    &:after {
-        content: '';
-        position: absolute;
-        left: 0;
-        bottom: -8px;
-        width: 40px;
-        height: 4px;
-        border-radius: 2px;
-        background: linear-gradient(to right, #0f753f, #52c873);
-    }
 }
 
 .custom-tabs {

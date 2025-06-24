@@ -1,5 +1,10 @@
 <template>
   <div class="ai-diagnosis">
+    <div class="page-header">
+      <h2 class="page-title">智能问答</h2>
+      <p class="page-subtitle">描述您的症状或健康问题，AI将为您提供专业的健康建议</p>
+    </div>
+    
     <el-card class="chat-container">
       <!-- 聊天消息容器 -->
       <div class="chat-messages" ref="chatBox">
@@ -98,6 +103,32 @@ export default {
   flex-direction: column;
 }
 
+/* 添加页面头部样式 */
+.page-header {
+  background: linear-gradient(135deg, #42b983, #2c9e6a);
+  color: white;
+  border-radius: 12px;
+  padding: 25px 30px;
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 10px;
+  color: white;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.9;
+}
+
 .chat-container {
   flex: 1;
   display: flex;
@@ -112,7 +143,7 @@ export default {
   overflow-y: auto;
   padding: 20px;
   margin-bottom: 20px;
-  max-height: calc(100vh - 240px);
+  max-height: calc(100vh - 290px); /* 调整高度以适应新添加的页面头部 */
   scroll-behavior: smooth; /* 平滑滚动 */
 }
 

@@ -1,24 +1,28 @@
 <template>
     <div class="gourmet-container">
-        <el-row :gutter="20">
-            <el-col :span="18">
-                <div class="header-section">
-                    <h1 class="page-title">论坛精选</h1>
+        <div class="page-header">
+            <div class="header-content">
+                <div class="title-area">
+                    <h2 class="page-title">论坛精选</h2>
+                    <p class="page-subtitle">分享和探索健康生活的精彩内容</p>
+                </div>
+                <div class="search-area">
                     <el-input 
                         size="medium" 
                         class="search-input" 
                         v-model="gourtmetQueryDto.title"
                         placeholder="搜索感兴趣的内容" 
-                        clearable 
-                        @clear="handleFilterClear">
-                        <el-button 
-                            slot="append" 
-                            @click="fetchGourmetData" 
-                            icon="el-icon-search">
-                        </el-button>
+                        clearable
+                        prefix-icon="el-icon-search"
+                        @clear="handleFilterClear"
+                        @keyup.enter.native="fetchGourmetData">
                     </el-input>
                 </div>
-                
+            </div>
+        </div>
+        
+        <el-row :gutter="20">
+            <el-col :span="18">
                 <div class="category-section">
                     <span 
                         v-for="(category, index) in categories" 
@@ -32,7 +36,7 @@
                 
                 <div v-if="gourmetList.length === 0" class="empty-state">
                     <el-empty description="暂无相关内容，换个话题试试？"></el-empty>
-                    <el-button type="primary" size="small" @click="categorySelected({id: null, name: '全部'})">返回全部</el-button>
+                    <el-button type="primary" size="small" @click="resetCategory">返回全部</el-button>
                 </div>
                 
                 <div v-else class="gourmet-list">
@@ -166,7 +170,9 @@ export default {
         categorySelected(category) {
             this.categoryClick = category;
             this.gourtmetQueryDto.categoryId = category.id;
+            this.currentPage = 1;
             this.fetchGourmetData();
+            console.log('选择分类:', category.name, '分类ID:', category.id);
         },
         fetchCategoryData() {
             this.$axios.post('/tags/query', {}).then(res => {
@@ -186,14 +192,28 @@ export default {
                 key: this.filterText,
                 ...this.gourtmetQueryDto
             };
+            console.log('发送查询参数:', JSON.stringify(queryDto));
             this.$axios.post('/gourmet/queryList', queryDto).then(res => {
                 const { data } = res;
                 if (data.code === 200) {
                     this.gourmetList = res.data.data;
                     this.totalItems = data.total;
+                    console.log('获取数据成功，条数:', this.gourmetList.length);
                 }
             }).catch(error => {
-                console.log(error);
+                console.error('获取数据失败:', error);
+                this.$message.error('获取数据失败，请稍后再试');
+            });
+        },
+        resetCategory() {
+            console.log('重置分类被调用');
+            this.categoryClick = { id: null, name: '全部' };
+            this.gourtmetQueryDto.title = '';
+            this.gourtmetQueryDto.categoryId = null;
+            this.currentPage = 1;
+            this.$nextTick(() => {
+                this.fetchGourmetData();
+                console.log('重置完成：搜索内容已清空，分类已重置为全部');
             });
         },
     }
@@ -206,63 +226,94 @@ export default {
     padding: 30px;
     min-height: calc(100vh - 60px);
     
-    .header-section {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 25px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid #eaeaea;
+    .page-header {
+        background: linear-gradient(135deg, #42b983, #2c9e6a);
+        color: white;
+        border-radius: 12px;
+        padding: 25px 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         
-        .page-title {
-            font-size: 28px;
-            color: #333;
-            font-weight: 700;
-            margin: 0;
-            letter-spacing: 0.5px;
-            position: relative;
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             
-            &:after {
-                content: '';
-                position: absolute;
-                left: 0;
-                bottom: -8px;
-                width: 40px;
-                height: 4px;
-                border-radius: 2px;
-                background: linear-gradient(to right, #0f753f, #52c873);
-            }
-        }
-        
-        .search-input {
-            width: 320px;
-            
-            .el-input__inner {
-                border-radius: 40px;
-                padding-left: 15px;
-                height: 42px;
-                border: 1px solid #e0e3e9;
-                box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-                transition: all 0.3s ease;
+            @media (max-width: 768px) {
+                flex-direction: column;
+                align-items: flex-start;
                 
-                &:focus {
-                    border-color: #0f753f;
-                    box-shadow: 0 2px 8px rgba(15, 117, 63, 0.2);
+                .search-area {
+                    margin-top: 15px;
+                    width: 100%;
                 }
             }
             
-            .el-input-group__append {
-                border-radius: 0 40px 40px 0;
-                background-color: #0f753f;
-                border-color: #0f753f;
-                color: white;
-                padding: 0 15px;
+            .title-area {
+                flex: 1;
+            }
+            
+            .search-area {
+                width: 320px;
                 
-                &:hover {
-                    background-color: #0b5e32;
+                .search-input {
+                    .el-input__inner {
+                        border-radius: 24px;
+                        padding-left: 20px;
+                        height: 42px;
+                        border: 2px solid rgba(255, 255, 255, 0.6);
+                        background-color: rgba(255, 255, 255, 0.2);
+                        color: white;
+                        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+                        transition: all 0.3s ease;
+                        
+                        &::placeholder {
+                            color: rgba(255, 255, 255, 0.8);
+                        }
+                        
+                        &:focus {
+                            background-color: rgba(255, 255, 255, 0.3);
+                            border-color: white;
+                            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                        }
+                    }
+                    
+                    .el-input__prefix {
+                        left: 12px;
+                        color: white;
+                        font-size: 16px;
+                    }
+                    
+                    .el-input__suffix {
+                        right: 12px;
+                        
+                        .el-input__suffix-inner {
+                            .el-input__icon {
+                                color: white;
+                                font-size: 16px;
+                                
+                                &:hover {
+                                    transform: scale(1.1);
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
+    }
+    
+    .page-title {
+        font-size: 24px;
+        font-weight: 600;
+        margin: 0 0 10px;
+        color: white;
+    }
+    
+    .page-subtitle {
+        font-size: 14px;
+        margin: 0;
+        opacity: 0.9;
     }
     
     .category-section {
@@ -293,9 +344,9 @@ export default {
             }
             
             &.active {
-                background-color: #0f753f;
+                background-color: #42b983;
                 color: white;
-                box-shadow: 0 3px 8px rgba(15, 117, 63, 0.25);
+                box-shadow: 0 3px 8px rgba(66, 185, 131, 0.25);
                 transform: translateY(-2px);
             }
         }
@@ -310,12 +361,12 @@ export default {
         
         .el-button {
             margin-top: 15px;
-            background-color: #0f753f;
-            border-color: #0f753f;
+            background-color: #42b983;
+            border-color: #42b983;
             
             &:hover {
-                background-color: #0b5e32;
-                border-color: #0b5e32;
+                background-color: #2c9e6a;
+                border-color: #2c9e6a;
             }
         }
     }
@@ -338,7 +389,7 @@ export default {
             }
             
             .title {
-                color: #0f753f;
+                color: #42b983;
             }
         }
         
@@ -429,7 +480,7 @@ export default {
                 transition: all 0.3s ease;
                 
                 &:hover {
-                    color: #0f753f;
+                    color: #42b983;
                 }
             }
             
@@ -475,8 +526,8 @@ export default {
                 
                 .read-more {
                     margin-left: auto;
-                    background-color: #0f753f;
-                    border-color: #0f753f;
+                    background-color: #42b983;
+                    border-color: #42b983;
                     padding: 6px 15px;
                     
                     i {
@@ -485,8 +536,7 @@ export default {
                     }
                     
                     &:hover {
-                        background-color: #0b5e32;
-                        transform: translateX(3px);
+                        background-color: #2c9e6a;
                     }
                 }
             }
@@ -503,8 +553,7 @@ export default {
         justify-content: center;
         
         .el-pagination.is-background .el-pager li:not(.disabled).active {
-            background-color: #0f753f;
-            color: white;
+            background-color: #42b983;
         }
     }
     

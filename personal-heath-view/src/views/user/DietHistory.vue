@@ -1,5 +1,11 @@
 <template>
   <div class="health-app-container">
+    <!-- 添加头部标签 -->
+    <div class="page-header">
+      <h2 class="page-title">我的饮食</h2>
+      <p class="page-subtitle">记录您的日常饮食习惯，合理搭配营养摄入</p>
+    </div>
+    
     <!-- 主内容区域 -->
     <div class="main-content">
       <!-- 左侧记录面板（包含饮食记录和健康计划） -->
@@ -150,11 +156,11 @@
           <div v-if="latestHealthPlan" class="plan-details">
             <div class="plan-metric">
               <div class="metric-icon">
-                <i class="el-icon-fire"></i>
+                <i class="el-icon-food"></i>
               </div>
               <div class="metric-info">
-                <div class="metric-value">{{ latestHealthPlan.targetCalories }} kcal</div>
-                <div class="metric-label">目标热量</div>
+                <div class="metric-value">2000 kcal</div>
+                <div class="metric-label">补充热量</div>
               </div>
             </div>
             
@@ -163,18 +169,18 @@
                 <i class="el-icon-bicycle"></i>
               </div>
               <div class="metric-info">
-                <div class="metric-value">{{ latestHealthPlan.exerciseMinutes }} 分钟</div>
+                <div class="metric-value">30 分钟</div>
                 <div class="metric-label">运动目标</div>
               </div>
             </div>
             
             <div class="plan-metric">
               <div class="metric-icon">
-                <i class="el-icon-data-analysis"></i>
+                <i class="el-icon-sugar"></i>
               </div>
               <div class="metric-info">
-                <div class="metric-value">{{ latestHealthPlan.exerciseType }}</div>
-                <div class="metric-label">运动方式</div>
+                <div class="metric-value">2500 ml</div>
+                <div class="metric-label">饮水量</div>
               </div>
             </div>
             
@@ -183,7 +189,7 @@
                 <i class="el-icon-stopwatch"></i>
               </div>
               <div class="metric-info">
-                <div class="metric-value">{{ latestHealthPlan.caloriesBurned }} kcal</div>
+                <div class="metric-value">1500 kcal</div>
                 <div class="metric-label">消耗热量</div>
               </div>
             </div>
@@ -719,6 +725,32 @@ export default {
   font-family: 'Helvetica Neue', Arial, sans-serif;
 }
 
+/* 添加页面头部样式 */
+.page-header {
+  background: linear-gradient(135deg, #42b983, #2c9e6a);
+  color: white;
+  border-radius: 12px;
+  padding: 25px 30px;
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 10px;
+  color: white;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.9;
+}
+
 .main-content {
   display: flex;
   gap: 20px;
@@ -1146,7 +1178,7 @@ export default {
 }
 </style>
 
-<style>
+<style lang="scss">
 /* 全局通知样式 */
 .success-notification {
   background: linear-gradient(135deg, #67C23A, #85ce61) !important;
@@ -1171,44 +1203,42 @@ export default {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  
-  h3 {
-    color: #303133;
-    font-size: 16px;
-    font-weight: 600;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    
-    i {
-      margin-right: 8px;
-      color: #67C23A;
-    }
-  }
+}
+
+.panel-header h3 {
+  color: #303133;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.panel-header h3 i {
+  margin-right: 8px;
+  color: #67C23A;
 }
 
 .recommendation-controls {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
-  
-  .el-select {
-    flex: 1;
-  }
 }
 
-.recommendation-results {
-  .meal-section {
-    margin-bottom: 20px;
-    
-    h4 {
-      color: #606266;
-      font-size: 14px;
-      margin-bottom: 10px;
-      padding-left: 5px;
-      border-left: 3px solid #67C23A;
-    }
-  }
+.recommendation-controls .el-select {
+  flex: 1;
+}
+
+.recommendation-results .meal-section {
+  margin-bottom: 20px;
+}
+
+.recommendation-results .meal-section h4 {
+  color: #606266;
+  font-size: 14px;
+  margin-bottom: 10px;
+  padding-left: 5px;
+  border-left: 3px solid #67C23A;
 }
 
 .meal-recommendations {
@@ -1220,15 +1250,15 @@ export default {
 .recipe-card {
   cursor: pointer;
   transition: transform 0.3s;
-  
-  &:hover {
-    transform: translateY(-3px);
-  }
-  
-  .recipe-content {
-    display: flex;
-    align-items: center;
-  }
+}
+
+.recipe-card:hover {
+  transform: translateY(-3px);
+}
+
+.recipe-card .recipe-content {
+  display: flex;
+  align-items: center;
 }
 
 .recipe-image {
@@ -1241,37 +1271,37 @@ export default {
 
 .recipe-info {
   flex: 1;
-  
-  .recipe-name {
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 4px;
-    color: #303133;
-  }
-  
-  .recipe-desc {
-    font-size: 12px;
-    color: #909399;
-    line-height: 1.4;
-  }
+}
+
+.recipe-info .recipe-name {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #303133;
+}
+
+.recipe-info .recipe-desc {
+  font-size: 12px;
+  color: #909399;
+  line-height: 1.4;
 }
 
 .empty-recommendation {
   text-align: center;
   padding: 30px;
   color: #909399;
-  
-  i {
-    font-size: 40px;
-    color: #E6A23C;
-    margin-bottom: 10px;
-    display: block;
-  }
-  
-  p {
-    margin: 8px 0 15px;
-    font-size: 14px;
-  }
+}
+
+.empty-recommendation i {
+  font-size: 40px;
+  color: #E6A23C;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.empty-recommendation p {
+  margin: 8px 0 15px;
+  font-size: 14px;
 }
 
 @media (max-width: 768px) {

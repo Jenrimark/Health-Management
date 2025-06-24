@@ -1,6 +1,10 @@
 <template>
   <div class="health-report-page">
-    <h2 class="page-title">个人体检报告</h2>
+    <!-- 添加统一风格的头部标签 -->
+    <div class="page-header">
+      <h2 class="page-title">个人体检报告</h2>
+      <p class="page-subtitle">上传和管理您的体检报告，追踪健康状况变化</p>
+    </div>
     
     <div class="upload-section">
       <!-- 基础表单上传 -->
@@ -287,13 +291,30 @@ export default {
   min-height: calc(100vh - 60px);
 }
 
+/* 添加统一风格的头部样式 */
+.page-header {
+  background: linear-gradient(135deg, #42b983, #2c9e6a);
+  color: white;
+  border-radius: 12px;
+  padding: 25px 30px;
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
 .page-title {
   font-size: 24px;
   font-weight: 600;
-  color: #303133;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #ebeef5;
+  margin: 0 0 10px;
+  color: white;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.9;
 }
 
 .upload-section {

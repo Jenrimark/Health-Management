@@ -1,5 +1,11 @@
 <template>
   <div class="daily-health">
+    <!-- 添加头部标签 -->
+    <div class="page-header">
+      <h2 class="page-title">我的运动</h2>
+      <p class="page-subtitle">记录和追踪您的日常运动数据，保持健康生活方式</p>
+    </div>
+    
     <!-- 统计功能卡片（保留） -->
     <el-card class="box-card stats-card">
       <div slot="header" class="clearfix">
@@ -568,6 +574,32 @@ export default {
   padding: 20px;
 }
 
+/* 添加页面头部样式 */
+.page-header {
+  background: linear-gradient(135deg, #42b983, #2c9e6a);
+  color: white;
+  border-radius: 12px;
+  padding: 25px 30px;
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 10px;
+  color: white;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.9;
+}
+
 .box-card {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
@@ -575,7 +607,7 @@ export default {
   border: none;
   
   &.stats-card {
-    margin-top: 30px;
+    margin-top: 0; /* 修改顶部边距，移除多余空间 */
   }
 }
 

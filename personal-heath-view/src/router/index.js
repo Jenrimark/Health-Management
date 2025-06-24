@@ -187,7 +187,7 @@ const routes = [
       },
       {
         path: "/dietHistory",
-        name: '饮食记录',
+        name: '我的饮食',
         component: () => import(`@/views/user/DietHistory.vue`),
         meta: { requireAuth: true },
       },

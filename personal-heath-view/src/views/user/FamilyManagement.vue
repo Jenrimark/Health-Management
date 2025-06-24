@@ -627,7 +627,16 @@ export default {
       this.fetchMemberHealthData(member.id)
       // 添加日志输出，以便调试
       console.log('选择家庭成员:', member.name, '，ID:', member.id)
-      this.$message.success(`已选择家庭成员: ${member.name}`)
+      this.$notify({
+        title: '已选择家庭成员',
+        message: member.name,
+        type: 'success',
+        position: 'bottom-right',
+        duration: 3000,
+        dangerouslyUseHTMLString: false,
+        showClose: true,
+        customClass: 'member-selected-notification'
+      })
     },
     
     // 获取成员健康数据
@@ -1572,5 +1581,26 @@ export default {
 
 .add-button i {
   margin-right: 5px;
+}
+
+/* 自定义选择成员通知样式 */
+.member-selected-notification {
+  background: linear-gradient(135deg, #42b983, #67c23a) !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(66, 185, 131, 0.3) !important;
+}
+
+.member-selected-notification .el-notification__title {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  font-family: "PingFang SC", "Microsoft YaHei", "微软雅黑", sans-serif !important;
+  font-size: 16px !important;
+}
+
+.member-selected-notification .el-notification__content {
+  color: #ffffff !important;
+  font-weight: 400 !important;
+  font-family: "PingFang SC", "Microsoft YaHei", "微软雅黑", sans-serif !important;
+  font-size: 14px !important;
 }
 </style> 

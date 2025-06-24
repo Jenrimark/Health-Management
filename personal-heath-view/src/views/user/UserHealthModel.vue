@@ -37,7 +37,7 @@
                 <div class="dashboard-card combined-card">
                     <div class="card-header">
                         <h2>健康评估</h2>
-                        <el-button type="primary" size="small" class="calculate-btn" @click="showCalculationDetails">计算详情</el-button>
+                        <el-button class="calculate-btn" @click="showCalculationDetails">计算详情</el-button>
                     </div>
                     <div class="combined-content">
                         <div class="score-section">
@@ -2823,13 +2823,13 @@ export default {
     padding: 12px;
     height: auto;
     width: 100%; /* 确保宽度一致 */
-    max-width: 320px; /* 限制最大宽度 */
+    max-width: 300px; /* 限制最大宽度 */
     margin-left: auto;
     margin-right: auto;
     flex: 1;
     border-radius: 15px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    border-top: 3px solid #42b983;
+    border-top: none;
     background: linear-gradient(to bottom, #ffffff, #fafafa);
 }
 
@@ -3007,7 +3007,7 @@ export default {
     flex: 1;
     border-radius: 15px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    border-top: 3px solid #42b983;
+    border-top: none;
     background: linear-gradient(to bottom, #ffffff, #fafafa);
 }
 
@@ -3150,6 +3150,29 @@ export default {
         margin-left: 4px;
         font-size: 12px;
         font-weight: bold;
+    }
+}
+
+/* 计算详情按钮样式 */
+.calculate-btn {
+    background: linear-gradient(135deg, #42b983 0%, #2c9e6a 100%);
+    color: white;
+    border: none;
+    font-size: 14px;
+    padding: 8px 15px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(66, 185, 131, 0.3);
+        opacity: 0.9;
+    }
+    
+    &:focus, &:active {
+        background: linear-gradient(135deg, #42b983 0%, #2c9e6a 100%);
+        color: white;
+        border: none;
     }
 }
 
