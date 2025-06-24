@@ -1,6 +1,6 @@
 <template>
   <div class="logo-container">
-    <div class="logo-wrapper">
+    <div class="logo-wrapper hoverable">
       <img src="/LOGO0.png" alt="健康图标" class="logo-icon" />
       <div class="logo-text">
         <span class="brand-text">{{ sysName }}</span>
@@ -36,17 +36,35 @@ export default {
   align-items: center;
   gap: 8px;
   justify-content: flex-start;
+  padding: 5px 10px;
+  border-radius: 8px;
+  backface-visibility: hidden;
+  vertical-align: middle;
+  position: relative;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+  transform: translateZ(0);
+  transition-duration: 0.3s;
+  transition-property: transform;
+}
+
+.logo-wrapper:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(66, 185, 131, 0.15);
 }
 
 .logo-icon {
   width: 36px;
   height: 36px;
   object-fit: contain;
+  display: flex;
+  align-self: center;
 }
 
 .logo-text {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-self: center;
 }
 
 @font-face {
@@ -56,16 +74,17 @@ export default {
 }
 
 .brand-text {
-  font-size: 24px;
+  font-size: 22px;
   font-family: '行楷', '华文行楷', 'STXingkai', '行书', '楷体', serif;
   font-weight: 600;
-  color: #3498db;
+  line-height: 1.2;
+  color: #42b983;
   text-shadow: 
-    0 0 6px rgba(52, 152, 219, 0.5),
-    0 0 10px rgba(52, 152, 219, 0.3);
+    0 0 6px rgba(66, 185, 131, 0.5),
+    0 0 10px rgba(66, 185, 131, 0.3);
   -webkit-text-stroke: 0.1px rgba(255, 255, 255, 0.7);
   background-image: 
-    linear-gradient(to right, #2980b9, #3498db, #5dade2, #3498db, #2980b9);
+    linear-gradient(to right, #2c9e6a, #42b983, #5dd4a4, #42b983, #2c9e6a);
   background-size: 200% auto;
   background-clip: text;
   -webkit-background-clip: text;
@@ -73,6 +92,9 @@ export default {
   letter-spacing: 2px;
   position: relative;
   animation: shimmer 8s ease infinite;
+  display: block;
+  margin: 0;
+  padding: 0;
 }
 
 .brand-text::after {
@@ -82,7 +104,7 @@ export default {
   left: 2px;
   width: 90%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(52, 152, 219, 0.4), rgba(52, 152, 219, 0.7), rgba(52, 152, 219, 0.4), transparent);
+  background: linear-gradient(90deg, transparent, rgba(66, 185, 131, 0.4), rgba(66, 185, 131, 0.7), rgba(66, 185, 131, 0.4), transparent);
   filter: blur(1px);
 }
 
@@ -96,5 +118,16 @@ export default {
   100% {
     background-position: 0% center;
   }
+}
+
+.hoverable {
+  cursor: pointer;
+  backface-visibility: hidden;
+  vertical-align: middle;
+  position: relative;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+  transform: translateZ(0);
+  transition-duration: 0.3s;
+  transition-property: transform;
 }
 </style>

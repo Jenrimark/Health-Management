@@ -90,10 +90,10 @@
         <div class="dashboard-container">
             <!-- Left Column - Exercise and Diet Summary (1/3 width) -->
             <div class="dashboard-column summary-column">
-                <!-- 健康指标摘要卡片 -->
+                <!-- 健康摘要卡片 -->
                 <div class="dashboard-card summary-highlight-card">
                     <div class="card-header">
-                        <h2>健康指标摘要</h2>
+                        <h2>健康摘要</h2>
                         <el-button type="text" class="custom-text-button" @click="toRecord">记录指标 <i class="el-icon-plus"></i></el-button>
                     </div>
                     <div class="summary-highlights-content">
@@ -2813,7 +2813,7 @@ export default {
     }
 }
 
-/* 健康指标摘要卡片样式 */
+/* 健康摘要卡片样式 */
 .health-summary-column {
     width: 100%;
 }

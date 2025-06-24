@@ -5,7 +5,8 @@
             <UserMenu :menus="routers" :userInfo="userInfo" @eventListener="eventListener" />
             <!-- 如果是家庭成员账号，显示关联信息 -->
             <div v-if="parentInfo" class="family-relation-info">
-                您正在使用 {{ parentInfo.parentName }} 的家庭成员账号 ({{ parentInfo.relation }})
+                <i class="el-icon-info-circle"></i>
+                您正在使用 <span class="parent-name">{{ parentInfo.parentName }}</span> 的家庭成员账号 (<span class="relation-type">{{ parentInfo.relation }}</span>)
             </div>
         </div>
         <div class="content-container">
@@ -252,7 +253,7 @@ export default {
             }
             // 家庭管理
             else if (event === 'familyManagement') {
-                this.$router.push('/family-management');
+                this.familyManagement();
             }
         },
         async loginOutOperation() {
@@ -301,7 +302,11 @@ export default {
             } catch (error) {
                 console.error('Token检验时发生错误:', error);
             }
-        }
+        },
+        // 家庭管理，传回父组件处理
+        familyManagement() {
+            this.$router.push('/family-management');
+        },
     },
 };
 </script>
@@ -316,12 +321,27 @@ export default {
 }
 
 .family-relation-info {
-    background-color: #ecf5ff;
-    color: #409EFF;
-    padding: 8px 20px;
-    font-size: 14px;
+    padding: 8px 40px;
+    background-color: #fff8e1;
+    color: #795548;
     text-align: center;
-    border-bottom: 1px solid #d9ecff;
+    font-size: 14px;
+    border-bottom: 1px solid #ffe0b2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    i {
+        margin-right: 8px;
+        color: #ff9800;
+        font-size: 16px;
+    }
+    
+    .parent-name, .relation-type {
+        font-weight: 600;
+        color: #e65100;
+        margin: 0 4px;
+    }
 }
 
 .user-container {

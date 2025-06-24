@@ -7,7 +7,8 @@
         
         <div class="content-panel">
             <el-tabs v-model="activeName" @tab-click="handleClick" class="custom-tabs">
-                <el-tab-pane label="我的帖子" name="first">
+                <el-tab-pane name="first">
+                    <span slot="label"><i class="el-icon-document"></i> 我的帖子</span>
                     <div class="empty-placeholder" v-if="gourmetList.length === 0">
                         <el-empty description="您还没有发布任何帖子"></el-empty>
                         <el-button type="primary" size="medium" @click="activeName = 'third'">开始创作</el-button>
@@ -46,10 +47,12 @@
                         </div>
                     </div>
                 </el-tab-pane>
-                <el-tab-pane label="我的收藏" name="second">
+                <el-tab-pane name="second">
+                    <span slot="label"><i class="el-icon-star-on"></i> 我的收藏</span>
                     <MySave />
                 </el-tab-pane>
-                <el-tab-pane label="内容创作" name="third">
+                <el-tab-pane name="third">
+                    <span slot="label"><i class="el-icon-edit-outline"></i> 内容创作</span>
                     <CreateGourmet @refresh="fetchMyslefGourmet" />
                 </el-tab-pane>
             </el-tabs>
@@ -224,19 +227,30 @@ export default {
 
 .custom-tabs {
     .el-tabs__item {
-        font-size: 16px;
-        font-weight: 500;
         height: 50px;
         line-height: 50px;
+        font-size: 16px;
+        color: #606266;
+        transition: all 0.3s;
+        
+        i {
+            margin-right: 6px;
+            font-size: 18px;
+            vertical-align: middle;
+        }
+        
+        &:hover {
+            color: #42b983;
+        }
         
         &.is-active {
-            color: #0f753f;
-            font-weight: 600;
+            color: #42b983;
+            font-weight: 500;
         }
     }
     
     .el-tabs__active-bar {
-        background-color: #0f753f;
+        background-color: #42b983;
         height: 3px;
     }
 }

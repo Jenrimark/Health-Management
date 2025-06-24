@@ -22,10 +22,6 @@ const routes = [
     component: () => import(`@/views/register/Register.vue`)
   },
   {
-    path: "/message",
-    component: () => import(`@/views/user/Message.vue`)
-  },
-  {
     path: "/record",
     component: () => import(`@/views/user/Record.vue`)
   },
@@ -139,6 +135,7 @@ const routes = [
       {
         name: '健康指标',
         path: "/user-health-model",
+        icon: 'el-icon-s-data',
         component: () => import(`@/views/user/UserHealthModel.vue`),
         meta: {
           requireAuth: true,
@@ -147,6 +144,7 @@ const routes = [
       {
         name: '健康论坛',
         path: "/gourmet",
+        icon: 'el-icon-s-comment',
         component: () => import(`@/views/user/Gourmet.vue`),
         meta: {
           requireAuth: true,
@@ -155,6 +153,7 @@ const routes = [
       {
         name: '内容中心',
         path: "/service",
+        icon: 'el-icon-menu',
         component: () => import(`@/views/user/Service.vue`),
         meta: {
           requireAuth: true,
@@ -163,6 +162,7 @@ const routes = [
       {
         name: '智能问答',
         path: "/aiDiagnosis",
+        icon: 'el-icon-chat-line-round',
         component: () => import(`@/views/user/Aicheck.vue`),
         meta: {
           requireAuth: true,
@@ -171,6 +171,7 @@ const routes = [
       {
         name: '健康论坛详情',
         path: "/gourmetDetail",
+        icon: 'el-icon-document',
         component: () => import(`@/views/user/GourmetDetail.vue`),
         meta: {
           requireAuth: true,
@@ -180,6 +181,7 @@ const routes = [
       {
         name: '我的运动',
         path: "/daily-health",
+        icon: 'el-icon-position',
         component: () => import(`@/views/user/DailyHealth.vue`),
         meta: {
           requireAuth: true,
@@ -188,26 +190,43 @@ const routes = [
       {
         path: "/dietHistory",
         name: '我的饮食',
+        icon: 'el-icon-dish-1',
         component: () => import(`@/views/user/DietHistory.vue`),
         meta: { requireAuth: true },
       },
       {
         path: '/my-cookbook',
         name: '食谱营养素',
+        icon: 'el-icon-sugar',
         component: () => import('@/views/user/CookbookOperation.vue'),
         meta: { requireAuth: true }
       },
       {
         path: '/health-report',
         name: '健康报告',
+        icon: 'el-icon-document-checked',
         component: () => import('@/views/user/HealthReport.vue'),
         meta: { requireAuth: true }
       },
       {
-        path: '/family-management',
+        name: '消息中心',
+        path: "/message",
+        icon: 'el-icon-chat-dot-round',
+        component: () => import(`@/views/user/Message.vue`),
+        meta: {
+          requireAuth: true,
+        },
+        isHidden: true,
+      },
+      {
         name: '家庭管理',
-        component: () => import('@/views/user/FamilyManagement.vue'),
-        meta: { requireAuth: true }
+        path: "/family-management",
+        icon: 'el-icon-house',
+        component: () => import(`@/views/user/FamilyManagement.vue`),
+        meta: {
+          requireAuth: true,
+        },
+        isHidden: true,
       },
     ]
   }

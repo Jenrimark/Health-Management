@@ -1,32 +1,5 @@
 <template>
      <div class="message-page">
-        <!-- 顶部导航栏 -->
-        <div class="top-nav">
-            <el-row>
-                <el-col :span="6">
-                    <Logo sysName="蝶启新生" />
-                </el-col>
-                <el-col :span="18">
-                    <span class="user-info">
-                        <el-dropdown class="user-dropdown">
-                            <span class="el-dropdown-link">
-                                <img :src="userInfo.userAvatar" alt="用户头像" />
-                                <span>{{ userInfo.userName }}</span>
-                                <i class="el-icon-arrow-down el-icon--right"></i>
-                            </span>
-                            <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item icon="el-icon-user" @click.native="handleUserCenter">个人中心</el-dropdown-item>
-                                <el-dropdown-item icon="el-icon-warning-outline" @click.native="handleResetPwd">修改密码</el-dropdown-item>
-                                <el-dropdown-item icon="el-icon-house" @click.native="handleFamilyManage">家庭管理</el-dropdown-item>
-                                <el-dropdown-item icon="el-icon-back" @click.native="handleLogout">退出登录</el-dropdown-item>
-                            </el-dropdown-menu>
-                        </el-dropdown>
-                    </span>
-                </el-col>
-            </el-row>
-        </div>
-        <div class="separator"></div>
-        
         <!-- 统一风格的头部标题栏 -->
         <div class="page-header">
             <div class="header-content">
@@ -37,30 +10,27 @@
 
         <!-- 主体内容区 -->
         <div class="message-container">
-            <!-- 功能区：返回按钮和清空消息 -->
-            <div class="message-actions">
-                <el-button class="back-button" @click="goBack" icon="el-icon-arrow-left" plain>返回首页</el-button>
-                
-                <div class="action-right">
-                    <el-tooltip content="将所有消息标记为已读" placement="top">
-                        <el-button type="text" @click="clearMessage" class="clear-button">
-                            <i class="el-icon-s-open"></i> 全部已读
-                        </el-button>
-                    </el-tooltip>
-                </div>
-            </div>
-
             <!-- 消息类型选择区 -->
             <div class="message-types-container">
-                <div class="message-type-tabs">
-                    <span 
-                        v-for="(messageType, index) in messageTypes" 
-                        :key="index"
-                        @click="messageTypeSelected(messageType.type)" 
-                        :class="['message-type', messageQueryDto.messageType === messageType.type ? 'active' : '']"
-                    >
-                        {{ messageType.detail }}
-                    </span>
+                <div class="message-type-header">
+                    <div class="message-type-tabs">
+                        <span 
+                            v-for="(messageType, index) in messageTypes" 
+                            :key="index"
+                            @click="messageTypeSelected(messageType.type)" 
+                            :class="['message-type', messageQueryDto.messageType === messageType.type ? 'active' : '']"
+                        >
+                            <i v-if="messageType.icon" :class="messageType.icon"></i>
+                            {{ messageType.detail }}
+                        </span>
+                    </div>
+                    <div class="action-right">
+                        <el-tooltip content="将所有消息标记为已读" placement="top">
+                            <el-button type="text" @click="clearMessage" class="clear-button">
+                                <i class="el-icon-s-open"></i> 全部已读
+                            </el-button>
+                        </el-tooltip>
+                    </div>
                 </div>
             </div>
 
@@ -105,45 +75,15 @@
                 </div>
             </div>
         </div>
-
-        <!-- 个人中心对话框 -->
-        <el-dialog :visible.sync="dialogUserCenter" title="个人中心" width="30%" :close-on-click-modal="false">
-            <div class="user-center-content">
-                <div class="avatar-upload-section">
-                    <p class="form-label">用户头像</p>
-                    <el-upload 
-                        class="avatar-uploader" 
-                        action="http://localhost:8080/api/personal-heath/v1.0/file/upload" 
-                        :show-file-list="false" 
-                        :on-success="handleAvatarSuccess">
-                        <img v-if="userCenterForm.userAvatar" :src="userCenterForm.userAvatar" class="avatar">
-                        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                    </el-upload>
-                </div>
-                <div class="form-item">
-                    <p class="form-label">用户名</p>
-                    <el-input v-model="userCenterForm.userName" placeholder="请输入用户名"></el-input>
-                </div>
-                <div class="form-item">
-                    <p class="form-label">邮箱</p>
-                    <el-input v-model="userCenterForm.userEmail" placeholder="请输入邮箱"></el-input>
-                </div>
-            </div>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogUserCenter = false">取 消</el-button>
-                <el-button type="primary" @click="updateUserInfo">确 定</el-button>
-            </span>
-        </el-dialog>
     </div>
 </template>
 
 <script>
-import Logo from '@/components/Logo';
 import Swal from 'sweetalert2';
 import { clearToken } from "@/utils/storage.js";
 
 export default {
-    components: { Logo },
+    components: { },
     data() {
         return {
             userInfo: {},
@@ -153,14 +93,7 @@ export default {
             messageList: [],
             messageTypes: [],
             dialogEvaluationsOperation: false,
-            message: {},
-            // 个人中心相关
-            dialogUserCenter: false,
-            userCenterForm: {
-                userName: '',
-                userEmail: '',
-                userAvatar: ''
-            }
+            message: {}
         };
     },
     created() {
@@ -174,9 +107,6 @@ export default {
     methods: {
         commentDeal(content) {
             return content.split(';');
-        },
-        goBack() {
-            this.$router.push('/user-health-model');
         },
         // 回复用户
         replyUser(message) {
@@ -267,7 +197,21 @@ export default {
                 const { data } = response;
                 if (data.code === 200) {
                     this.messageTypes = data.data;
-                    const messageType = { type: null, detail: '全部消息' };
+                    // 添加图标信息
+                    this.messageTypes.forEach(item => {
+                        // 根据消息类型设置对应图标
+                        if (item.detail === '评论') {
+                            item.icon = 'el-icon-chat-dot-round';
+                        } else if (item.detail === '点赞') {
+                            item.icon = 'el-icon-star-on';
+                        } else if (item.detail === '指标提醒') {
+                            item.icon = 'el-icon-data-analysis';
+                        } else if (item.detail === '系统通知') {
+                            item.icon = 'el-icon-bell';
+                        }
+                    });
+                    // 添加全部消息选项，并设置图标
+                    const messageType = { type: null, detail: '全部消息', icon: 'el-icon-document' };
                     this.messageTypes.unshift(messageType);
                 }
             })
@@ -283,132 +227,13 @@ export default {
                 }
             })
         },
-        // 下拉菜单处理函数
-        handleUserCenter() {
-            // 打开个人中心对话框
-            this.userCenterForm.userName = this.userInfo.userName;
-            this.userCenterForm.userEmail = this.userInfo.userEmail;
-            this.userCenterForm.userAvatar = this.userInfo.userAvatar;
-            this.dialogUserCenter = true;
-        },
-        handleResetPwd() {
-            // 跳转到修改密码页面
-            this.$router.push('/reset-password');
-        },
-        handleFamilyManage() {
-            // 跳转到家庭管理页面
-            this.$router.push('/family-management');
-        },
-        handleLogout() {
-            // 退出登录
-            Swal.fire({
-                title: '退出登录',
-                text: '确定要退出登录吗？',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#42b983',
-                cancelButtonColor: '#d33',
-                confirmButtonText: '确定',
-                cancelButtonText: '取消'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // 清除token和用户信息
-                    clearToken();
-                    sessionStorage.removeItem('userInfo');
-                    // 跳转到登录页
-                    this.$router.push('/login');
-                }
-            });
-        },
-        // 处理头像上传成功
-        handleAvatarSuccess(res) {
-            if (res.code === 200) {
-                this.userCenterForm.userAvatar = res.data;
-                this.$message.success('头像上传成功');
-            } else {
-                this.$message.error('头像上传失败');
-            }
-        },
-        // 更新用户信息
-        updateUserInfo() {
-            const userUpdateDTO = {
-                userAvatar: this.userCenterForm.userAvatar,
-                userName: this.userCenterForm.userName,
-                userEmail: this.userCenterForm.userEmail
-            };
-            
-            this.$axios.put(`/user/update`, userUpdateDTO).then(response => {
-                const { data } = response;
-                if (data.code === 200) {
-                    // 更新本地存储的用户信息
-                    const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
-                    userInfo.userName = this.userCenterForm.userName;
-                    userInfo.userEmail = this.userCenterForm.userEmail;
-                    userInfo.userAvatar = this.userCenterForm.userAvatar;
-                    sessionStorage.setItem('userInfo', JSON.stringify(userInfo));
-                    
-                    // 更新当前组件的用户信息
-                    this.userInfo = userInfo;
-                    
-                    // 关闭对话框并提示成功
-                    this.dialogUserCenter = false;
-                    this.$notify({
-                        title: '个人信息',
-                        message: '个人信息更新成功',
-                        type: 'success'
-                    });
-                }
-            }).catch(error => {
-                console.error('更新用户信息失败:', error);
-                this.$message.error('更新用户信息失败，请稍后重试');
-            });
-        }
+
     },
 };
 </script>
 
 <style scoped lang="scss">
-/* 顶部导航栏样式 */
-.top-nav {
-    line-height: 70px;
-    padding: 0 50px;
-}
 
-.user-info {
-    float: right;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    height: 70px;
-}
-
-.user-dropdown {
-    cursor: pointer;
-    
-    .el-dropdown-link {
-        display: flex;
-        align-items: center;
-        
-        img {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 8px;
-        }
-        
-        i {
-            margin-left: 8px;
-            font-size: 12px;
-            color: #909399;
-        }
-    }
-}
-
-.separator {
-    height: 20px;
-    background-color: rgb(248, 248, 248);
-}
 
 .message-page {
     background-color: #f5f7fa;
@@ -486,23 +311,7 @@ export default {
     padding: 0 20px 40px;
 }
 
-/* 功能区 */
-.message-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
 
-.back-button {
-    color: #42b983;
-    border-color: #42b983;
-    
-    &:hover {
-        color: white;
-        background-color: #42b983;
-    }
-}
 
 .action-right {
     display: flex;
@@ -528,13 +337,23 @@ export default {
 .message-types-container {
     margin-bottom: 25px;
     border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
+    padding-bottom: 15px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    padding: 15px 20px;
+}
+
+.message-type-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .message-type-tabs {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 12px;
 }
 
 .message-type {
@@ -544,16 +363,25 @@ export default {
     cursor: pointer;
     border-radius: 20px;
     transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    
+    i {
+        font-size: 16px;
+    }
     
     &:hover {
         color: #42b983;
         background-color: rgba(66, 185, 131, 0.08);
+        transform: translateY(-2px);
     }
     
     &.active {
         color: white;
         background-color: #42b983;
         font-weight: 500;
+        box-shadow: 0 4px 8px rgba(66, 185, 131, 0.2);
     }
 }
 
@@ -563,6 +391,7 @@ export default {
     border-radius: 10px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
     padding: 20px;
+    margin-top: 20px;
 }
 
 .empty-message {
@@ -671,62 +500,9 @@ export default {
     }
 }
 
-/* 用户中心对话框样式 */
-.user-center-content {
-    padding: 10px;
-}
 
-.avatar-upload-section {
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.form-label {
-    font-size: 14px;
-    color: #606266;
-    margin-bottom: 10px;
-}
-
-.form-item {
-    margin-bottom: 20px;
-}
-
-.avatar-uploader {
-    display: flex;
-    justify-content: center;
-    
-    .el-upload {
-        border: 1px dashed #d9d9d9;
-        border-radius: 6px;
-        cursor: pointer;
-        overflow: hidden;
-        
-        &:hover {
-            border-color: #42b983;
-        }
-    }
-    
-    .avatar {
-        width: 100px;
-        height: 100px;
-        display: block;
-        object-fit: cover;
-    }
-    
-    .avatar-uploader-icon {
-        font-size: 28px;
-        color: #8c939d;
-        width: 100px;
-        height: 100px;
-        line-height: 100px;
-        text-align: center;
-    }
-}
 
 @media screen and (max-width: 768px) {
-    .top-nav {
-        padding: 0 20px;
-    }
     
     .page-header {
         padding: 30px 0;
