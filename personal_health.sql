@@ -11,7 +11,7 @@
  Target Server Version : 80041 (8.0.41)
  File Encoding         : 65001
 
- Date: 24/06/2025 16:19:32
+ Date: 25/06/2025 04:02:15
 */
 
 SET NAMES utf8mb4;
@@ -323,6 +323,33 @@ INSERT INTO `evaluations_upvote` VALUES (66, 2, 23);
 INSERT INTO `evaluations_upvote` VALUES (67, 2, 15);
 
 -- ----------------------------
+-- Table structure for family_relationship
+-- ----------------------------
+DROP TABLE IF EXISTS `family_relationship`;
+CREATE TABLE `family_relationship`  (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '关系ID',
+  `user_id` int UNSIGNED NOT NULL COMMENT '用户ID',
+  `related_user_id` int UNSIGNED NOT NULL COMMENT '关联用户ID',
+  `relationship_type` tinyint NOT NULL COMMENT '关系类型(1:父母,2:子女,3:配偶,4:兄弟姐妹,5:祖父母,6:孙子女,7:其他)',
+  `permission_level` tinyint NOT NULL DEFAULT 1 COMMENT '权限级别(1:只读查看,2:可编辑,3:完全管理)',
+  `data_access` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '1,2,3' COMMENT '可访问的数据类型(1:健康指标,2:饮食记录,3:运动记录,4:药物记录,多个以逗号分隔)',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `status` tinyint NOT NULL DEFAULT 1 COMMENT '状态(0:已删除,1:正常)',
+  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uk_user_related`(`user_id` ASC, `related_user_id` ASC) USING BTREE COMMENT '用户关系唯一约束',
+  INDEX `idx_user_id`(`user_id` ASC) USING BTREE,
+  INDEX `idx_related_user_id`(`related_user_id` ASC) USING BTREE,
+  CONSTRAINT `fk_family_relationship_related_user_id` FOREIGN KEY (`related_user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_family_relationship_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '家庭关系表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of family_relationship
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for gourmet
 -- ----------------------------
 DROP TABLE IF EXISTS `gourmet`;
@@ -508,7 +535,7 @@ CREATE TABLE `interaction`  (
   `score` int NULL DEFAULT NULL COMMENT '评分',
   `create_time` datetime NULL DEFAULT NULL COMMENT '互动时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 154 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '互动信息表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 159 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '互动信息表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of interaction
@@ -651,11 +678,16 @@ INSERT INTO `interaction` VALUES (141, 3, 'VIEW', 70, 29, NULL, '2025-06-17 17:3
 INSERT INTO `interaction` VALUES (142, 3, 'VIEW', 64, 2, NULL, '2025-06-19 11:12:52');
 INSERT INTO `interaction` VALUES (144, 1, 'UPVOTE', 4, 2, NULL, '2025-06-19 23:14:35');
 INSERT INTO `interaction` VALUES (145, 1, 'UPVOTE', 5, 2, NULL, '2025-06-21 13:30:52');
-INSERT INTO `interaction` VALUES (146, 3, 'VIEW', 71, 2, NULL, '2025-06-23 23:17:03');
+INSERT INTO `interaction` VALUES (146, 3, 'VIEW', 70, 2, NULL, '2025-06-23 23:17:03');
 INSERT INTO `interaction` VALUES (147, 4, 'RATING', 70, 2, 5, '2025-06-23 23:17:08');
 INSERT INTO `interaction` VALUES (148, 1, 'UPVOTE', 70, 2, NULL, '2025-06-23 23:17:13');
 INSERT INTO `interaction` VALUES (149, 3, 'VIEW', 2, 2, NULL, '2025-06-23 23:26:35');
 INSERT INTO `interaction` VALUES (150, 4, 'RATING', 2, 2, 5, '2025-06-23 23:26:36');
+INSERT INTO `interaction` VALUES (154, 3, 'VIEW', 3, 2, NULL, '2025-06-24 21:55:16');
+INSERT INTO `interaction` VALUES (155, 4, 'RATING', 3, 2, 2, '2025-06-24 21:56:58');
+INSERT INTO `interaction` VALUES (156, 1, 'UPVOTE', 3, 2, NULL, '2025-06-24 21:57:12');
+INSERT INTO `interaction` VALUES (157, 4, 'RATING', 64, 2, 5, '2025-06-24 22:08:04');
+INSERT INTO `interaction` VALUES (158, 3, 'VIEW', 36, 2, NULL, '2025-06-25 00:53:15');
 
 -- ----------------------------
 -- Table structure for message
@@ -1103,6 +1135,34 @@ INSERT INTO `region` VALUES (5, '华中地区', 'central');
 INSERT INTO `region` VALUES (6, '东北地区', 'east-north');
 
 -- ----------------------------
+-- Table structure for relationship_request
+-- ----------------------------
+DROP TABLE IF EXISTS `relationship_request`;
+CREATE TABLE `relationship_request`  (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '请求ID',
+  `sender_id` int UNSIGNED NOT NULL COMMENT '发送者ID',
+  `receiver_id` int UNSIGNED NOT NULL COMMENT '接收者ID',
+  `relationship_type` tinyint NOT NULL COMMENT '关系类型(1:父母,2:子女,3:配偶,4:兄弟姐妹,5:祖父母,6:孙子女,7:其他)',
+  `permission_level` tinyint NOT NULL DEFAULT 1 COMMENT '请求的权限级别(1:只读查看,2:可编辑,3:完全管理)',
+  `data_access` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '1,2,3' COMMENT '请求访问的数据类型(1:健康指标,2:饮食记录,3:运动记录,4:药物记录,多个以逗号分隔)',
+  `request_message` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '请求消息',
+  `request_status` tinyint NOT NULL DEFAULT 0 COMMENT '请求状态(0:待处理,1:已接受,2:已拒绝)',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_sender_id`(`sender_id` ASC) USING BTREE,
+  INDEX `idx_receiver_id`(`receiver_id` ASC) USING BTREE,
+  INDEX `idx_status`(`request_status` ASC) USING BTREE,
+  CONSTRAINT `fk_relationship_request_receiver_id` FOREIGN KEY (`receiver_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_relationship_request_sender_id` FOREIGN KEY (`sender_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '关系请求表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of relationship_request
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for season
 -- ----------------------------
 DROP TABLE IF EXISTS `season`;
@@ -1168,9 +1228,9 @@ CREATE TABLE `user`  (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (2, 'whd', '吴汉东', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=8b13839微信图片_2025-05-21_010610_632.jpg', '2303532728@qq.com', 2, 0, 0, 1, 19, '2025-04-02 23:05:58');
+INSERT INTO `user` VALUES (2, 'whd', '吴汉东', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=8b13839微信图片_2025-05-21_010610_632.jpg', '2303532728@qq.com', 2, 0, 0, 1, 20, '2025-04-02 23:05:58');
 INSERT INTO `user` VALUES (3, 'xhr', '许浩然', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=b5718ff20.jpg', '123@qq.com', 2, 0, 0, 1, 20, '2025-04-18 23:06:21');
-INSERT INTO `user` VALUES (4, 'lym', '刘玉明', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=82dd17818.jpg', '1234@qq.com', 2, 0, 0, 1, 21, '2025-04-03 23:07:06');
+INSERT INTO `user` VALUES (4, 'lym', '刘玉明', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=56c6089cad2a40f-9bd7-4e35-a31e-8219ad715294.png', '1234@qq.com', 2, 0, 0, 1, 21, '2025-04-03 23:07:06');
 INSERT INTO `user` VALUES (5, 'wwb', '王文博', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=cb8bbda17.jpg', '1234@qq.com', 2, 0, 0, 1, 19, '2025-04-04 23:07:44');
 INSERT INTO `user` VALUES (6, 'wzr', '王梓瑞', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=768ca766.jpg', '1234@qq.com', 2, 0, 1, 1, 19, '2025-04-05 23:08:06');
 INSERT INTO `user` VALUES (7, 'zyk', '张殷恺', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=bd3a863admin.jpg', '1234@qq.com', 2, 1, 0, 1, 19, '2025-04-05 23:09:00');
