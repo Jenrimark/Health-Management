@@ -11,7 +11,7 @@
  Target Server Version : 80041 (8.0.41)
  File Encoding         : 65001
 
- Date: 20/06/2025 12:33:05
+ Date: 24/06/2025 16:19:32
 */
 
 SET NAMES utf8mb4;
@@ -63,7 +63,7 @@ CREATE TABLE `cookbook`  (
   `is_publish` tinyint(1) NULL DEFAULT NULL COMMENT '是否是公开食谱',
   `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 72 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '食谱信息表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 75 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '食谱信息表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of cookbook
@@ -105,10 +105,11 @@ INSERT INTO `cookbook` VALUES (42, 1, 'http://localhost:8080/api/personal-heath/
 INSERT INTO `cookbook` VALUES (43, 1, 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=1d30a60西红柿豆腐汤.webp', '西红柿豆腐汤', 1, '<p>西红柿50g，豆腐30g</p>', 1, '2025-04-19 11:13:00');
 INSERT INTO `cookbook` VALUES (64, 1, 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=93f374egouqi.webp', '枸杞叶豆腐汤', 1, '<p>枸杞叶50g，豆腐50g</p>', 1, '2025-04-19 18:37:13');
 INSERT INTO `cookbook` VALUES (65, 1, 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=bd95531水煮奶白菜.jpg@watermark=0', '水煮奶白菜', 1, '<p><span style=\"color: rgb(84, 83, 84); background-color: rgb(245, 247, 250); font-size: 14px;\">烧脚白菜80g</span></p>', 1, '2025-04-19 18:39:16');
-INSERT INTO `cookbook` VALUES (66, 1, 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=c237504鲜虾焖冬笋.jpg@h_1280', '鲜虾焖冬笋', 1, '<p><span style=\"color: rgb(84, 83, 84); background-color: rgb(245, 247, 250); font-size: 14px;\">冬笋80g，海虾30g</span></p>', 1, '2025-04-19 18:40:35');
-INSERT INTO `cookbook` VALUES (67, 1, 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=bfda12a红薯.webp', '红薯', 1, '<p><br></p>', 1, '2025-04-19 23:33:49');
-INSERT INTO `cookbook` VALUES (68, 2, 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=3788599t013a1780aedcfea383.jpg', '巧克力', 2, '<p>超甜！</p>', 0, '2025-04-23 10:58:09');
+INSERT INTO `cookbook` VALUES (68, 2, 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=3788599t013a1780aedcfea383.jpg', '巧克力', 2, '<p>超甜！</p>', 1, '2025-04-23 10:58:09');
 INSERT INTO `cookbook` VALUES (71, 29, 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=e6bae5b90.jpg', '奶茶', 16, '<p>超好喝</p>', 1, '2025-06-19 15:17:06');
+INSERT INTO `cookbook` VALUES (72, 29, 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=bfda12a红薯.webp', '红薯', 1, '<p><br></p>', 1, '2025-06-21 22:14:14');
+INSERT INTO `cookbook` VALUES (73, 29, 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=c237504鲜虾焖冬笋.jpg@h_1280', '鲜虾焖冬笋', 1, '<p>冬笋80g，海虾30g</p>', 1, '2025-06-21 22:18:02');
+INSERT INTO `cookbook` VALUES (74, 2, 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=3788599t013a1780aedcfea383.jpg', '123', 14, '<p>123</p>', 0, '2025-06-21 23:57:16');
 
 -- ----------------------------
 -- Table structure for cookbook_nutriment
@@ -120,7 +121,7 @@ CREATE TABLE `cookbook_nutriment`  (
   `nutriment_id` int NULL DEFAULT NULL COMMENT '营养素ID',
   `100g_value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '每100g食物中含量',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 70 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '食谱营养素关联信息表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 72 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '食谱营养素关联信息表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of cookbook_nutriment
@@ -193,6 +194,8 @@ INSERT INTO `cookbook_nutriment` VALUES (66, 68, 3, '53');
 INSERT INTO `cookbook_nutriment` VALUES (67, 68, 14, '205');
 INSERT INTO `cookbook_nutriment` VALUES (68, 68, 1, '10.7');
 INSERT INTO `cookbook_nutriment` VALUES (69, 68, 8, '60');
+INSERT INTO `cookbook_nutriment` VALUES (70, 74, 8, '1');
+INSERT INTO `cookbook_nutriment` VALUES (71, 74, 9, '100');
 
 -- ----------------------------
 -- Table structure for diet_history
@@ -206,13 +209,12 @@ CREATE TABLE `diet_history`  (
   `value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '记录的值',
   `create_time` datetime NULL DEFAULT NULL COMMENT '记录时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 42 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '用户饮食信息表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 43 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '用户饮食信息表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of diet_history
 -- ----------------------------
 INSERT INTO `diet_history` VALUES (1, 2, 1, '早餐', '200', '2025-04-04 14:02:37');
-INSERT INTO `diet_history` VALUES (2, 2, 67, '早餐', '200', '2025-04-04 23:34:44');
 INSERT INTO `diet_history` VALUES (3, 2, 10, '早餐', '160', '2025-04-04 23:34:44');
 INSERT INTO `diet_history` VALUES (4, 2, 5, '中饭', '150', '2025-04-05 23:36:47');
 INSERT INTO `diet_history` VALUES (5, 2, 13, '晚饭', '150', '2025-04-05 23:36:47');
@@ -221,7 +223,6 @@ INSERT INTO `diet_history` VALUES (7, 2, 43, '晚饭', '150', '2025-04-06 23:36:
 INSERT INTO `diet_history` VALUES (8, 2, 65, '中饭', '150', '2025-04-06 23:36:47');
 INSERT INTO `diet_history` VALUES (9, 2, 42, '晚饭', '150', '2025-04-07 23:36:47');
 INSERT INTO `diet_history` VALUES (10, 2, 68, '中餐', '500', '2025-04-08 15:56:52');
-INSERT INTO `diet_history` VALUES (11, 2, 67, '早餐', '100', '2025-04-11 15:56:52');
 INSERT INTO `diet_history` VALUES (12, 2, 43, '晚餐', '500', '2025-04-11 15:56:52');
 INSERT INTO `diet_history` VALUES (13, 2, 16, '中餐', '300', '2025-04-15 15:56:52');
 INSERT INTO `diet_history` VALUES (14, 2, 13, '中餐', '200', '2025-04-15 15:56:52');
@@ -231,12 +232,10 @@ INSERT INTO `diet_history` VALUES (17, 2, 10, '早餐', '300', '2025-04-18 16:14
 INSERT INTO `diet_history` VALUES (18, 2, 10, '早餐', '200', '2025-04-19 16:15:10');
 INSERT INTO `diet_history` VALUES (19, 2, 1, '早餐', '200', '2025-04-20 16:15:33');
 INSERT INTO `diet_history` VALUES (20, 2, 1, '早餐', '200', '2025-04-23 16:13:32');
-INSERT INTO `diet_history` VALUES (21, 2, 67, '早餐', '200', '2025-04-24 16:19:23');
 INSERT INTO `diet_history` VALUES (22, 2, 42, '中餐', '200', '2025-04-24 16:19:23');
 INSERT INTO `diet_history` VALUES (23, 2, 68, '中餐', '500', '2025-04-24 16:19:55');
 INSERT INTO `diet_history` VALUES (24, 2, 13, '中餐', '200', '2025-04-24 16:19:55');
 INSERT INTO `diet_history` VALUES (25, 2, 68, '中餐', '500', '2025-04-26 13:48:14');
-INSERT INTO `diet_history` VALUES (26, 2, 67, '早餐', '200', '2025-04-26 13:48:14');
 INSERT INTO `diet_history` VALUES (27, 2, 10, '早餐', '500', '2025-04-26 13:48:14');
 INSERT INTO `diet_history` VALUES (28, 2, 43, '中餐', '300', '2025-04-26 13:48:14');
 INSERT INTO `diet_history` VALUES (29, 2, 1, '晚餐', '300', '2025-04-26 13:48:14');
@@ -244,13 +243,12 @@ INSERT INTO `diet_history` VALUES (30, 2, 65, '午餐', '200', '2025-05-14 21:57
 INSERT INTO `diet_history` VALUES (31, 2, 43, '晚餐', '300', '2025-05-14 21:57:35');
 INSERT INTO `diet_history` VALUES (33, 2, 68, NULL, '500', '2025-05-16 11:04:33');
 INSERT INTO `diet_history` VALUES (34, 2, 68, '午餐', '200', '2025-05-16 19:23:20');
-INSERT INTO `diet_history` VALUES (35, 2, 67, '早餐', '200', '2025-05-16 19:23:20');
 INSERT INTO `diet_history` VALUES (36, 2, 68, '午餐', '300', '2025-05-17 09:01:17');
-INSERT INTO `diet_history` VALUES (37, 2, 67, '早餐', '200', '2025-05-17 09:01:17');
 INSERT INTO `diet_history` VALUES (38, 29, 66, NULL, '10', '2025-06-17 17:41:52');
 INSERT INTO `diet_history` VALUES (39, 29, 17, NULL, '3', '2025-06-17 17:41:52');
 INSERT INTO `diet_history` VALUES (40, 29, 10, NULL, '2', '2025-06-17 17:41:52');
 INSERT INTO `diet_history` VALUES (41, 2, 30, NULL, '10', '2025-06-19 23:03:59');
+INSERT INTO `diet_history` VALUES (42, 2, 68, NULL, '10', '2025-06-21 17:55:46');
 
 -- ----------------------------
 -- Table structure for evaluations
@@ -306,7 +304,7 @@ CREATE TABLE `evaluations_upvote`  (
   `user_id` int NULL DEFAULT NULL COMMENT '用户ID',
   `evaluations_id` int NULL DEFAULT NULL COMMENT '点赞ID',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 67 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 68 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of evaluations_upvote
@@ -322,6 +320,7 @@ INSERT INTO `evaluations_upvote` VALUES (62, 3, 12);
 INSERT INTO `evaluations_upvote` VALUES (63, 2, 16);
 INSERT INTO `evaluations_upvote` VALUES (65, 2, 10);
 INSERT INTO `evaluations_upvote` VALUES (66, 2, 23);
+INSERT INTO `evaluations_upvote` VALUES (67, 2, 15);
 
 -- ----------------------------
 -- Table structure for gourmet
@@ -364,7 +363,7 @@ INSERT INTO `gourmet` VALUES (34, 3, 2, '补气虚的运动有哪些', '<p style
 INSERT INTO `gourmet` VALUES (35, 3, 4, '含神经酰胺的护肤品对皮肤有哪些作用？', '<p><span style=\"color: rgb(51, 51, 51);\">女性使用过化妆品的都知道其中是含有神经酰胺的，但是大家对于含神经酰胺的护肤品对于皮肤会产生哪些作用并不是十分清楚，这些基本常识是每一位女性必须去了解清楚的，今天小编正好给大家请来了皮肤方面的权威专家，一起来听听他们是怎么说的。<br><br> </span><span style=\"color: rgb(51, 51, 51);\"><strong>神经酰胺是什么？</strong></span></p><p><span style=\"color: rgb(51, 51, 51);\"> 我们知道人的皮肤主要由三个部分组成，分别是真皮、表皮和皮下组织，我们每天使用化妆品的时候与皮肤发生关系的就是表皮层，而表皮层的外面就是角质层，而神经酰胺就是角质层细胞之间的物质，占据的比例能够达到50%，相当于神经酰胺在皮肤表面形成了一层保护膜，能够抵抗外界的腐蚀。<br><br> </span><span style=\"color: rgb(51, 51, 51);\"><strong> 含神经酰胺的护肤品对皮肤的作用如下：<br><br> 1）粘合作用：<br></strong></span><span style=\"color: rgb(51, 51, 51);\"> &nbsp;第一个神经酰胺功能就是粘合功能，这是它十分独特的一个功能，能够非常强地将很多的角质细胞粘合在一起，这样皮肤就会锁住水分了，保持湿润。<br><br> </span><span style=\"color: rgb(51, 51, 51);\"><strong> 2）保湿作用：</strong></span></p><p><span style=\"color: rgb(51, 51, 51);\"> 神经酰胺还能帮助大家锁住水分子，最终形成网状的结构锁水，其他的锁水物质效果都不如神经酰胺好。皮肤湿度有保证了，整个人的皮肤就会变得非常好。<br> </span><span style=\"color: rgb(51, 51, 51);\"><strong> 3）屏障作用：</strong></span></p><p><span style=\"color: rgb(51, 51, 51);\"> 皮肤中有了神经酰胺这种物质之后能够让皮肤少受外界的刺激，如果皮肤里面没有它，就失去了一个屏障。<br><br> </span><span style=\"color: rgb(51, 51, 51);\"><strong>4）抗过敏作用：</strong></span><span style=\"color: rgb(51, 51, 51);\"> </span></p><p><span style=\"color: rgb(51, 51, 51);\">有些人的皮肤本身就非常的薄，这时候使用含有神经酰胺的化妆品的话能够让角质层变得厚一点，皮肤会变得更加有耐受力，不会出现红血丝了。<br><br><br> </span><span style=\"color: rgb(51, 51, 51);\"><strong>5）抗衰老：</strong></span><span style=\"color: rgb(51, 51, 51);\"> 皮肤干燥会引起皱纹，做好保湿自然是可以辅助抗衰老的。<br><br><br> 相信大家读完上文后对于含神经酰胺的护肤品对皮肤的5个作用都有十分全面的认识，能够看出这样的一种物质对于皮肤是有十分明显的保护作用的，希望大家在使用化妆品的时候尽量选择含有神经酰胺的，只要大家坚持使用皮肤会变得越来越好的。</span></p>', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=1f7855c19.webp', 1, 1, '2025-04-19 22:48:05');
 INSERT INTO `gourmet` VALUES (36, 3, 8, '人们在走神时大脑活动更为活跃', '<p style=\"text-align: start;\"> 这项研究发现，当我们心不在焉的时候，大脑很多区域的活动都有所增强。研究结果刊登在最新一期《美国科学院院刊》上。事实上，该研究表明，一些同解决复杂问题有关的大脑区域在我们进行天马行空的想象时高度活跃，而科学家之前认为这些区域在我们走神时处于休眠状态。</p><p style=\"text-align: start;\">　　领导实施这项研究的不列颠哥伦比亚大学心理学教授卡琳娜·克里斯托夫(KalinaChristoff)表示：“思绪飘扬一般同懒散或精力不集中等负面事情有关。但是，这项研究却表明我们走神时大脑活动反而更为活跃，活跃程度甚至超过我们专心从事一些日常工作的时候。”</p><p style=\"text-align: start;\">　　在研究中，志愿者躺在fMRI扫描仪里面，当数字出现在屏幕上时进行按键等简单活动。研究人员可以通过大脑扫描、志愿者的主动报告以及追踪志愿者的成绩来调查他们的瞬间注意力。研究结果发现，走神(最多可以占据我们清醒状态下三分之一的时间)是一种重要的认知状态，在这种状态下，我们可能在不知不觉中将注意力从当前的工作转向梳理日常生活中的重要问题。</p><p style=\"text-align: start;\">　　大脑活动的数量和质量表明，尝试解决复杂问题的人应该先停下来，转而从事更为简单的工作，让思绪自由飘荡。克里斯托夫说：“你在走神的时候，可能并没有取得直接目标——比如在课堂上读书或集中注意力听讲，但思绪可能利用这一时间去解决你人生中更为重要的问题，比如事业发展或个人关系。”</p>', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=fc1962820.jpg', 1, 1, '2025-04-19 22:50:19');
 INSERT INTO `gourmet` VALUES (37, 5, 6, '长期处于低温环境人会如何', '<p style=\"text-align: start;\"><span style=\"color: rgb(0, 0, 0);\">长期处于低温环境可能导致</span><a href=\"https://jbk.39.net/zhengzhuang/twtjwl/\" target=\"\"><span style=\"color: rgb(0, 0, 0);\">体温调节紊乱</span></a><span style=\"color: rgb(0, 0, 0);\">、低代谢状态、</span><a href=\"https://jbk.39.net/ds/\" target=\"\"><span style=\"color: rgb(0, 0, 0);\">冻伤</span></a><span style=\"color: rgb(0, 0, 0);\">、</span><a href=\"https://jbk.39.net/ts/\" target=\"\"><span style=\"color: rgb(0, 0, 0);\">脱水</span></a><span style=\"color: rgb(0, 0, 0);\">、</span><a href=\"https://jbk.39.net/zhengzhuang/mylxj/\" target=\"\"><span style=\"color: rgb(0, 0, 0);\">免疫力下降</span></a><span style=\"color: rgb(0, 0, 0);\">等风险反应。</span></p><p style=\"text-align: start;\"><span style=\"color: rgb(0, 0, 0);\">1.体温调节紊乱</span></p><p style=\"text-align: start;\"><span style=\"color: rgb(0, 0, 0);\">长期处于低温环境中会导致机体产热不足以维持正常体温，引起体温调节中枢功能障碍。此时可能出现寒战、颤抖等自主性产热增加的现象，严重时可导致</span><a href=\"https://jbk.39.net/twgd/\" target=\"\"><span style=\"color: rgb(0, 0, 0);\">体温过低</span></a><span style=\"color: rgb(0, 0, 0);\">甚至昏迷。</span></p><p style=\"text-align: start;\"><span style=\"color: rgb(0, 0, 0);\">2.低代谢状态</span></p><p style=\"text-align: start;\"><span style=\"color: rgb(0, 0, 0);\">低温状态下，为了保持体温，身体会降低新陈代谢率以减少热量散失。这可能导致心率减慢、呼吸变浅以及其他生理过程的减缓，进一步影响血液循环和器官功能。</span></p><p style=\"text-align: start;\"><span style=\"color: rgb(0, 0, 0);\">3.冻伤</span></p><p style=\"text-align: start;\"><span style=\"color: rgb(0, 0, 0);\">当人体长时间暴露于低温环境中，皮肤表面温度低于5℃时，局部组织会发生冻结现象，这是由于低温导致细胞内外水分结晶所致。冻伤后，受损部位会出现红斑、</span><a href=\"https://jbk.39.net/zs13/\" target=\"\"><span style=\"color: rgb(0, 0, 0);\">肿胀</span></a><span style=\"color: rgb(0, 0, 0);\">、疼痛等症状，严重者可能伴有水疱或组织坏死。</span></p><p style=\"text-align: start;\"><span style=\"color: rgb(0, 0, 0);\">4.脱水</span></p><p style=\"text-align: start;\"><span style=\"color: rgb(0, 0, 0);\">低温环境下，人体出汗减少，但呼吸加快以保持呼吸道湿润，从而造成水分流失。脱水可能导致头晕、口渴、尿量减少等不适症状，严重时可引发电解质紊乱。</span></p><p style=\"text-align: start;\"><span style=\"color: rgb(0, 0, 0);\">5.免疫力下降</span></p><p style=\"text-align: start;\"><span style=\"color: rgb(0, 0, 0);\">低温条件下，机体为抵御寒冷需要消耗大量能量，这可能会干扰免疫系统的正常功能。因此，长期处于低温环境中的人更容易受到感染，恢复期也相对较长。</span></p><p style=\"text-align: start;\"><span style=\"color: rgb(0, 0, 0);\">在低温环境中活动时，应做好保暖措施，避免穿着潮湿衣物，以免加重体温调节紊乱。</span></p>', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=6d12a2221.jpg', 1, 1, '2025-04-19 22:56:01');
-INSERT INTO `gourmet` VALUES (38, 5, 4, '美甲变毁甲 “指尖上的美丽”如何守护', '<p style=\"text-indent: 2em; text-align: justify;\">从“过年三件套”到敖闰的“裂空爪”，从“法式甲”到“中式风”，从刷油涂胶到可穿戴……美甲已成为不少消费者展示自我、表达个性的“新刚需”。</p><p style=\"text-indent: 2em; text-align: justify;\">然而，美甲变毁甲等糟心事不时发生，一些爱美人士不仅丢了“指尖美丽”，还搭上了指甲的健康。</p><p style=\"text-indent: 2em; text-align: justify;\">如何守护“指尖上的美丽”？记者进行了调查采访。</p><p style=\"text-indent: 2em; text-align: justify;\"><strong>美丽背后潜藏风险</strong></p><p style=\"text-indent: 2em; text-align: justify;\">前不久，广西南宁市民周小怡发现，刚做两天的美甲“发霉”了——透过厚厚的淡粉色延长甲片，可以清晰看到指甲上长出黝黑的霉菌。就医后医生告诉她，这是因为甲片与指甲贴合不紧，水分进入缝隙滋生了霉菌。</p><p style=\"text-indent: 2em; text-align: justify;\">在一些医院皮肤科，类似的患者并不鲜见。“我们科每天开设七八个门诊诊室，每个诊室日均至少有一两个患者因为美甲出现问题。”吉林大学第二医院皮肤科主治医师单百卉说，她遇到过指甲变绿的、变灰的、发炎的、分层的，甚至还有指甲整个掀翻的，“还有不少青少年患者”。</p><p style=\"text-indent: 2em; text-align: justify;\">记者在小红书等社交平台上搜索发现，“美甲变毁甲”“美甲后出现问题”等话题精选量超千万次，上万人参与讨论。除了指甲发霉、变绿，指甲红肿、变脆、泛血丝等也是常见的讨论问题。</p><p style=\"text-indent: 2em; text-align: justify;\">记者调查发现，美甲变毁甲等问题的背后，是美甲越来越受到消费者青睐，近些年美甲相关企业大量出现，鱼龙混杂。</p><p style=\"text-indent: 2em; text-align: justify;\">业内人士透露，美甲市场火热，但行业门槛较低，一些“美甲工作室”没有经营许可，藏身于居民楼间，甚至一个人、一个筐就能上门服务。</p><p style=\"text-indent: 2em; text-align: justify;\">有些不良商家凭借低价抢占市场，使用劣质材料，卫生环境较差，造成潜在风险。“美甲的风险包括指甲损伤、甲分离、甲沟炎、皮肤刺激，以及细菌、真菌或病毒感染等，长期频繁接触质量欠佳的指甲油、指甲胶，还会增加患癌风险。”广西医科大学第一附属医院皮肤性病科副主任医师张馨予说。</p><p style=\"text-indent: 2em; text-align: justify;\"><strong>问题到底出在哪</strong></p><p style=\"text-indent: 2em; text-align: justify;\">近期，记者在多地实地探访发现，不少美甲店的产品设备、卫生环境、操作流程等隐患重重。</p><p style=\"text-indent: 2em; text-align: justify;\">记者在一家美甲店看到，各式甲油胶琳琅满目。美甲师表示，这些甲油胶都是厂家直供，市场上买不到。记者提出想要看一下产品合格证，美甲师说，产品是老板拿来的，“我们只负责用，不知道合格证在哪里。”</p><p style=\"text-indent: 2em; text-align: justify;\">前不久，上海市消保委对43款美甲产品进行测评，结果显示，有几款油性指甲油和甲油胶中测出了一定含量的甲苯、乙苯等挥发性有机物；含闪粉和亮片的指甲油被检出多种重金属元素，深红色指甲油中铬或镍的检出浓度较高。</p><p style=\"text-indent: 2em; text-align: justify;\">商务部2007年发布的美容美发行业经营管理技术规范要求，美甲服务应备有皮肤病顾客的专用工具箱，美甲工具应采用紫外线消毒，做到一客一消毒，或使用一次性用品。</p><p style=\"text-indent: 2em; text-align: justify;\">记者周末到店体验时看到，繁忙时段，多名美甲师混用美甲工具，“你剪完我用，你磨完我磨”，最多用湿巾擦一下，鲜有消毒工序。当记者询问这些工具是否需要“一客一消”时，一名美甲师说：“请您放心，闭店之后我们都会认真消毒的。”</p><p style=\"text-indent: 2em; text-align: justify;\">“如果操作过程中没有经过严格的消毒，那细菌、病毒、真菌就会通过器械传播到其他人身上去；尤其是如果修剪过程中破皮了、出血了，交叉感染隐患就更大。”张馨予说。</p><p style=\"text-indent: 2em; text-align: justify;\"><strong>健康与美丽能否兼得</strong></p><p style=\"text-indent: 2em; text-align: justify;\">美甲行业快速发展、消费群体日益扩大，如何守护“指尖上的美丽”？</p><p style=\"text-indent: 2em; text-align: justify;\">广西消费者权益保护委员会秘书长唐楚尧建议，有关部门出台强制性标准和规范，加强监管，指导行业协会对美甲商家定期评星评级，为消费者选择美甲服务提供有效参考；同时加大从业人员的培训力度，推动行业自律，促进美甲行业健康发展。</p><p style=\"text-indent: 2em; text-align: justify;\">多位医生建议，加强健康科普宣传，引导消费者树立健康美甲、理性美甲的观念。单百卉等医生提示，每次美甲至少应间隔一个月至一个半月，给指甲充分的休息时间；一旦发现指甲出现变色等异常情况应及时就医，千万不能为了一时的美丽影响身体健康。</p><p style=\"text-indent: 2em; text-align: justify;\">“随着健康美甲需求的不断增长，只有更安全、更卫生、更规范的美甲服务，才能赢得消费者的信赖和口碑。”广西美甲标准专业委员会副会长黄谢丹说。</p>', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=91fe3f122.webp', 1, 1, '2025-04-19 22:57:54');
+INSERT INTO `gourmet` VALUES (38, 5, 4, '美甲变毁甲 “指尖上的美丽”如何守护', '<p style=\"text-indent: 2em; text-align: justify;\">从“过年三件套”到敖闰的“裂空爪”，从“法式甲”到“中式风”，从刷油涂胶到可穿戴……美甲已成为不少消费者展示自我、表达个性的“新刚需”。</p><p style=\"text-indent: 2em; text-align: justify;\">然而，美甲变毁甲等糟心事不时发生，一些爱美人士不仅丢了“指尖美丽”，还搭上了指甲的健康。</p><p style=\"text-indent: 2em; text-align: justify;\">如何守护“指尖上的美丽”？记者进行了调查采访。</p><p style=\"text-indent: 2em; text-align: justify;\"><strong>美丽背后潜藏风险</strong></p><p style=\"text-indent: 2em; text-align: justify;\">前不久，广西南宁市民周小怡发现，刚做两天的美甲“发霉”了——透过厚厚的淡粉色延长甲片，可以清晰看到指甲上长出黝黑的霉菌。就医后医生告诉她，这是因为甲片与指甲贴合不紧，水分进入缝隙滋生了霉菌。</p><p style=\"text-indent: 2em; text-align: justify;\">在一些医院皮肤科，类似的患者并不鲜见。“我们科每天开设七八个门诊诊室，每个诊室日均至少有一两个患者因为美甲出现问题。”吉林大学第二医院皮肤科主治医师单百卉说，她遇到过指甲变绿的、变灰的、发炎的、分层的，甚至还有指甲整个掀翻的，“还有不少青少年患者”。</p><p style=\"text-indent: 2em; text-align: justify;\">记者在小红书等社交平台上搜索发现，“美甲变毁甲”“美甲后出现问题”等话题浏览量超千万次，上万人参与讨论。除了指甲发霉、变绿，指甲红肿、变脆、泛血丝等也是常见的讨论问题。</p><p style=\"text-indent: 2em; text-align: justify;\">记者调查发现，美甲变毁甲等问题的背后，是美甲越来越受到消费者青睐，近些年美甲相关企业大量出现，鱼龙混杂。</p><p style=\"text-indent: 2em; text-align: justify;\">业内人士透露，美甲市场火热，但行业门槛较低，一些“美甲工作室”没有经营许可，藏身于居民楼间，甚至一个人、一个筐就能上门服务。</p><p style=\"text-indent: 2em; text-align: justify;\">有些不良商家凭借低价抢占市场，使用劣质材料，卫生环境较差，造成潜在风险。“美甲的风险包括指甲损伤、甲分离、甲沟炎、皮肤刺激，以及细菌、真菌或病毒感染等，长期频繁接触质量欠佳的指甲油、指甲胶，还会增加患癌风险。”广西医科大学第一附属医院皮肤性病科副主任医师张馨予说。</p><p style=\"text-indent: 2em; text-align: justify;\"><strong>问题到底出在哪</strong></p><p style=\"text-indent: 2em; text-align: justify;\">近期，记者在多地实地探访发现，不少美甲店的产品设备、卫生环境、操作流程等隐患重重。</p><p style=\"text-indent: 2em; text-align: justify;\">记者在一家美甲店看到，各式甲油胶琳琅满目。美甲师表示，这些甲油胶都是厂家直供，市场上买不到。记者提出想要看一下产品合格证，美甲师说，产品是老板拿来的，“我们只负责用，不知道合格证在哪里。”</p><p style=\"text-indent: 2em; text-align: justify;\">前不久，上海市消保委对43款美甲产品进行测评，结果显示，有几款油性指甲油和甲油胶中测出了一定含量的甲苯、乙苯等挥发性有机物；含闪粉和亮片的指甲油被检出多种重金属元素，深红色指甲油中铬或镍的检出浓度较高。</p><p style=\"text-indent: 2em; text-align: justify;\">商务部2007年发布的美容美发行业经营管理技术规范要求，美甲服务应备有皮肤病顾客的专用工具箱，美甲工具应采用紫外线消毒，做到一客一消毒，或使用一次性用品。</p><p style=\"text-indent: 2em; text-align: justify;\">记者周末到店体验时看到，繁忙时段，多名美甲师混用美甲工具，“你剪完我用，你磨完我磨”，最多用湿巾擦一下，鲜有消毒工序。当记者询问这些工具是否需要“一客一消”时，一名美甲师说：“请您放心，闭店之后我们都会认真消毒的。”</p><p style=\"text-indent: 2em; text-align: justify;\">“如果操作过程中没有经过严格的消毒，那细菌、病毒、真菌就会通过器械传播到其他人身上去；尤其是如果修剪过程中破皮了、出血了，交叉感染隐患就更大。”张馨予说。</p><p style=\"text-indent: 2em; text-align: justify;\"><strong>健康与美丽能否兼得</strong></p><p style=\"text-indent: 2em; text-align: justify;\">美甲行业快速发展、消费群体日益扩大，如何守护“指尖上的美丽”？</p><p style=\"text-indent: 2em; text-align: justify;\">广西消费者权益保护委员会秘书长唐楚尧建议，有关部门出台强制性标准和规范，加强监管，指导行业协会对美甲商家定期评星评级，为消费者选择美甲服务提供有效参考；同时加大从业人员的培训力度，推动行业自律，促进美甲行业健康发展。</p><p style=\"text-indent: 2em; text-align: justify;\">多位医生建议，加强健康科普宣传，引导消费者树立健康美甲、理性美甲的观念。单百卉等医生提示，每次美甲至少应间隔一个月至一个半月，给指甲充分的休息时间；一旦发现指甲出现变色等异常情况应及时就医，千万不能为了一时的美丽影响身体健康。</p><p style=\"text-indent: 2em; text-align: justify;\">“随着健康美甲需求的不断增长，只有更安全、更卫生、更规范的美甲服务，才能赢得消费者的信赖和口碑。”广西美甲标准专业委员会副会长黄谢丹说。</p>', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=91fe3f122.webp', 1, 1, '2025-04-19 22:57:54');
 INSERT INTO `gourmet` VALUES (39, 5, 3, '去挖野菜了吗？荠菜、香椿、蒲公英可不能随便吃，医生总结野菜食用提醒', '<p style=\"text-indent: 2em; text-align: justify;\">微雨众卉新，春天是万物复苏的季节，百草萌发，又到了吃野菜的季节。野菜是春天限时版的美味，如今相约一起摘野菜更成为都市人放松社交的新方式。不过，既然叫野菜，食用也有讲究。这里来说说一些常见的春季野菜。</p><p style=\"text-indent: 2em; text-align: justify;\"><strong>荠菜：天然维C源</strong></p><p style=\"text-indent: 2em; text-align: justify;\">荠菜在田野里随处可见，可以轻轻松松挖上一篮筐。荠菜含有丰富的维生素C和膳食纤维，100克荠菜中的维生素C含量约43毫克，大约是苹果的14倍，可与130克圣女果相媲美，是天然的维C源。</p><p style=\"text-indent: 2em; text-align: justify;\">荠菜的烹饪方法多种多样，可以做荠菜炒鸡蛋、蒸荠菜（荠菜加玉米面搅拌均匀后蒸熟）、荠菜团子（荠菜加上胡萝卜、粉丝、虾皮，再加入食用油锁住水分，搅拌均匀后蒸熟）。采用这些烹饪方法，既可以保留荠菜的自然风味，还能较大限度保留其营养价值。</p><p style=\"text-indent: 2em; text-align: justify;\"><strong>香椿：“春菜”人气榜必有一席</strong></p><p style=\"text-indent: 2em; text-align: justify;\">香椿具有独特芳香，被誉为“树上蔬菜”。在我国，食用香椿的历史悠久，民间自古就有“食用香椿，不染杂病”的说法。香椿中含有丰富的钙、镁、铁、磷等微量元素，香椿的镁含量是猕猴桃的3倍，铁含量是新鲜红枣的3倍。香椿中也含有丰富的膳食纤维，其含量与菠菜相当。</p><p style=\"text-indent: 2em; text-align: justify;\">要注意的是，吃香椿前需要先焯水，以去除亚硝酸盐和草酸等物质，焯水时间不需过长，30秒即可。香椿可以和其他食材搭配食用，例如可以做成香椿炒鸡蛋、香椿烙饼（香椿洗净切碎后加入面粉和鸡蛋，搅成糊状，小火慢煎）、香椿豆腐泥（豆腐压成泥，加入香椿碎、芝麻、花生碎等），鲜美无比。</p><p style=\"text-indent: 2em; text-align: justify;\"><strong>蒲公英：蘸酱过多增加肾负担</strong></p><p style=\"text-indent: 2em; text-align: justify;\">蒲公英又称婆婆丁，属于药食同源的食物，具有清热解毒，消肿、散结块、保护视力的作用，维生素A的含量约是胡萝卜的1.7倍。更有研究发现，蒲公英提取物可改善2型糖尿病大鼠胰岛素抵抗状态，并降低血糖水平。</p><p style=\"text-indent: 2em; text-align: justify;\">有人喜欢用蒲公英来蘸酱食用，这种方法虽简单便捷，但食用过多会导致盐分摄入过多，加重肾脏负担。更推荐将其凉拌，做成鸡蛋饼或蒲公英包子，或制作成蒲公英茶，既可以保留美味，又不会加重身体代谢负担。</p><p style=\"text-indent: 2em; text-align: justify;\"><strong>特别提醒：</strong></p><p style=\"text-indent: 2em; text-align: justify;\">野菜是春天里一道特殊美食，然而，像荠菜、香椿、马齿苋等野菜都是光敏性食物，食用后会增加人体对紫外线的吸收，在阳光下暴晒容易诱发日光性皮炎，光敏体质者更容易中招。因此，这类人群在食用野菜时应特别小心，尤其是外出旅游或在户外工作之前最好不要食用野菜。即使没有明显光敏感的人群，也应注意控制食用量，并在食用后尽量避免阳光直射，或选择在晚餐时食用。</p><p style=\"text-indent: 2em; text-align: justify;\">为了加速身体排泄，食用野菜后要多喝水。</p><p style=\"text-indent: 2em; text-align: justify;\">食用野菜前，最好先将其焯水，以去除多余的草酸等物质，同时还能软化粗纤维，有助于消化和吸收。</p><p style=\"text-indent: 2em; text-align: justify;\">无论是哪种野菜，都需要注意控制食用量和烹调方法，以避免过度摄入盐、糖分或脂肪。</p><p style=\"text-indent: 2em; text-align: justify;\">选择野菜时，要注意避免采摘花坛边、路边、矿厂附近的野菜，因为这些地方可能存在污染风险。</p><p style=\"text-indent: 2em; text-align: justify;\">如果遇到不认识或辨识不清的野菜，不要采摘，以免误食导致食物中毒。</p>', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=4c7288c23.png', 1, 1, '2025-04-19 22:58:51');
 INSERT INTO `gourmet` VALUES (40, 5, 10, '减少“小胖墩”需家校社协同共治', '<p style=\"text-indent: 2em; text-align: justify;\">“我家孩子才9岁，这半年长了20斤”……近期，首都儿科研究所成立医学体重管理中心，不少家长带孩子前来向医生咨询体重管理意见。近年来，我国儿童青少年超重肥胖比例持续上升。超重肥胖，不仅会影响孩子身体健康，还可能带来焦虑、抑郁等心理问题。</p><p style=\"text-indent: 2em; text-align: justify;\">随着国家卫健委等16部门发起“体重管理年”行动，超重肥胖问题成为社会关注焦点，“小胖墩”现象也引起社会广泛关注。《中国居民营养与慢性病状况报告（2020年）》显示，我国6至17岁儿童青少年的超重肥胖率为19%，即每5个孩子中就有1个体重超标。更为严峻的是，若不加以有效干预，到2030年我国儿童超重肥胖率将突破31.8%。</p><p style=\"text-indent: 2em; text-align: justify;\">儿童青少年正处于生长发育的关键阶段，儿童期肥胖的危害远大于“中年发福”。肥胖容易诱发高血压、糖尿病、脂肪肝等疾病，还会影响儿童的运动能力、骨骼发育及认知智力。同时，肥胖儿童常因体型问题遭受嘲笑、孤立，导致自尊心受挫，可能产生孤僻、抑郁等心理问题。此外，儿童期肥胖主要是由于脂肪细胞数量增多，其带来的危害具有长期持续性。研究表明，41%至80%的儿童肥胖会延续至成年，成年后患心脑血管疾病等慢性病的风险大幅增加。</p><p style=\"text-indent: 2em; text-align: justify;\">造成超重儿童越来越多的原因是多方面的。首先是“吃多动少”。由于功课安排紧张、学习压力大，孩子们普遍久坐时间长、吃饭速度快、运动量不足，造成脂肪过度堆积，进而形成“越不动就越胖，越胖越不想动”的恶性循环。其次是观念误区。一些家长认为孩子小时候胖点没关系，长大后自然会瘦下来，甚至持有“越胖越健康，越胖越有福”的错误理念，纵容甚至鼓励孩子进食甜食、肉类、油炸食品等高热量、高脂肪食物。此外是缺乏指导。部分孩子和家长虽然意识到肥胖的危害，但苦于缺乏科学运动和减肥相关知识、指导。一些家长试图通过限制进食帮助孩子减肥，却陷入了“越饿越胖”的怪圈，还引发了新的身体问题。</p><p style=\"text-indent: 2em; text-align: justify;\">解铃还须系铃人。治理儿童肥胖问题，需要家庭、学校、社会等多个层面协同配合，共同发力。</p><p style=\"text-indent: 2em; text-align: justify;\">对于家庭而言，家长作为孩子身心健康的第一责任人，亟待改变传统观念和养育方式，积极主动地参与到孩子的体重管理中。一方面，家长要以身作则，和孩子一起“管住嘴，迈开腿”，成为体重管理的表率；另一方面，要注重饮食的多样性和合理性，在确保孩子身体发育所需营养的同时，减少多余热量和脂肪的摄入。</p><p style=\"text-indent: 2em; text-align: justify;\">对于学校来说，应合理安排课程表，保障体育与健康课时，确保中小学生每天综合体育活动时间不低于2小时。同时，不断丰富体育活动形式，开展街舞、韵律操、武术操、球类运动、花式跳绳等简便易行、学生喜爱的体育活动，培养学生良好的锻炼习惯和健康的生活方式。</p><p style=\"text-indent: 2em; text-align: justify;\">对于社会而言，各地医疗卫生机构应积极开设儿童减重门诊，为孩子和家长提供专业的健康咨询服务，指导肥胖儿童量身定制科学、安全、有效的减重方案。体育场馆、文化场馆等校外活动场所应结合自身功能，为儿童体重管理提供必要支持，让孩子有地方运动、有兴趣锻炼，实现身心健康成长。</p>', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=e949e4124.png', 1, 1, '2025-04-19 22:59:24');
 INSERT INTO `gourmet` VALUES (41, 5, 6, '室外二手烟 这样治理', '<p style=\"text-indent: 2em; text-align: justify;\">一边走路，一边吸烟——这样的“游烟”行为，游走于城市的街头巷尾，让不少路人直呼“遇到二手烟，无处躲藏”。</p><p style=\"text-indent: 2em; text-align: justify;\">近日，上海市宣布在外滩、武康路、豫园商城、新天地、南京路步行街、陆家嘴商圈、今潮8弄、蟠龙天地等8处中外游客集中、人群密集区域，启动针对室外“游烟”的示范治理。比如，在豫园商城、外滩等地，加强控烟宣传，引入智能语音提示设备，以提升劝阻和引导效果；在陆家嘴商圈，通过陆家嘴中心绿地大屏、商务楼宇户外屏、地铁站信息屏及东方明珠周边行人指示屏滚动投播控烟宣传。</p><p style=\"text-indent: 2em; text-align: justify;\">禁烟宣传标语能起到一定的提醒作用，但主要依赖吸烟者自觉。如何更好提升“游烟”劝阻效果？一些区域引入志愿者，针对“游烟”行为进行劝导。</p><p style=\"text-indent: 2em; text-align: justify;\">张大懂是上海市普陀区的一名志愿者，主要在公交站点和菜市场门口劝导“游烟者”。“我们日常身上会有志愿者标识，只要说明上海在室外开展控烟示范行动，很多人都会自觉把烟掐了，或者走到更空旷的地方。”张大懂说。</p><p style=\"text-indent: 2em; text-align: justify;\">还有些市民自觉加入劝导队伍。上海市民艾达日常会在自家孩子就读的小学门口，自发进行控烟劝导。据她介绍，学校门口等待区时常人员聚集，往往有家长一边等待，一边吸烟。“我自身患有呼吸道疾病，二手烟对我影响很大，为此我寻求过学校和社区帮助，也曾拨打12345热线反映情况，要求在校门口贴上‘禁止吸烟’提示。学校配合贴了标识后，禁烟效果比想象中好很多。看到‘50米内禁止吸烟’的标识，一些吸烟的家长会自觉远离人群。”艾达说。</p><p style=\"text-indent: 2em; text-align: justify;\">实际上，早在2010年，上海市就颁布了公共场所控制吸烟条例；2017年修订后的版本，更是明确室内公共场所、室内工作场所和公共交通工具全面禁烟。统计显示，在严格的控烟政策下，上海的成人吸烟率从2010年的近27%下降至目前的19.2%。餐厅、办公楼等场所“烟雾缭绕”的现象得到明显改善。然而，由于人口基数庞大，很多户外场景的二手烟暴露率依旧较高，“边走边抽”的“游烟”更让不少市民诟病。根据上海市2024年对室外二手烟所做的抽样调查结果，在一万名受访者中，有约六成市民明确表示“经常遭遇‘游烟’”。此次上海市明确启动针对室外“游烟”的示范治理，就是要加大治烟力度，为市民创造良好的室内外环境。</p><p style=\"text-indent: 2em; text-align: justify;\">据悉，上海此次的“游烟”治理，在明确提出不支持人群密集区随意吸烟的同时，将更加科学规划吸烟点，以便利吸烟者并减少对他人的影响。当地管理部门、商户和志愿者团队也在努力让相关提示更显眼、更易懂，在中文标识外，还加入外文导引。</p><p style=\"text-indent: 2em; text-align: justify;\">据上海市爱国卫生运动委员会办公室信息，上海将在多个“网红”场所内持续完善室外吸烟点和提示系统，通过市、区两级部门分工合作，推进公众健康教育，让更多市民养成不在密集人群中吸烟的习惯。多位受访者表示，室内控烟过去被很多人认为“推行有难度”，但经过十余年努力，已成为公共场合常态。“游烟”治理同样不可能一蹴而就，需要坚持宣传、劝导与执法同步。从上海的实践看，无论是不断出现的志愿者队伍，还是逐渐增多的控烟海报，都显示出上海在禁烟领域做出的积极尝试。</p><p style=\"text-indent: 2em; text-align: justify;\">“要让禁止‘游烟’深入人心，既要加强宣传效果，也要加强志愿者队伍和制度支持。”艾达说，期待能形成一套可落地的“禁止游烟”机制，进一步强化取证便利性，为“游烟”治理提供更有力的保障。</p>', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=017c9f225.png', 1, 1, '2025-04-19 23:00:05');
@@ -413,7 +412,7 @@ CREATE TABLE `health_model_config`  (
   `is_global` tinyint(1) NULL DEFAULT NULL COMMENT '是否是全局模型',
   `value_range` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '正常值范围',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 26 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '健康模型表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 28 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '健康模型表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of health_model_config
@@ -426,8 +425,6 @@ INSERT INTO `health_model_config` VALUES (5, 1, '每日睡眠时长', '记录一
 INSERT INTO `health_model_config` VALUES (6, 1, '刷牙记录', '记录每日刷牙次数', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=ac252c4健康牙齿.png', '次', NULL, 1, '1,2');
 INSERT INTO `health_model_config` VALUES (7, 1, '运动心率', '运动时心率', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=b8cb9108db294f心率.png', '次/分', 'Bpm', 1, '75,197');
 INSERT INTO `health_model_config` VALUES (8, 1, '夜间血压', '夜间血压测量值', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=47b7422536807e血压.png', '毫米汞柱', 'mmHg', 1, '72,145');
-INSERT INTO `health_model_config` VALUES (9, 1, '夜跑步数', '记录夜跑步数', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=e1e0560icon_健康打卡.png', '步', '暂无', 1, '422,17990');
-INSERT INTO `health_model_config` VALUES (10, 1, '晨跑步数', '记录晨跑时的步数', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=c7331201cd680d步数.png', '步', '暂无', 1, '3000,10000');
 INSERT INTO `health_model_config` VALUES (11, 1, '空腹血糖', '预防糖尿病', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=003fe13皮肤.png', '毫摩尔/升', NULL, 1, '4,6');
 INSERT INTO `health_model_config` VALUES (12, 1, '心率', '预防冠心病、高血压', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=8df5afe心脏.png', '次/分', NULL, 1, '60,100');
 INSERT INTO `health_model_config` VALUES (13, 1, '血脂', '预防疾病', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=27c2ff1肝脏.png', '毫摩尔/升', 'mol/L', 1, '2,5');
@@ -437,7 +434,6 @@ INSERT INTO `health_model_config` VALUES (20, 29, '身体总水分', '身体总�
 INSERT INTO `health_model_config` VALUES (21, 29, '脂肪', '身体脂肪是能量储备、体温调节的重要物质', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=38704b1生成脂肪图片.png', '克/百分比', 'BF', 1, '7000,20000');
 INSERT INTO `health_model_config` VALUES (22, 29, '蛋白质', '蛋白质是构成人体细胞、组织的重要成分', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=7e9b19b生成脂肪图片 (1).png', '克', 'PRO', 1, '65,180');
 INSERT INTO `health_model_config` VALUES (23, 29, '肌肉', '肌肉是人体运动、代谢的核心组织，参与力量支撑、基础代谢维持', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=99367e5绘制肌肉图标.png', '千克', 'MM', 1, '20,60');
-INSERT INTO `health_model_config` VALUES (24, 29, '基础代谢率', '基础代谢率指人体清醒静息状态下（无运动、消化等额外消耗 ），维持心跳、呼吸、体温等基本生理功能的能量消耗', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=01778a1生成二次元图标.png', '千卡', 'BMR', 1, '1200,2000');
 INSERT INTO `health_model_config` VALUES (25, 29, '内脏脂肪等级', '内脏脂肪等级反映腹腔内内脏周围脂肪堆积程度', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=b422a4dQQ截图20250619221352.png', '级', 'VFL', 1, '1,9');
 
 -- ----------------------------
@@ -448,25 +444,56 @@ CREATE TABLE `health_plan`  (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_id` bigint NOT NULL,
   `plan_date` date NOT NULL,
-  `target_calories` int NOT NULL,
+  `steps` int NULL DEFAULT NULL,
   `exercise_minutes` int NOT NULL,
-  `sleep_hours` decimal(3, 1) NOT NULL,
-  `water_cups` int NOT NULL,
+  `exercise_type` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NULL DEFAULT NULL COMMENT '运动方式',
+  `calories_burned` int NULL DEFAULT NULL COMMENT '消耗热量',
   `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 10 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_unicode_ci ROW_FORMAT = FIXED;
+) ENGINE = MyISAM AUTO_INCREMENT = 496129 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_unicode_ci ROW_FORMAT = FIXED;
 
 -- ----------------------------
 -- Records of health_plan
 -- ----------------------------
-INSERT INTO `health_plan` VALUES (2, 2, '2025-03-06', 2000, 32, 9.0, 10, '2025-03-05 20:15:38', '2025-03-05 21:45:38');
-INSERT INTO `health_plan` VALUES (4, 2, '2025-03-07', 2000, 33, 8.0, 8, '2025-03-05 21:46:08', '2025-04-16 20:29:52');
-INSERT INTO `health_plan` VALUES (5, 2, '2025-04-16', 2000, 30, 8.0, 8, '2025-04-16 20:08:20', '2025-04-16 20:08:20');
-INSERT INTO `health_plan` VALUES (6, 2, '2025-04-16', 2012, 30, 8.0, 8, '2025-04-16 20:30:03', '2025-04-16 20:30:02');
-INSERT INTO `health_plan` VALUES (7, 2, '2025-05-16', 2000, 30, 8.0, 8, '2025-05-16 18:55:14', '2025-05-16 18:55:13');
-INSERT INTO `health_plan` VALUES (8, 2, '2025-05-16', 2000, 30, 8.0, 8, '2025-05-16 19:22:40', '2025-05-16 19:22:40');
-INSERT INTO `health_plan` VALUES (9, 2, '2025-05-17', 2000, 30, 8.0, 8, '2025-05-17 09:00:41', '2025-06-20 09:42:35');
+INSERT INTO `health_plan` VALUES (20, 2, '2025-06-21', 1, 90, '跑步', 2, '2025-06-21 15:47:22', '2025-06-22 01:20:58');
+INSERT INTO `health_plan` VALUES (9, 2, '2025-05-17', 2001, 31, '步行', 1, '2025-05-17 09:00:41', '2025-06-21 18:34:28');
+INSERT INTO `health_plan` VALUES (10, 2, '2025-05-17', 2000, 30, '跑步', 2000, '2025-06-21 15:28:23', '2025-06-21 15:28:22');
+INSERT INTO `health_plan` VALUES (11, 2, '2025-06-21', 4999, 41, '游泳', 441, '2025-06-21 15:29:16', '2025-06-21 18:21:00');
+INSERT INTO `health_plan` VALUES (12, 2, '2025-05-17', 2000, 30, '骑行', 0, '2025-06-21 15:29:38', '2025-06-21 17:46:25');
+INSERT INTO `health_plan` VALUES (13, 2, '2025-05-17', 2000, 30, '爬山', 2333, '2025-06-21 15:36:19', '2025-06-21 15:36:19');
+INSERT INTO `health_plan` VALUES (19, 2, '2025-06-21', 1000, 44, '跑步', 66, '2025-06-21 15:45:59', '2025-06-21 18:21:05');
+INSERT INTO `health_plan` VALUES (496128, 2, '2025-06-21', 8000, 30, '骑行', 300, '2025-06-21 18:34:34', '2025-06-21 18:34:33');
+INSERT INTO `health_plan` VALUES (112170, 2, '2025-06-21', 8000, 30, '跑步', 300, '2025-06-21 18:36:34', '2025-06-21 18:36:33');
+INSERT INTO `health_plan` VALUES (320517, 2, '2025-06-21', 0, 0, '爬山', 1, '2025-06-21 18:36:45', '2025-06-22 01:21:01');
+INSERT INTO `health_plan` VALUES (197608, 2, '2025-06-22', 8000, 30, '跑步', 300, '2025-06-22 01:21:08', '2025-06-22 01:21:08');
+
+-- ----------------------------
+-- Table structure for healthy_report
+-- ----------------------------
+DROP TABLE IF EXISTS `healthy_report`;
+CREATE TABLE `healthy_report`  (
+  `id` int NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `user_account` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户账号',
+  `file_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '文件名称',
+  `file_path` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '文件路径',
+  `file_type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '文件类型',
+  `file_size` bigint NOT NULL COMMENT '文件大小(字节)',
+  `upload_time` datetime NOT NULL COMMENT '上传时间',
+  `description` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '报告描述',
+  `report_date` date NULL DEFAULT NULL COMMENT '体检日期',
+  `is_deleted` tinyint(1) NULL DEFAULT 0 COMMENT '是否删除(0-未删除,1-已删除)',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_user_account`(`user_account` ASC) USING BTREE,
+  INDEX `idx_upload_time`(`upload_time` ASC) USING BTREE,
+  INDEX `idx_report_date`(`report_date` ASC) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户体检报告表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of healthy_report
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for interaction
@@ -474,14 +501,14 @@ INSERT INTO `health_plan` VALUES (9, 2, '2025-05-17', 2000, 30, 8.0, 8, '2025-05
 DROP TABLE IF EXISTS `interaction`;
 CREATE TABLE `interaction`  (
   `id` int NOT NULL AUTO_INCREMENT COMMENT '互动表主键ID',
-  `type` int NULL DEFAULT NULL COMMENT '互动类型（1：点赞；2：收藏；3：精选；4：评分）',
+  `type` int NULL DEFAULT NULL COMMENT '互动类型（1：点赞；2：收藏；3：浏览；4：评分）',
   `content_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '内容类型，表示的就是互动属于哪一个模块的东西',
   `content_id` int NULL DEFAULT NULL COMMENT '内容ID',
   `user_id` int NULL DEFAULT NULL COMMENT '用户ID',
   `score` int NULL DEFAULT NULL COMMENT '评分',
   `create_time` datetime NULL DEFAULT NULL COMMENT '互动时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 145 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '互动信息表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 154 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '互动信息表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of interaction
@@ -616,7 +643,6 @@ INSERT INTO `interaction` VALUES (130, 3, 'VIEW', 11, 2, NULL, '2025-04-26 13:41
 INSERT INTO `interaction` VALUES (131, 1, 'UPVOTE', 67, 2, NULL, '2025-04-26 13:52:38');
 INSERT INTO `interaction` VALUES (133, 3, 'VIEW', 5, 2, NULL, '2025-05-16 18:54:05');
 INSERT INTO `interaction` VALUES (134, 4, 'RATING', 5, 2, 4, '2025-05-16 19:16:24');
-INSERT INTO `interaction` VALUES (135, 1, 'UPVOTE', 5, 2, NULL, '2025-05-16 19:16:32');
 INSERT INTO `interaction` VALUES (136, 2, 'COLLECTION', 5, 2, NULL, '2025-05-16 19:16:33');
 INSERT INTO `interaction` VALUES (138, 2, 'COLLECTION', 1, 2, NULL, '2025-05-16 19:20:24');
 INSERT INTO `interaction` VALUES (139, 1, 'UPVOTE', 1, 2, NULL, '2025-05-17 08:57:29');
@@ -624,6 +650,12 @@ INSERT INTO `interaction` VALUES (140, 3, 'VIEW', 65, 29, NULL, '2025-06-17 09:2
 INSERT INTO `interaction` VALUES (141, 3, 'VIEW', 70, 29, NULL, '2025-06-17 17:39:44');
 INSERT INTO `interaction` VALUES (142, 3, 'VIEW', 64, 2, NULL, '2025-06-19 11:12:52');
 INSERT INTO `interaction` VALUES (144, 1, 'UPVOTE', 4, 2, NULL, '2025-06-19 23:14:35');
+INSERT INTO `interaction` VALUES (145, 1, 'UPVOTE', 5, 2, NULL, '2025-06-21 13:30:52');
+INSERT INTO `interaction` VALUES (146, 3, 'VIEW', 71, 2, NULL, '2025-06-23 23:17:03');
+INSERT INTO `interaction` VALUES (147, 4, 'RATING', 70, 2, 5, '2025-06-23 23:17:08');
+INSERT INTO `interaction` VALUES (148, 1, 'UPVOTE', 70, 2, NULL, '2025-06-23 23:17:13');
+INSERT INTO `interaction` VALUES (149, 3, 'VIEW', 2, 2, NULL, '2025-06-23 23:26:35');
+INSERT INTO `interaction` VALUES (150, 4, 'RATING', 2, 2, 5, '2025-06-23 23:26:36');
 
 -- ----------------------------
 -- Table structure for message
@@ -639,7 +671,7 @@ CREATE TABLE `message`  (
   `content_id` int NULL DEFAULT NULL COMMENT '关联的内容ID',
   `create_time` datetime NULL DEFAULT NULL COMMENT '消息的发送时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 99 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 108 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of message
@@ -737,6 +769,15 @@ INSERT INTO `message` VALUES (95, '你记录的【晨跑步数】偏低了！当
 INSERT INTO `message` VALUES (96, '你记录的【运动心率】超标了！当前值：200.0，正常值范围:[75,197]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-20 09:41:23');
 INSERT INTO `message` VALUES (97, '你记录的【晨跑步数】偏低了！当前值：2000.0，正常值范围:[3000,10000]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-20 09:41:29');
 INSERT INTO `message` VALUES (98, '你记录的【运动心率】超标了！当前值：200.0，正常值范围:[75,197]，请注意休息。必要时请就医!', 3, 2, NULL, 0, NULL, '2025-06-20 09:41:29');
+INSERT INTO `message` VALUES (99, '你记录的【心率】超标了！当前值：1000.0，正常值范围:[60,100]!', 3, 2, NULL, 0, NULL, '2025-06-21 22:15:25');
+INSERT INTO `message` VALUES (100, '你记录的【空腹血糖】超标了！当前值：9.0，正常值范围:[4,6]!', 3, 2, NULL, 0, NULL, '2025-06-23 16:51:34');
+INSERT INTO `message` VALUES (101, '你记录的【内脏脂肪等级】超标了！当前值：11.0，正常值范围:[1,9]!', 3, 2, NULL, 0, NULL, '2025-06-23 17:26:22');
+INSERT INTO `message` VALUES (102, '你记录的【体温】偏低了！当前值：22.0，正常值范围:[36,38]!', 3, 2, NULL, 0, NULL, '2025-06-23 17:26:32');
+INSERT INTO `message` VALUES (103, '你记录的【内脏脂肪等级】偏低了！当前值：0.0，正常值范围:[1,9]!', 3, 2, NULL, 0, NULL, '2025-06-23 17:26:43');
+INSERT INTO `message` VALUES (104, '你记录的【心率】超标了！当前值：110.0，正常值范围:[60,100]!', 3, 2, NULL, 0, NULL, '2025-06-23 17:26:52');
+INSERT INTO `message` VALUES (105, '你记录的【内脏脂肪等级】超标了！当前值：100.0，正常值范围:[1,9]!', 3, 2, NULL, 0, NULL, '2025-06-24 02:23:08');
+INSERT INTO `message` VALUES (106, '你记录的【肌肉】超标了！当前值：10000.0，正常值范围:[20,60]!', 3, 2, NULL, 0, NULL, '2025-06-24 02:23:08');
+INSERT INTO `message` VALUES (107, '你记录的【脂肪】超标了！当前值：100000.0，正常值范围:[7000,20000]!', 3, 2, NULL, 0, NULL, '2025-06-24 02:23:08');
 
 -- ----------------------------
 -- Table structure for nutriment
@@ -761,9 +802,9 @@ INSERT INTO `nutriment` VALUES (3, 2, '脂肪', '脂肪的单位‌通常是指�
 INSERT INTO `nutriment` VALUES (4, 2, '碳水化合物', '是人体最经济、最直接的能量来源', '克', 1, '2024-11-29 15:28:58');
 INSERT INTO `nutriment` VALUES (5, 2, '钾', '‌钾含量的单位通常是mmol/L‌。血清钾的单位是mmol/L，正常值范围通常为3.5mmol/L-5.3mmol/L', 'mmol/L‌', 1, '2024-11-29 15:56:14');
 INSERT INTO `nutriment` VALUES (6, 2, '钙', '毫克(mg)是计量钙等营养素的常用单位,而克(g)是更大的单位,通常用于表示食品或补充剂中含量较高的营养素。', '毫克(mg)', 1, '2024-11-29 15:56:58');
-INSERT INTO `nutriment` VALUES (7, 2, '纤维素', '促进消化健康，帮助维持血糖水平', '克', 0, '2024-11-30 15:39:57');
-INSERT INTO `nutriment` VALUES (8, 2, '维生素 A', '支持视力、免疫功能和皮肤健康。', '毫克(mg)', 0, '2024-11-30 15:40:26');
-INSERT INTO `nutriment` VALUES (9, 2, '维生素 D', '促进钙的吸收，支持骨骼健康', '毫克(mg)', 0, '2024-11-30 15:40:47');
+INSERT INTO `nutriment` VALUES (7, 2, '纤维素', '促进消化健康，帮助维持血糖水平', '克', 1, '2024-11-30 15:39:57');
+INSERT INTO `nutriment` VALUES (8, 2, '维生素 A', '支持视力、免疫功能和皮肤健康。', '毫克(mg)', 1, '2024-11-30 15:40:26');
+INSERT INTO `nutriment` VALUES (9, 2, '维生素 D', '促进钙的吸收，支持骨骼健康', '毫克(mg)', 1, '2024-11-30 15:40:47');
 INSERT INTO `nutriment` VALUES (14, 29, '热量', '维持人体正常生理功能方面发挥着至关重要的作用', '千卡', 1, '2025-06-19 14:49:03');
 INSERT INTO `nutriment` VALUES (15, 29, '维生素B1', '维生素 B₁助力碳水化合物分解供能', '毫克(mg)', 1, '2025-06-19 14:59:24');
 INSERT INTO `nutriment` VALUES (16, 29, '维生素B2', 'B₂参与氧化还原反应；维护皮肤、黏膜健康，像 B₂可防口角炎等', '毫克(mg)', 1, '2025-06-19 14:59:49');
@@ -1033,8 +1074,8 @@ INSERT INTO `recipe` VALUES (240, '鹰嘴桃', '200g', 'http://localhost:8080/ap
 INSERT INTO `recipe` VALUES (241, '米饭', '大米20g', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=ea0c7bd米饭.webp', 3, 1, 3, '2025-04-19 11:13:00', '2025-04-19 18:42:53');
 INSERT INTO `recipe` VALUES (242, '百合炒鸡', '西芹100g，百合30g，鸡肉20g', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=2bfe8df百合炒鸡.webp', 3, 1, 3, '2025-04-19 11:13:00', '2025-04-19 19:03:25');
 INSERT INTO `recipe` VALUES (243, '炒上海青', '上海青150g', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=dc80074炒上海青.webp', 3, 1, 3, '2025-04-19 11:13:00', '2025-04-19 19:03:21');
-INSERT INTO `recipe` VALUES (244, '蛋肠粉', '肠粉【湿】250g，鸡蛋50g', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=445f659蛋肠粉.webp', 1, 1, 4, '2025-04-19 11:13:00', '2025-04-19 19:02:17');
-INSERT INTO `recipe` VALUES (245, '低脂牛奶', '250mL', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=976e889牛奶.webp', 1, 1, 4, '2025-04-19 11:13:00', '2025-04-19 18:50:49');
+INSERT INTO `recipe` VALUES (244, '蛋肠粉', '肠粉【湿】250g，鸡蛋50g', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=445f659蛋肠粉.webp', 2, 1, 4, '2025-04-19 11:13:00', '2025-06-21 22:20:01');
+INSERT INTO `recipe` VALUES (245, '低脂牛奶', '250mL', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=976e889牛奶.webp', 2, 1, 4, '2025-04-19 11:13:00', '2025-06-21 22:19:57');
 INSERT INTO `recipe` VALUES (246, '糙米饭', '糙米90g', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=1882cae糙米饭.webp', 2, 1, 4, '2025-04-19 11:13:00', '2025-04-19 18:42:58');
 INSERT INTO `recipe` VALUES (247, '鲜虾焖冬笋', '冬笋80g，海虾30g', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=c02ad66鲜虾焖冬笋.jpg@h_1280', 2, 1, 4, '2025-04-19 11:13:00', '2025-04-19 18:40:18');
 INSERT INTO `recipe` VALUES (248, '水煮奶白菜', '烧脚白菜80g', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=2fefe9b水煮奶白菜.jpg@watermark=0', 2, 1, 4, '2025-04-19 11:13:00', '2025-04-19 18:38:46');
@@ -1122,12 +1163,12 @@ CREATE TABLE `user`  (
   `age` int NULL DEFAULT NULL COMMENT '年龄',
   `create_time` datetime NULL DEFAULT NULL COMMENT '用户注册时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 30 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 33 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (2, 'whd', '吴汉东', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=8b13839微信图片_2025-05-21_010610_632.jpg', '2303532728@qq.com', 2, 0, 0, 1, 20, '2025-04-02 23:05:58');
+INSERT INTO `user` VALUES (2, 'whd', '吴汉东', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=8b13839微信图片_2025-05-21_010610_632.jpg', '2303532728@qq.com', 2, 0, 0, 1, 19, '2025-04-02 23:05:58');
 INSERT INTO `user` VALUES (3, 'xhr', '许浩然', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=b5718ff20.jpg', '123@qq.com', 2, 0, 0, 1, 20, '2025-04-18 23:06:21');
 INSERT INTO `user` VALUES (4, 'lym', '刘玉明', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=82dd17818.jpg', '1234@qq.com', 2, 0, 0, 1, 21, '2025-04-03 23:07:06');
 INSERT INTO `user` VALUES (5, 'wwb', '王文博', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=cb8bbda17.jpg', '1234@qq.com', 2, 0, 0, 1, 19, '2025-04-04 23:07:44');
@@ -1141,6 +1182,9 @@ INSERT INTO `user` VALUES (18, 'yjt', '余霁庭', '14e1b600b1fd579f47433b88e8d8
 INSERT INTO `user` VALUES (19, 'ycx', '叶辰勋', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=b724e4d3.jpg', '1234@qq.com', 2, 0, 0, 0, 21, '2025-04-10 23:18:53');
 INSERT INTO `user` VALUES (20, 'lcz', '吕承泽', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=d18076d2.jpg', '1234@qq.com', 2, 0, 0, 1, 19, '2025-04-16 23:18:57');
 INSERT INTO `user` VALUES (29, 'Jenrimark', 'Jenrimark', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=249bc9eImage_1720676880457.jpg', '230@qq.com', 1, 0, 0, 1, 19, '2025-06-16 11:24:46');
+INSERT INTO `user` VALUES (30, '20050713', 'zykkk', '14e1b600b1fd579f47433b88e8d85291', NULL, NULL, 2, 0, 0, NULL, NULL, '2025-06-24 04:11:11');
+INSERT INTO `user` VALUES (31, 'smc', '苏沐橙', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=a688542微信图片_20250120175720_85.jpg', NULL, 2, 0, 0, 0, 19, '2025-06-24 16:03:20');
+INSERT INTO `user` VALUES (32, 'wlk', '吴林坤', '14e1b600b1fd579f47433b88e8d85291', 'http://localhost:8080/api/personal-heath/v1.0/file/getFile?fileName=c335bfc微信图片_20250120175725_86.jpg', NULL, 2, 0, 0, 1, 1, '2025-06-24 16:04:21');
 
 -- ----------------------------
 -- Table structure for user_health
@@ -1153,7 +1197,7 @@ CREATE TABLE `user_health`  (
   `value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '输入的值',
   `create_time` datetime NULL DEFAULT NULL COMMENT '记录时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 430 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '用户健康记录表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 447 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '用户健康记录表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of user_health
@@ -1164,7 +1208,6 @@ INSERT INTO `user_health` VALUES (3, 2, 1, '165', '2025-04-19 00:19:39');
 INSERT INTO `user_health` VALUES (4, 2, 3, '1500', '2025-04-19 00:19:39');
 INSERT INTO `user_health` VALUES (5, 2, 5, '9', '2025-04-19 00:19:39');
 INSERT INTO `user_health` VALUES (6, 2, 7, '90', '2025-04-19 00:19:39');
-INSERT INTO `user_health` VALUES (7, 2, 9, '3000', '2025-04-19 00:19:39');
 INSERT INTO `user_health` VALUES (8, 2, 14, '36.2', '2025-04-19 00:19:39');
 INSERT INTO `user_health` VALUES (9, 2, 12, '90', '2025-04-19 00:19:52');
 INSERT INTO `user_health` VALUES (10, 2, 2, '48', '2025-04-19 00:20:22');
@@ -1233,7 +1276,6 @@ INSERT INTO `user_health` VALUES (72, 2, 7, '78', '2025-05-02 23:18:48');
 INSERT INTO `user_health` VALUES (73, 2, 6, '2', '2025-05-02 23:18:48');
 INSERT INTO `user_health` VALUES (74, 2, 5, '10', '2025-05-02 23:18:48');
 INSERT INTO `user_health` VALUES (75, 2, 4, '268', '2025-05-02 23:18:48');
-INSERT INTO `user_health` VALUES (76, 2, 3, '2000', '2025-05-02 23:18:48');
 INSERT INTO `user_health` VALUES (77, 2, 2, '48', '2025-05-02 23:18:48');
 INSERT INTO `user_health` VALUES (78, 2, 15, '250', '2025-05-02 23:18:48');
 INSERT INTO `user_health` VALUES (79, 2, 14, '37.2', '2025-05-03 22:02:31');
@@ -1247,7 +1289,6 @@ INSERT INTO `user_health` VALUES (86, 2, 7, '78', '2025-05-03 22:02:31');
 INSERT INTO `user_health` VALUES (87, 2, 6, '2', '2025-05-03 22:02:31');
 INSERT INTO `user_health` VALUES (88, 2, 5, '10', '2025-05-03 22:02:31');
 INSERT INTO `user_health` VALUES (89, 2, 4, '260', '2025-05-03 22:02:31');
-INSERT INTO `user_health` VALUES (90, 2, 3, '2000', '2025-05-03 22:02:31');
 INSERT INTO `user_health` VALUES (91, 2, 2, '48', '2025-05-03 22:02:31');
 INSERT INTO `user_health` VALUES (92, 2, 15, '250', '2025-05-03 22:02:31');
 INSERT INTO `user_health` VALUES (93, 2, 14, '37', '2025-05-07 18:06:29');
@@ -1314,7 +1355,6 @@ INSERT INTO `user_health` VALUES (153, 29, 2, '85', '2025-06-17 17:39:15');
 INSERT INTO `user_health` VALUES (154, 2, 14, '37', '2025-06-19 20:46:59');
 INSERT INTO `user_health` VALUES (155, 2, 20, '50', '2025-06-19 20:54:32');
 INSERT INTO `user_health` VALUES (156, 2, 25, '8', '2025-06-19 22:22:35');
-INSERT INTO `user_health` VALUES (157, 2, 24, '2000', '2025-06-19 22:22:35');
 INSERT INTO `user_health` VALUES (158, 2, 23, '50', '2025-06-19 22:22:35');
 INSERT INTO `user_health` VALUES (159, 2, 22, '80', '2025-06-19 22:22:35');
 INSERT INTO `user_health` VALUES (160, 2, 21, '10000', '2025-06-19 22:22:35');
@@ -1330,43 +1370,34 @@ INSERT INTO `user_health` VALUES (169, 2, 7, '200', '2025-06-19 22:22:35');
 INSERT INTO `user_health` VALUES (170, 2, 6, '1', '2025-06-19 22:22:35');
 INSERT INTO `user_health` VALUES (171, 2, 5, '8', '2025-06-19 22:22:35');
 INSERT INTO `user_health` VALUES (172, 2, 4, '200', '2025-06-19 22:22:35');
-INSERT INTO `user_health` VALUES (173, 2, 3, '2000', '2025-06-19 22:22:35');
 INSERT INTO `user_health` VALUES (174, 2, 2, '50', '2025-06-19 22:22:35');
 INSERT INTO `user_health` VALUES (175, 2, 1, '185', '2025-06-19 22:22:35');
 INSERT INTO `user_health` VALUES (176, 2, 23, '30', '2025-06-20 09:23:50');
-INSERT INTO `user_health` VALUES (177, 2, 24, '2000', '2025-06-20 09:23:50');
 INSERT INTO `user_health` VALUES (178, 2, 21, '20000', '2025-06-20 09:23:50');
 INSERT INTO `user_health` VALUES (179, 2, 20, '50', '2025-06-20 09:36:23');
 INSERT INTO `user_health` VALUES (180, 2, 25, '8', '2025-06-20 09:39:45');
 INSERT INTO `user_health` VALUES (181, 2, 25, '8', '2025-06-20 09:39:52');
-INSERT INTO `user_health` VALUES (182, 2, 24, '2000', '2025-06-20 09:39:52');
 INSERT INTO `user_health` VALUES (183, 2, 25, '8', '2025-06-20 09:39:58');
-INSERT INTO `user_health` VALUES (184, 2, 24, '2000', '2025-06-20 09:39:58');
 INSERT INTO `user_health` VALUES (185, 2, 23, '50', '2025-06-20 09:39:58');
 INSERT INTO `user_health` VALUES (186, 2, 25, '8', '2025-06-20 09:40:03');
-INSERT INTO `user_health` VALUES (187, 2, 24, '2000', '2025-06-20 09:40:03');
 INSERT INTO `user_health` VALUES (188, 2, 23, '50', '2025-06-20 09:40:03');
 INSERT INTO `user_health` VALUES (189, 2, 22, '88', '2025-06-20 09:40:03');
 INSERT INTO `user_health` VALUES (190, 2, 25, '8', '2025-06-20 09:40:09');
-INSERT INTO `user_health` VALUES (191, 2, 24, '2000', '2025-06-20 09:40:09');
 INSERT INTO `user_health` VALUES (192, 2, 23, '50', '2025-06-20 09:40:09');
 INSERT INTO `user_health` VALUES (193, 2, 22, '88', '2025-06-20 09:40:09');
 INSERT INTO `user_health` VALUES (194, 2, 21, '8000', '2025-06-20 09:40:09');
 INSERT INTO `user_health` VALUES (195, 2, 25, '8', '2025-06-20 09:40:13');
-INSERT INTO `user_health` VALUES (196, 2, 24, '2000', '2025-06-20 09:40:13');
 INSERT INTO `user_health` VALUES (197, 2, 23, '50', '2025-06-20 09:40:13');
 INSERT INTO `user_health` VALUES (198, 2, 22, '88', '2025-06-20 09:40:13');
 INSERT INTO `user_health` VALUES (199, 2, 21, '8000', '2025-06-20 09:40:13');
 INSERT INTO `user_health` VALUES (200, 2, 20, '50', '2025-06-20 09:40:13');
 INSERT INTO `user_health` VALUES (201, 2, 25, '8', '2025-06-20 09:40:19');
-INSERT INTO `user_health` VALUES (202, 2, 24, '2000', '2025-06-20 09:40:19');
 INSERT INTO `user_health` VALUES (203, 2, 23, '50', '2025-06-20 09:40:19');
 INSERT INTO `user_health` VALUES (204, 2, 22, '88', '2025-06-20 09:40:19');
 INSERT INTO `user_health` VALUES (205, 2, 21, '8000', '2025-06-20 09:40:19');
 INSERT INTO `user_health` VALUES (206, 2, 20, '50', '2025-06-20 09:40:19');
 INSERT INTO `user_health` VALUES (207, 2, 14, '37.8', '2025-06-20 09:40:19');
 INSERT INTO `user_health` VALUES (208, 2, 25, '8', '2025-06-20 09:40:23');
-INSERT INTO `user_health` VALUES (209, 2, 24, '2000', '2025-06-20 09:40:23');
 INSERT INTO `user_health` VALUES (210, 2, 23, '50', '2025-06-20 09:40:23');
 INSERT INTO `user_health` VALUES (211, 2, 22, '88', '2025-06-20 09:40:23');
 INSERT INTO `user_health` VALUES (212, 2, 21, '8000', '2025-06-20 09:40:23');
@@ -1374,7 +1405,6 @@ INSERT INTO `user_health` VALUES (213, 2, 20, '50', '2025-06-20 09:40:23');
 INSERT INTO `user_health` VALUES (214, 2, 14, '37.8', '2025-06-20 09:40:23');
 INSERT INTO `user_health` VALUES (215, 2, 13, '3', '2025-06-20 09:40:23');
 INSERT INTO `user_health` VALUES (216, 2, 25, '8', '2025-06-20 09:40:27');
-INSERT INTO `user_health` VALUES (217, 2, 24, '2000', '2025-06-20 09:40:27');
 INSERT INTO `user_health` VALUES (218, 2, 23, '50', '2025-06-20 09:40:27');
 INSERT INTO `user_health` VALUES (219, 2, 22, '88', '2025-06-20 09:40:27');
 INSERT INTO `user_health` VALUES (220, 2, 21, '8000', '2025-06-20 09:40:27');
@@ -1383,7 +1413,6 @@ INSERT INTO `user_health` VALUES (222, 2, 14, '37.8', '2025-06-20 09:40:27');
 INSERT INTO `user_health` VALUES (223, 2, 13, '3', '2025-06-20 09:40:27');
 INSERT INTO `user_health` VALUES (224, 2, 12, '88', '2025-06-20 09:40:27');
 INSERT INTO `user_health` VALUES (225, 2, 25, '8', '2025-06-20 09:40:31');
-INSERT INTO `user_health` VALUES (226, 2, 24, '2000', '2025-06-20 09:40:31');
 INSERT INTO `user_health` VALUES (227, 2, 23, '50', '2025-06-20 09:40:31');
 INSERT INTO `user_health` VALUES (228, 2, 22, '88', '2025-06-20 09:40:31');
 INSERT INTO `user_health` VALUES (229, 2, 21, '8000', '2025-06-20 09:40:31');
@@ -1393,7 +1422,6 @@ INSERT INTO `user_health` VALUES (232, 2, 13, '3', '2025-06-20 09:40:31');
 INSERT INTO `user_health` VALUES (233, 2, 12, '88', '2025-06-20 09:40:31');
 INSERT INTO `user_health` VALUES (234, 2, 11, '5', '2025-06-20 09:40:31');
 INSERT INTO `user_health` VALUES (235, 2, 25, '8', '2025-06-20 09:40:35');
-INSERT INTO `user_health` VALUES (236, 2, 24, '2000', '2025-06-20 09:40:35');
 INSERT INTO `user_health` VALUES (237, 2, 23, '50', '2025-06-20 09:40:35');
 INSERT INTO `user_health` VALUES (238, 2, 22, '88', '2025-06-20 09:40:35');
 INSERT INTO `user_health` VALUES (239, 2, 21, '8000', '2025-06-20 09:40:35');
@@ -1402,9 +1430,7 @@ INSERT INTO `user_health` VALUES (241, 2, 14, '37.8', '2025-06-20 09:40:35');
 INSERT INTO `user_health` VALUES (242, 2, 13, '3', '2025-06-20 09:40:35');
 INSERT INTO `user_health` VALUES (243, 2, 12, '88', '2025-06-20 09:40:35');
 INSERT INTO `user_health` VALUES (244, 2, 11, '5', '2025-06-20 09:40:35');
-INSERT INTO `user_health` VALUES (245, 2, 10, '2000', '2025-06-20 09:40:35');
 INSERT INTO `user_health` VALUES (246, 2, 25, '8', '2025-06-20 09:40:39');
-INSERT INTO `user_health` VALUES (247, 2, 24, '2000', '2025-06-20 09:40:39');
 INSERT INTO `user_health` VALUES (248, 2, 23, '50', '2025-06-20 09:40:39');
 INSERT INTO `user_health` VALUES (249, 2, 22, '88', '2025-06-20 09:40:39');
 INSERT INTO `user_health` VALUES (250, 2, 21, '8000', '2025-06-20 09:40:39');
@@ -1413,10 +1439,7 @@ INSERT INTO `user_health` VALUES (252, 2, 14, '37.8', '2025-06-20 09:40:39');
 INSERT INTO `user_health` VALUES (253, 2, 13, '3', '2025-06-20 09:40:39');
 INSERT INTO `user_health` VALUES (254, 2, 12, '88', '2025-06-20 09:40:39');
 INSERT INTO `user_health` VALUES (255, 2, 11, '5', '2025-06-20 09:40:39');
-INSERT INTO `user_health` VALUES (256, 2, 10, '2000', '2025-06-20 09:40:39');
-INSERT INTO `user_health` VALUES (257, 2, 9, '2000', '2025-06-20 09:40:39');
 INSERT INTO `user_health` VALUES (258, 2, 25, '8', '2025-06-20 09:40:44');
-INSERT INTO `user_health` VALUES (259, 2, 24, '2000', '2025-06-20 09:40:44');
 INSERT INTO `user_health` VALUES (260, 2, 23, '50', '2025-06-20 09:40:44');
 INSERT INTO `user_health` VALUES (261, 2, 22, '88', '2025-06-20 09:40:44');
 INSERT INTO `user_health` VALUES (262, 2, 21, '8000', '2025-06-20 09:40:44');
@@ -1425,11 +1448,7 @@ INSERT INTO `user_health` VALUES (264, 2, 14, '37.8', '2025-06-20 09:40:44');
 INSERT INTO `user_health` VALUES (265, 2, 13, '3', '2025-06-20 09:40:44');
 INSERT INTO `user_health` VALUES (266, 2, 12, '88', '2025-06-20 09:40:44');
 INSERT INTO `user_health` VALUES (267, 2, 11, '5', '2025-06-20 09:40:44');
-INSERT INTO `user_health` VALUES (268, 2, 10, '2000', '2025-06-20 09:40:44');
-INSERT INTO `user_health` VALUES (269, 2, 9, '2000', '2025-06-20 09:40:44');
 INSERT INTO `user_health` VALUES (270, 2, 8, '88', '2025-06-20 09:40:44');
-INSERT INTO `user_health` VALUES (271, 2, 25, '8', '2025-06-20 09:40:50');
-INSERT INTO `user_health` VALUES (272, 2, 24, '2000', '2025-06-20 09:40:50');
 INSERT INTO `user_health` VALUES (273, 2, 23, '50', '2025-06-20 09:40:50');
 INSERT INTO `user_health` VALUES (274, 2, 22, '88', '2025-06-20 09:40:50');
 INSERT INTO `user_health` VALUES (275, 2, 21, '8000', '2025-06-20 09:40:50');
@@ -1438,12 +1457,9 @@ INSERT INTO `user_health` VALUES (277, 2, 14, '37.8', '2025-06-20 09:40:50');
 INSERT INTO `user_health` VALUES (278, 2, 13, '3', '2025-06-20 09:40:50');
 INSERT INTO `user_health` VALUES (279, 2, 12, '88', '2025-06-20 09:40:50');
 INSERT INTO `user_health` VALUES (280, 2, 11, '5', '2025-06-20 09:40:50');
-INSERT INTO `user_health` VALUES (281, 2, 10, '2000', '2025-06-20 09:40:50');
-INSERT INTO `user_health` VALUES (282, 2, 9, '2000', '2025-06-20 09:40:50');
 INSERT INTO `user_health` VALUES (283, 2, 8, '88', '2025-06-20 09:40:50');
 INSERT INTO `user_health` VALUES (284, 2, 7, '200', '2025-06-20 09:40:50');
 INSERT INTO `user_health` VALUES (285, 2, 25, '8', '2025-06-20 09:40:54');
-INSERT INTO `user_health` VALUES (286, 2, 24, '2000', '2025-06-20 09:40:54');
 INSERT INTO `user_health` VALUES (287, 2, 23, '50', '2025-06-20 09:40:54');
 INSERT INTO `user_health` VALUES (288, 2, 22, '88', '2025-06-20 09:40:54');
 INSERT INTO `user_health` VALUES (289, 2, 21, '8000', '2025-06-20 09:40:54');
@@ -1452,13 +1468,10 @@ INSERT INTO `user_health` VALUES (291, 2, 14, '37.8', '2025-06-20 09:40:54');
 INSERT INTO `user_health` VALUES (292, 2, 13, '3', '2025-06-20 09:40:54');
 INSERT INTO `user_health` VALUES (293, 2, 12, '88', '2025-06-20 09:40:54');
 INSERT INTO `user_health` VALUES (294, 2, 11, '5', '2025-06-20 09:40:54');
-INSERT INTO `user_health` VALUES (295, 2, 10, '2000', '2025-06-20 09:40:54');
-INSERT INTO `user_health` VALUES (296, 2, 9, '2000', '2025-06-20 09:40:54');
 INSERT INTO `user_health` VALUES (297, 2, 8, '88', '2025-06-20 09:40:54');
 INSERT INTO `user_health` VALUES (298, 2, 7, '200', '2025-06-20 09:40:54');
 INSERT INTO `user_health` VALUES (299, 2, 6, '1', '2025-06-20 09:40:54');
 INSERT INTO `user_health` VALUES (300, 2, 25, '8', '2025-06-20 09:40:59');
-INSERT INTO `user_health` VALUES (301, 2, 24, '2000', '2025-06-20 09:40:59');
 INSERT INTO `user_health` VALUES (302, 2, 23, '50', '2025-06-20 09:40:59');
 INSERT INTO `user_health` VALUES (303, 2, 22, '88', '2025-06-20 09:40:59');
 INSERT INTO `user_health` VALUES (304, 2, 21, '8000', '2025-06-20 09:40:59');
@@ -1467,14 +1480,11 @@ INSERT INTO `user_health` VALUES (306, 2, 14, '37.8', '2025-06-20 09:40:59');
 INSERT INTO `user_health` VALUES (307, 2, 13, '3', '2025-06-20 09:40:59');
 INSERT INTO `user_health` VALUES (308, 2, 12, '88', '2025-06-20 09:40:59');
 INSERT INTO `user_health` VALUES (309, 2, 11, '5', '2025-06-20 09:40:59');
-INSERT INTO `user_health` VALUES (310, 2, 10, '2000', '2025-06-20 09:40:59');
-INSERT INTO `user_health` VALUES (311, 2, 9, '2000', '2025-06-20 09:40:59');
 INSERT INTO `user_health` VALUES (312, 2, 8, '88', '2025-06-20 09:40:59');
 INSERT INTO `user_health` VALUES (313, 2, 7, '200', '2025-06-20 09:40:59');
 INSERT INTO `user_health` VALUES (314, 2, 6, '1', '2025-06-20 09:40:59');
 INSERT INTO `user_health` VALUES (315, 2, 5, '8', '2025-06-20 09:40:59');
 INSERT INTO `user_health` VALUES (316, 2, 25, '8', '2025-06-20 09:41:04');
-INSERT INTO `user_health` VALUES (317, 2, 24, '2000', '2025-06-20 09:41:04');
 INSERT INTO `user_health` VALUES (318, 2, 23, '50', '2025-06-20 09:41:04');
 INSERT INTO `user_health` VALUES (319, 2, 22, '88', '2025-06-20 09:41:04');
 INSERT INTO `user_health` VALUES (320, 2, 21, '8000', '2025-06-20 09:41:04');
@@ -1483,15 +1493,12 @@ INSERT INTO `user_health` VALUES (322, 2, 14, '37.8', '2025-06-20 09:41:04');
 INSERT INTO `user_health` VALUES (323, 2, 13, '3', '2025-06-20 09:41:04');
 INSERT INTO `user_health` VALUES (324, 2, 12, '88', '2025-06-20 09:41:04');
 INSERT INTO `user_health` VALUES (325, 2, 11, '5', '2025-06-20 09:41:04');
-INSERT INTO `user_health` VALUES (326, 2, 10, '2000', '2025-06-20 09:41:04');
-INSERT INTO `user_health` VALUES (327, 2, 9, '2000', '2025-06-20 09:41:04');
 INSERT INTO `user_health` VALUES (328, 2, 8, '88', '2025-06-20 09:41:04');
 INSERT INTO `user_health` VALUES (329, 2, 7, '200', '2025-06-20 09:41:04');
 INSERT INTO `user_health` VALUES (330, 2, 6, '1', '2025-06-20 09:41:04');
 INSERT INTO `user_health` VALUES (331, 2, 5, '8', '2025-06-20 09:41:04');
 INSERT INTO `user_health` VALUES (332, 2, 4, '200', '2025-06-20 09:41:04');
 INSERT INTO `user_health` VALUES (333, 2, 25, '8', '2025-06-20 09:41:10');
-INSERT INTO `user_health` VALUES (334, 2, 24, '2000', '2025-06-20 09:41:10');
 INSERT INTO `user_health` VALUES (335, 2, 23, '50', '2025-06-20 09:41:10');
 INSERT INTO `user_health` VALUES (336, 2, 22, '88', '2025-06-20 09:41:10');
 INSERT INTO `user_health` VALUES (337, 2, 21, '8000', '2025-06-20 09:41:10');
@@ -1500,8 +1507,6 @@ INSERT INTO `user_health` VALUES (339, 2, 14, '37.8', '2025-06-20 09:41:10');
 INSERT INTO `user_health` VALUES (340, 2, 13, '3', '2025-06-20 09:41:10');
 INSERT INTO `user_health` VALUES (341, 2, 12, '88', '2025-06-20 09:41:10');
 INSERT INTO `user_health` VALUES (342, 2, 11, '5', '2025-06-20 09:41:10');
-INSERT INTO `user_health` VALUES (343, 2, 10, '2000', '2025-06-20 09:41:10');
-INSERT INTO `user_health` VALUES (344, 2, 9, '2000', '2025-06-20 09:41:10');
 INSERT INTO `user_health` VALUES (345, 2, 8, '88', '2025-06-20 09:41:10');
 INSERT INTO `user_health` VALUES (346, 2, 7, '200', '2025-06-20 09:41:10');
 INSERT INTO `user_health` VALUES (347, 2, 6, '1', '2025-06-20 09:41:10');
@@ -1509,7 +1514,6 @@ INSERT INTO `user_health` VALUES (348, 2, 5, '8', '2025-06-20 09:41:10');
 INSERT INTO `user_health` VALUES (349, 2, 4, '200', '2025-06-20 09:41:10');
 INSERT INTO `user_health` VALUES (350, 2, 3, '1500', '2025-06-20 09:41:10');
 INSERT INTO `user_health` VALUES (351, 2, 25, '8', '2025-06-20 09:41:15');
-INSERT INTO `user_health` VALUES (352, 2, 24, '2000', '2025-06-20 09:41:15');
 INSERT INTO `user_health` VALUES (353, 2, 23, '50', '2025-06-20 09:41:15');
 INSERT INTO `user_health` VALUES (354, 2, 22, '88', '2025-06-20 09:41:15');
 INSERT INTO `user_health` VALUES (355, 2, 21, '8000', '2025-06-20 09:41:15');
@@ -1518,8 +1522,6 @@ INSERT INTO `user_health` VALUES (357, 2, 14, '37.8', '2025-06-20 09:41:15');
 INSERT INTO `user_health` VALUES (358, 2, 13, '3', '2025-06-20 09:41:15');
 INSERT INTO `user_health` VALUES (359, 2, 12, '88', '2025-06-20 09:41:15');
 INSERT INTO `user_health` VALUES (360, 2, 11, '5', '2025-06-20 09:41:15');
-INSERT INTO `user_health` VALUES (361, 2, 10, '2000', '2025-06-20 09:41:15');
-INSERT INTO `user_health` VALUES (362, 2, 9, '2000', '2025-06-20 09:41:15');
 INSERT INTO `user_health` VALUES (363, 2, 8, '88', '2025-06-20 09:41:15');
 INSERT INTO `user_health` VALUES (364, 2, 7, '200', '2025-06-20 09:41:15');
 INSERT INTO `user_health` VALUES (365, 2, 6, '1', '2025-06-20 09:41:15');
@@ -1528,7 +1530,6 @@ INSERT INTO `user_health` VALUES (367, 2, 4, '200', '2025-06-20 09:41:15');
 INSERT INTO `user_health` VALUES (368, 2, 3, '1500', '2025-06-20 09:41:15');
 INSERT INTO `user_health` VALUES (369, 2, 2, '50', '2025-06-20 09:41:15');
 INSERT INTO `user_health` VALUES (370, 2, 25, '8', '2025-06-20 09:41:21');
-INSERT INTO `user_health` VALUES (371, 2, 24, '2000', '2025-06-20 09:41:21');
 INSERT INTO `user_health` VALUES (372, 2, 23, '50', '2025-06-20 09:41:21');
 INSERT INTO `user_health` VALUES (373, 2, 22, '88', '2025-06-20 09:41:21');
 INSERT INTO `user_health` VALUES (374, 2, 21, '8000', '2025-06-20 09:41:21');
@@ -1537,8 +1538,6 @@ INSERT INTO `user_health` VALUES (376, 2, 14, '37.8', '2025-06-20 09:41:21');
 INSERT INTO `user_health` VALUES (377, 2, 13, '3', '2025-06-20 09:41:21');
 INSERT INTO `user_health` VALUES (378, 2, 12, '88', '2025-06-20 09:41:21');
 INSERT INTO `user_health` VALUES (379, 2, 11, '5', '2025-06-20 09:41:21');
-INSERT INTO `user_health` VALUES (380, 2, 10, '2000', '2025-06-20 09:41:21');
-INSERT INTO `user_health` VALUES (381, 2, 9, '2000', '2025-06-20 09:41:21');
 INSERT INTO `user_health` VALUES (382, 2, 8, '88', '2025-06-20 09:41:21');
 INSERT INTO `user_health` VALUES (383, 2, 7, '200', '2025-06-20 09:41:21');
 INSERT INTO `user_health` VALUES (384, 2, 6, '1', '2025-06-20 09:41:21');
@@ -1548,7 +1547,6 @@ INSERT INTO `user_health` VALUES (387, 2, 3, '1500', '2025-06-20 09:41:21');
 INSERT INTO `user_health` VALUES (388, 2, 2, '50', '2025-06-20 09:41:21');
 INSERT INTO `user_health` VALUES (389, 2, 1, '173', '2025-06-20 09:41:21');
 INSERT INTO `user_health` VALUES (390, 2, 25, '8', '2025-06-20 09:41:23');
-INSERT INTO `user_health` VALUES (391, 2, 24, '2000', '2025-06-20 09:41:23');
 INSERT INTO `user_health` VALUES (392, 2, 23, '50', '2025-06-20 09:41:23');
 INSERT INTO `user_health` VALUES (393, 2, 22, '88', '2025-06-20 09:41:23');
 INSERT INTO `user_health` VALUES (394, 2, 21, '8000', '2025-06-20 09:41:23');
@@ -1557,8 +1555,6 @@ INSERT INTO `user_health` VALUES (396, 2, 14, '37.8', '2025-06-20 09:41:23');
 INSERT INTO `user_health` VALUES (397, 2, 13, '3', '2025-06-20 09:41:23');
 INSERT INTO `user_health` VALUES (398, 2, 12, '88', '2025-06-20 09:41:23');
 INSERT INTO `user_health` VALUES (399, 2, 11, '5', '2025-06-20 09:41:23');
-INSERT INTO `user_health` VALUES (400, 2, 10, '2000', '2025-06-20 09:41:23');
-INSERT INTO `user_health` VALUES (401, 2, 9, '2000', '2025-06-20 09:41:23');
 INSERT INTO `user_health` VALUES (402, 2, 8, '88', '2025-06-20 09:41:23');
 INSERT INTO `user_health` VALUES (403, 2, 7, '200', '2025-06-20 09:41:23');
 INSERT INTO `user_health` VALUES (404, 2, 6, '1', '2025-06-20 09:41:23');
@@ -1568,7 +1564,6 @@ INSERT INTO `user_health` VALUES (407, 2, 3, '1500', '2025-06-20 09:41:23');
 INSERT INTO `user_health` VALUES (408, 2, 2, '50', '2025-06-20 09:41:23');
 INSERT INTO `user_health` VALUES (409, 2, 1, '173', '2025-06-20 09:41:23');
 INSERT INTO `user_health` VALUES (410, 2, 25, '8', '2025-06-20 09:41:29');
-INSERT INTO `user_health` VALUES (411, 2, 24, '2000', '2025-06-20 09:41:29');
 INSERT INTO `user_health` VALUES (412, 2, 23, '50', '2025-06-20 09:41:29');
 INSERT INTO `user_health` VALUES (413, 2, 22, '88', '2025-06-20 09:41:29');
 INSERT INTO `user_health` VALUES (414, 2, 21, '8000', '2025-06-20 09:41:29');
@@ -1577,8 +1572,6 @@ INSERT INTO `user_health` VALUES (416, 2, 14, '37.8', '2025-06-20 09:41:29');
 INSERT INTO `user_health` VALUES (417, 2, 13, '3', '2025-06-20 09:41:29');
 INSERT INTO `user_health` VALUES (418, 2, 12, '88', '2025-06-20 09:41:29');
 INSERT INTO `user_health` VALUES (419, 2, 11, '5', '2025-06-20 09:41:29');
-INSERT INTO `user_health` VALUES (420, 2, 10, '2000', '2025-06-20 09:41:29');
-INSERT INTO `user_health` VALUES (421, 2, 9, '2000', '2025-06-20 09:41:29');
 INSERT INTO `user_health` VALUES (422, 2, 8, '88', '2025-06-20 09:41:29');
 INSERT INTO `user_health` VALUES (423, 2, 7, '200', '2025-06-20 09:41:29');
 INSERT INTO `user_health` VALUES (424, 2, 6, '1', '2025-06-20 09:41:29');
@@ -1587,5 +1580,12 @@ INSERT INTO `user_health` VALUES (426, 2, 4, '200', '2025-06-20 09:41:29');
 INSERT INTO `user_health` VALUES (427, 2, 3, '1500', '2025-06-20 09:41:29');
 INSERT INTO `user_health` VALUES (428, 2, 2, '50', '2025-06-20 09:41:29');
 INSERT INTO `user_health` VALUES (429, 2, 1, '173', '2025-06-20 09:41:29');
+INSERT INTO `user_health` VALUES (430, 2, 2, '85', '2025-06-20 20:31:56');
+INSERT INTO `user_health` VALUES (431, 2, 1, '173', '2025-06-20 20:31:56');
+INSERT INTO `user_health` VALUES (432, 2, 1, '174', '2025-06-20 20:46:26');
+INSERT INTO `user_health` VALUES (433, 2, 2, '86', '2025-06-20 20:46:26');
+INSERT INTO `user_health` VALUES (435, 2, 11, '5', '2025-06-21 22:15:25');
+INSERT INTO `user_health` VALUES (437, 2, 25, '8', '2025-06-23 03:40:12');
+INSERT INTO `user_health` VALUES (438, 2, 23, '60', '2025-06-23 16:50:53');
 
 SET FOREIGN_KEY_CHECKS = 1;

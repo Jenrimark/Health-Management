@@ -1,205 +1,346 @@
 <template>
   <div class="family-management">
-    <div class="page-header">
-      <h2 class="title">家庭成员管理</h2>
-      <el-button type="primary" size="small" icon="el-icon-plus" @click="showAddMemberDialog">添加家庭成员</el-button>
-    </div>
-
-    <!-- 家庭成员列表 -->
-    <el-row :gutter="20" class="member-list">
-      <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="(member, index) in familyMembers" :key="index">
-        <div class="member-card-wrapper" @click="selectMember(member)">
-          <el-card :class="['member-card', { active: currentMember && currentMember.id === member.id }]">
-            <div class="member-avatar">
-              <img 
-                :src="member.avatar || require('@/assets/img/default-avatar.png')" 
-                alt="头像" 
-                @error="handleAvatarError($event, member)"
-              >
-            </div>
-            <div class="member-info">
-              <h3>{{ member.name }}</h3>
-              <p>{{ member.relation }}</p>
-              <p>{{ calculateAge(member.birthday) }}岁</p>
-              <el-button type="primary" size="mini" @click.stop="selectMember(member)" style="margin-top: 10px;">查看健康数据</el-button>
-            </div>
-            <div class="member-actions">
-              <el-button type="text" icon="el-icon-edit" @click.stop="editMember(member)"></el-button>
-              <el-button type="text" icon="el-icon-key" @click.stop="resetPassword(member)" title="重置密码"></el-button>
-              <el-button type="text" icon="el-icon-delete" @click.stop="confirmDelete(member)"></el-button>
-            </div>
-          </el-card>
-          
-          <!-- 账号密码信息卡片 -->
-          <el-card class="account-info-card">
-            <div class="account-info-title">账号信息</div>
-            <div class="account-info-item">
-              <span class="label">账号:</span> 
-              <span class="value">{{ member.username }}</span>
-              <el-tooltip content="复制账号" placement="top">
-                <el-button type="text" size="mini" @click.stop="copyToClipboard(member.username, '账号')" icon="el-icon-document-copy"></el-button>
-              </el-tooltip>
-            </div>
-            <div class="account-info-item">
-              <span class="label">密码:</span> 
-              <span class="value" v-if="member.showPassword">{{ member.password || '******' }}</span>
-              <span class="value" v-else>******</span>
-              <el-tooltip :content="member.showPassword ? '隐藏密码' : '查看密码'" placement="top">
-                <el-button type="text" size="mini" class="password-view-btn" @click.stop="togglePasswordVisibility(member)">
-                  <i :class="member.showPassword ? 'el-icon-view' : 'el-icon-search'"></i>
-                </el-button>
-              </el-tooltip>
-              <el-tooltip v-if="member.showPassword" content="放大查看" placement="top">
-                <el-button type="text" size="mini" @click.stop="showPasswordMagnified(member.password)" icon="el-icon-zoom-in"></el-button>
-              </el-tooltip>
-              <el-tooltip v-if="member.showPassword" content="复制密码" placement="top">
-                <el-button type="text" size="mini" @click.stop="copyToClipboard(member.password, '密码')" icon="el-icon-document-copy"></el-button>
-              </el-tooltip>
-            </div>
-          </el-card>
+    <div class="family-management-container">
+      <div class="page-header">
+        <h2 class="page-title">家庭成员管理</h2>
+        <p class="page-subtitle">管理您的家庭成员账户，为家人的健康保驾护航</p>
+        <div class="add-member-btn">
+          <el-button type="primary" @click="showAddMemberDialog" class="add-button">
+            <i class="el-icon-plus"></i> 添加家庭成员
+          </el-button>
         </div>
-      </el-col>
-    </el-row>
+      </div>
 
-    <!-- 当前选中家庭成员的健康数据 -->
-    <div class="member-data" v-if="currentMember">
-      <div class="section-header">
-        <h3>{{ currentMember.name }}的健康数据</h3>
-        <el-tabs v-model="activeTab">
+      <!-- 家庭成员列表 -->
+      <div class="family-members">
+        <el-row :gutter="20">
+          <el-col :span="8" v-for="(member, index) in familyMembers" :key="index" class="member-col">
+            <div class="member-card" 
+              @click="selectMember(member)" 
+              :class="{ 'active': currentMember && currentMember.id === member.id }">
+              <div class="member-avatar-container">
+                <div class="member-avatar">
+                  <img :src="getImageUrl(member.avatar)" alt="头像" @error="handleAvatarError($event, member)">
+                  <div class="gender-indicator" :class="member.gender === 1 ? 'male' : 'female'">
+                    <i :class="member.gender === 1 ? 'el-icon-male' : 'el-icon-female'"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="member-info">
+                <h3 class="member-name">{{ member.name }}</h3>
+                <div class="relation-tag">{{ member.relation }}</div>
+                <div class="member-detail">
+                  <p><i class="el-icon-user"></i> 账号：{{ member.username }}</p>
+                  <p><i class="el-icon-lock"></i> 密码：
+                    <span class="password-mask" @click.stop="showPasswordMagnified(member.password)">******</span>
+                  </p>
+                  <p><i class="el-icon-date"></i> 出生日期：{{ member.birthday }}</p>
+                </div>
+              </div>
+              <div class="member-actions">
+                <el-button type="primary" size="mini" @click.stop="editMember(member)" class="action-btn edit-btn">
+                  <i class="el-icon-edit"></i> 编辑
+                </el-button>
+                <el-button type="warning" size="mini" @click.stop="resetPassword(member)" class="action-btn reset-btn">
+                  <i class="el-icon-refresh"></i> 重置密码
+                </el-button>
+                <el-button type="danger" size="mini" @click.stop="confirmDelete(member)" class="action-btn delete-btn">
+                  <i class="el-icon-delete"></i> 删除
+                </el-button>
+              </div>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
+
+      <!-- 当前选中家庭成员的健康数据 -->
+      <div class="member-data-container" v-if="currentMember">
+        <div class="data-header">
+          <div class="data-title">
+            <i class="el-icon-data-analysis"></i>
+            <h3>{{ currentMember.name }}的健康数据</h3>
+          </div>
+          <div class="data-actions">
+            <el-button type="success" size="small" class="refresh-btn" @click="fetchMemberHealthData(currentMember.id)">
+              <i class="el-icon-refresh"></i> 刷新数据
+            </el-button>
+          </div>
+        </div>
+        
+        <el-tabs v-model="activeTab" class="custom-tabs">
           <el-tab-pane label="健康指标" name="healthMetrics">
             <div class="metrics-grid" v-if="healthData.metrics && healthData.metrics.length">
-              <el-card v-for="(metric, idx) in healthData.metrics" :key="idx" class="metric-card">
-                <div class="metric-value">{{ metric.value }}{{ metric.unit }}</div>
-                <div class="metric-name">{{ metric.name }}</div>
-                <div class="metric-status" :class="getStatusClass(metric.status)">
-                  {{ metric.status === 'normal' ? '正常' : '异常' }}
+              <el-card v-for="(metric, idx) in healthData.metrics" :key="idx" class="metric-card" :body-style="{ padding: '0px' }">
+                <div class="metric-header" :class="getStatusClass(metric.status)">
+                  <i class="el-icon-s-data"></i>
+                </div>
+                <div class="metric-body">
+                  <div class="metric-value">{{ metric.value }}<span class="metric-unit">{{ metric.unit }}</span></div>
+                  <div class="metric-name">{{ metric.name }}</div>
+                  <div class="metric-status" :class="getStatusClass(metric.status)">
+                    {{ metric.status === 'normal' ? '正常' : '异常' }}
+                  </div>
                 </div>
               </el-card>
             </div>
             <el-empty v-else description="暂无健康指标数据"></el-empty>
           </el-tab-pane>
+          
           <el-tab-pane label="运动记录" name="exerciseRecords">
-            <el-table :data="healthData.exercises || []" style="width: 100%" v-if="healthData.exercises && healthData.exercises.length">
-              <el-table-column prop="date" label="日期" width="180"></el-table-column>
-              <el-table-column prop="type" label="运动类型" width="120"></el-table-column>
-              <el-table-column prop="duration" label="时长(分钟)"></el-table-column>
-              <el-table-column prop="calories" label="消耗(卡路里)"></el-table-column>
-            </el-table>
+            <div class="table-container" v-if="healthData.exercises && healthData.exercises.length">
+              <el-table :data="healthData.exercises" style="width: 100%" class="custom-table" stripe>
+                <el-table-column prop="date" label="日期" width="120">
+                  <template slot-scope="scope">
+                    <div class="table-cell">
+                      <i class="el-icon-date cell-icon"></i>
+                      <span>{{ scope.row.date }}</span>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="type" label="运动类型" width="120">
+                  <template slot-scope="scope">
+                    <div class="table-cell">
+                      <i class="el-icon-bicycle cell-icon"></i>
+                      <span>{{ scope.row.type }}</span>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="duration" label="时长(分钟)" width="120">
+                  <template slot-scope="scope">
+                    <div class="table-cell">
+                      <i class="el-icon-timer cell-icon"></i>
+                      <span>{{ scope.row.duration }}</span>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="calories" label="消耗(卡路里)">
+                  <template slot-scope="scope">
+                    <div class="table-cell">
+                      <i class="el-icon-hot-water cell-icon"></i>
+                      <span>{{ scope.row.calories }}</span>
+                    </div>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
             <el-empty v-else description="暂无运动记录数据"></el-empty>
           </el-tab-pane>
+          
           <el-tab-pane label="饮食记录" name="dietRecords">
-            <el-table :data="healthData.diets || []" style="width: 100%" v-if="healthData.diets && healthData.diets.length">
-              <el-table-column prop="date" label="日期" width="180"></el-table-column>
-              <el-table-column prop="mealTime" label="餐次" width="120"></el-table-column>
-              <el-table-column prop="food" label="食物"></el-table-column>
-              <el-table-column prop="calories" label="热量(卡路里)"></el-table-column>
-            </el-table>
+            <div class="table-container" v-if="healthData.diets && healthData.diets.length">
+              <el-table :data="healthData.diets" style="width: 100%" class="custom-table" stripe>
+                <el-table-column prop="date" label="日期" width="120">
+                  <template slot-scope="scope">
+                    <div class="table-cell">
+                      <i class="el-icon-date cell-icon"></i>
+                      <span>{{ scope.row.date }}</span>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="mealTime" label="餐次" width="100">
+                  <template slot-scope="scope">
+                    <div class="table-cell">
+                      <i class="el-icon-dish cell-icon"></i>
+                      <span>{{ scope.row.mealTime }}</span>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="food" label="食物">
+                  <template slot-scope="scope">
+                    <div class="table-cell">
+                      <i class="el-icon-food cell-icon"></i>
+                      <span>{{ scope.row.food }}</span>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="calories" label="热量(卡路里)" width="120">
+                  <template slot-scope="scope">
+                    <div class="table-cell">
+                      <i class="el-icon-hot-water cell-icon"></i>
+                      <span>{{ scope.row.calories }}</span>
+                    </div>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
             <el-empty v-else description="暂无饮食记录数据"></el-empty>
           </el-tab-pane>
         </el-tabs>
       </div>
-    </div>
 
-    <el-empty v-else description="请选择一个家庭成员查看健康数据"></el-empty>
-
-    <!-- 添加/编辑家庭成员对话框 -->
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="30%">
-      <el-form :model="memberForm" :rules="memberRules" ref="memberForm" label-width="80px">
-        <el-form-item label="姓名" prop="name">
-          <el-input v-model="memberForm.name" placeholder="请输入家庭成员姓名"></el-input>
-        </el-form-item>
-        <el-form-item label="关系" prop="relation">
-          <el-select v-model="memberForm.relation" placeholder="请选择与您的关系" style="width: 100%">
-            <el-option label="配偶" value="配偶"></el-option>
-            <el-option label="父亲" value="父亲"></el-option>
-            <el-option label="母亲" value="母亲"></el-option>
-            <el-option label="儿子" value="儿子"></el-option>
-            <el-option label="女儿" value="女儿"></el-option>
-            <el-option label="其他" value="其他"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="账号" prop="username">
-          <el-input v-model="memberForm.username" placeholder="请输入登录账号"></el-input>
-        </el-form-item>
-        <el-form-item label="密码" prop="password" v-if="!isEditing">
-          <el-input v-model="memberForm.password" placeholder="请输入登录密码" type="password" show-password></el-input>
-        </el-form-item>
-        <el-form-item label="出生日期" prop="birthday">
-          <el-date-picker v-model="memberForm.birthday" type="date" placeholder="选择出生日期" style="width: 100%"></el-date-picker>
-        </el-form-item>
-        <el-form-item label="性别" prop="gender">
-          <el-radio-group v-model="memberForm.gender">
-            <el-radio :label="1">男</el-radio>
-            <el-radio :label="0">女</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="头像">
-          <el-upload
-            class="avatar-uploader"
-            action="#"
-            :http-request="handleCustomUpload"
-            :show-file-list="false"
-            :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload">
-            <img v-if="memberForm.avatar" :src="memberForm.avatar" class="avatar">
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-          </el-upload>
-          <div class="upload-tip">点击上传头像（支持JPG、PNG格式，小于2MB）</div>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="saveMember">确 定</el-button>
-      </span>
-    </el-dialog>
-
-    <!-- 删除确认对话框 -->
-    <el-dialog
-      title="删除确认"
-      :visible.sync="deleteDialogVisible"
-      width="30%">
-      <span>确定要删除家庭成员 {{ memberToDelete ? memberToDelete.name : '' }} 吗？</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="deleteDialogVisible = false">取 消</el-button>
-        <el-button type="danger" @click="deleteMember">确 定</el-button>
-      </span>
-    </el-dialog>
-
-    <!-- 重置密码对话框 -->
-    <el-dialog
-      title="重置密码"
-      :visible.sync="resetPwdDialog"
-      width="30%">
-      <el-form :model="resetPwdMember" :rules="resetPwdRules" ref="resetPwdForm" label-width="80px">
-        <el-form-item label="新密码" prop="password">
-          <el-input v-model="newPassword" placeholder="请输入新密码" type="password" show-password>
-            <el-button slot="append" @click="generateRandomPassword">随机</el-button>
-          </el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="resetPwdDialog = false">取 消</el-button>
-        <el-button type="primary" @click="confirmResetPassword">确 定</el-button>
-      </span>
-    </el-dialog>
-
-    <!-- 密码放大查看对话框 -->
-    <el-dialog
-      title="密码放大查看"
-      :visible.sync="passwordPreviewDialog"
-      width="30%">
-      <div class="password-preview">
-        <div class="password-preview-content">{{ passwordToPreview }}</div>
-        <div class="password-preview-actions">
-          <el-button type="primary" size="small" @click="copyToClipboard(passwordToPreview, '密码')">
-            <i class="el-icon-document-copy"></i> 复制密码
-          </el-button>
+      <el-card class="empty-state-card" v-else>
+        <div class="empty-state">
+          <i class="el-icon-user"></i>
+          <p>请选择一个家庭成员查看健康数据</p>
         </div>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="passwordPreviewDialog = false">关闭</el-button>
-      </span>
-    </el-dialog>
+      </el-card>
+
+      <!-- 添加/编辑家庭成员对话框 -->
+      <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="30%" custom-class="custom-dialog" :show-close="false">
+        <div class="dialog-header">
+          <h3 class="dialog-title">{{ dialogTitle }}</h3>
+          <i class="el-icon-close close-icon" @click="dialogVisible = false"></i>
+        </div>
+        <div class="dialog-body">
+          <el-form :model="memberForm" :rules="memberRules" ref="memberForm" label-width="90px">
+            <el-form-item label="姓名" prop="name">
+              <div class="input-with-icon">
+                <i class="el-icon-user input-prefix-icon"></i>
+                <el-input v-model="memberForm.name" placeholder="请输入家庭成员姓名"></el-input>
+              </div>
+            </el-form-item>
+            <el-form-item label="关系" prop="relation">
+              <div class="input-with-icon">
+                <i class="el-icon-connection input-prefix-icon"></i>
+                <el-select v-model="memberForm.relation" placeholder="请选择与您的关系" style="width: 100%">
+                  <el-option label="配偶" value="配偶"></el-option>
+                  <el-option label="父亲" value="父亲"></el-option>
+                  <el-option label="母亲" value="母亲"></el-option>
+                  <el-option label="儿子" value="儿子"></el-option>
+                  <el-option label="女儿" value="女儿"></el-option>
+                  <el-option label="其他" value="其他"></el-option>
+                </el-select>
+              </div>
+            </el-form-item>
+            <el-form-item label="账号" prop="username">
+              <div class="input-with-icon">
+                <i class="el-icon-user-solid input-prefix-icon"></i>
+                <el-input v-model="memberForm.username" placeholder="请输入登录账号"></el-input>
+              </div>
+            </el-form-item>
+            <el-form-item label="密码" prop="password" v-if="!isEditing">
+              <div class="input-with-icon">
+                <i class="el-icon-lock input-prefix-icon"></i>
+                <el-input v-model="memberForm.password" placeholder="请输入登录密码" type="password" show-password>
+                  <el-button slot="append" @click="memberForm.password = generateRandomString(10)" class="random-btn">随机</el-button>
+                </el-input>
+              </div>
+            </el-form-item>
+            <el-form-item label="出生日期" prop="birthday">
+              <div class="input-with-icon">
+                <i class="el-icon-date input-prefix-icon"></i>
+                <el-date-picker v-model="memberForm.birthday" type="date" placeholder="选择出生日期" style="width: 100%"></el-date-picker>
+              </div>
+            </el-form-item>
+            <el-form-item label="性别" prop="gender">
+              <div class="gender-selector">
+                <label class="gender-option" :class="{ 'active': memberForm.gender === 1 }">
+                  <el-radio v-model="memberForm.gender" :label="1">
+                    <i class="el-icon-male"></i> 男
+                  </el-radio>
+                </label>
+                <label class="gender-option" :class="{ 'active': memberForm.gender === 0 }">
+                  <el-radio v-model="memberForm.gender" :label="0">
+                    <i class="el-icon-female"></i> 女
+                  </el-radio>
+                </label>
+              </div>
+            </el-form-item>
+            <el-form-item label="头像">
+              <div class="avatar-upload-container">
+                <el-upload
+                  class="avatar-uploader"
+                  action="#"
+                  :http-request="handleCustomUpload"
+                  :show-file-list="false"
+                  :on-success="handleAvatarSuccess"
+                  :before-upload="beforeAvatarUpload"
+                  drag>
+                  <img v-if="memberForm.avatar" :src="getImageUrl(memberForm.avatar)" class="avatar">
+                  <div v-else class="avatar-placeholder">
+                    <i class="el-icon-plus avatar-uploader-icon"></i>
+                    <div class="upload-text">点击或拖拽上传</div>
+                  </div>
+                </el-upload>
+                <div class="upload-tip">点击上传头像 (支持JPG、PNG格式，小于2MB)</div>
+              </div>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div class="dialog-footer">
+          <el-button @click="dialogVisible = false" class="cancel-btn">取 消</el-button>
+          <el-button type="primary" @click="saveMember" class="confirm-btn">确 定</el-button>
+        </div>
+      </el-dialog>
+
+      <!-- 删除确认对话框 -->
+      <el-dialog
+        :visible.sync="deleteDialogVisible"
+        width="30%"
+        custom-class="custom-dialog"
+        :show-close="false">
+        <div class="dialog-header">
+          <h3 class="dialog-title">删除确认</h3>
+          <i class="el-icon-close close-icon" @click="deleteDialogVisible = false"></i>
+        </div>
+        <div class="dialog-body">
+          <div class="delete-confirm">
+            <div class="warning-icon-container">
+              <i class="el-icon-warning-outline warning-icon"></i>
+            </div>
+            <p class="delete-message">确定要删除家庭成员 <span class="highlight-text">{{ memberToDelete ? memberToDelete.name : '' }}</span> 吗？</p>
+            <p class="warning-text">删除后将无法恢复该成员的所有数据！</p>
+          </div>
+        </div>
+        <div class="dialog-footer">
+          <el-button @click="deleteDialogVisible = false" class="cancel-btn">取 消</el-button>
+          <el-button type="danger" @click="deleteMember" class="confirm-btn">确 定</el-button>
+        </div>
+      </el-dialog>
+
+      <!-- 重置密码对话框 -->
+      <el-dialog
+        :visible.sync="resetPwdDialog"
+        width="30%"
+        custom-class="custom-dialog"
+        :show-close="false">
+        <div class="dialog-header">
+          <h3 class="dialog-title">重置密码</h3>
+          <i class="el-icon-close close-icon" @click="resetPwdDialog = false"></i>
+        </div>
+        <div class="dialog-body">
+          <el-form :model="resetPwdMember" :rules="resetPwdRules" ref="resetPwdForm" label-width="90px">
+            <el-form-item label="新密码" prop="password">
+              <div class="input-with-icon">
+                <i class="el-icon-lock input-prefix-icon"></i>
+                <el-input v-model="newPassword" placeholder="请输入新密码" type="password" show-password>
+                  <el-button slot="append" @click="generateRandomPassword" class="random-btn">随机</el-button>
+                </el-input>
+              </div>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div class="dialog-footer">
+          <el-button @click="resetPwdDialog = false" class="cancel-btn">取 消</el-button>
+          <el-button type="primary" @click="confirmResetPassword" class="confirm-btn">确 定</el-button>
+        </div>
+      </el-dialog>
+
+      <!-- 密码放大查看对话框 -->
+      <el-dialog
+        :visible.sync="passwordPreviewDialog"
+        width="30%"
+        custom-class="custom-dialog"
+        :show-close="false">
+        <div class="dialog-header">
+          <h3 class="dialog-title">密码放大查看</h3>
+          <i class="el-icon-close close-icon" @click="passwordPreviewDialog = false"></i>
+        </div>
+        <div class="dialog-body">
+          <div class="password-preview">
+            <div class="password-preview-content">{{ passwordToPreview }}</div>
+            <div class="password-preview-actions">
+              <el-button type="primary" size="small" @click="copyToClipboard(passwordToPreview, '密码')" class="copy-btn">
+                <i class="el-icon-document-copy"></i> 复制密码
+              </el-button>
+            </div>
+          </div>
+        </div>
+        <div class="dialog-footer">
+          <el-button @click="passwordPreviewDialog = false" class="confirm-btn">关闭</el-button>
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -241,11 +382,11 @@ export default {
         ],
         username: [
           { required: true, message: '请输入登录账号', trigger: 'blur' },
-          { min: 4, max: 20, message: '长度在 4 到 20 个字符', trigger: 'blur' }
+          { max: 20, message: '长度不能超过20个字符', trigger: 'blur' }
         ],
         password: [
           { required: true, message: '请输入登录密码', trigger: 'blur' },
-          { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
+          { max: 20, message: '长度不能超过20个字符', trigger: 'blur' }
         ],
         birthday: [
           { required: true, message: '请选择出生日期', trigger: 'change' }
@@ -261,7 +402,7 @@ export default {
       resetPwdRules: {
         password: [
           { required: true, message: '请输入新密码', trigger: 'blur' },
-          { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
+          { max: 20, message: '长度不能超过20个字符', trigger: 'blur' }
         ]
       },
       // 密码放大查看对话框
@@ -296,25 +437,25 @@ export default {
       this.familyMembers = [
         { 
           id: '1', 
-          name: '张三', 
-          relation: '配偶', 
-          username: 'zhangsan123',
-          password: 'zhangsan123',
-          birthday: '1985-05-15', 
-          gender: 0,
-          avatar: '',
+          name: '吴林坤', 
+          relation: '儿子', 
+          username: 'wlk',
+          password: 'wlk123',
+          birthday: '2023-01-01', 
+          gender: 1,  // 男
+          avatar: '/uploads/1.jpg',
           parentUserId: currentUserId,
           showPassword: false // 控制密码是否显示
         },
         { 
           id: '2', 
-          name: '小明', 
-          relation: '儿子', 
-          username: 'xiaoming456',
-          password: 'xiaoming456',
-          birthday: '2010-08-20', 
-          gender: 1,
-          avatar: '',
+          name: '苏沐橙', 
+          relation: '妻子', 
+          username: 'smc',
+          password: 'smc123',
+          birthday: '2005-01-01', 
+          gender: 0,  // 女
+          avatar: '/uploads/2.jpg',
           parentUserId: currentUserId,
           showPassword: false // 控制密码是否显示
         }
@@ -339,7 +480,8 @@ export default {
         birthday: '',
         gender: 1,
         avatar: '',
-        parentUserId: '' // 关联的主用户ID
+        parentUserId: '', // 关联的主用户ID
+        avatarPath: '' // 不带@前缀，相对于src目录
       }
       this.dialogVisible = true
     },
@@ -435,19 +577,34 @@ export default {
         
         // 模拟保存
         if (this.isEditing) {
-          // 编辑时不修改密码
-          const memberWithoutPassword = {...this.memberForm};
-          delete memberWithoutPassword.password;
-          
-          const index = this.familyMembers.findIndex(m => m.id === this.memberForm.id);
-          if (index !== -1) {
-            this.familyMembers.splice(index, 1, memberWithoutPassword);
+          // 查找原始成员获取原始密码
+          const originalMember = this.familyMembers.find(m => m.id === this.memberForm.id);
+          if (originalMember) {
+            // 创建一个新对象来保存更新后的成员信息
+            const updatedMember = {
+              ...this.memberForm,
+              // 使用原始密码
+              password: originalMember.password
+            };
+            
+            const index = this.familyMembers.findIndex(m => m.id === this.memberForm.id);
+            if (index !== -1) {
+              this.familyMembers.splice(index, 1, updatedMember);
+              
+              // 如果当前正在查看的成员就是被编辑的成员，更新currentMember
+              if (this.currentMember && this.currentMember.id === updatedMember.id) {
+                this.currentMember = updatedMember;
+              }
+            }
+            this.$message.success('更新成功');
+          } else {
+            this.$message.error('未找到要编辑的成员');
           }
-          this.$message.success('更新成功');
         } else {
           const newMember = { 
             ...this.memberForm,
-            id: Date.now().toString() // 模拟ID生成
+            id: Date.now().toString(), // 模拟ID生成
+            showPassword: false // 添加控制密码是否显示的属性
           };
           this.familyMembers.push(newMember);
           
@@ -538,20 +695,8 @@ export default {
     
     // 头像上传前验证
     beforeAvatarUpload(file) {
-      const isImage = file.type.indexOf('image/') === 0;
-      const isLt2M = file.size / 1024 / 1024 < 2;
-      
-      if (!isImage) {
-        this.$message.error('上传头像图片只能是图片格式 (JPG, PNG, GIF等)!');
-        return false;
-      }
-      if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 2MB!');
-        return false;
-      }
-      
-      // 如果验证通过，返回true
-      return isImage && isLt2M;
+      // 验证由handleCustomUpload处理，这里直接返回true
+      return true;
     },
     
     // 切换密码可见性
@@ -633,37 +778,40 @@ export default {
 
     // 自定义上传逻辑
     handleCustomUpload(event) {
-      // 这里可以添加自定义的上传逻辑
-      // 例如，使用 FormData 对象将文件上传到服务器
       const file = event.file;
       
-      // 在实际项目中，应该上传到服务器
-      // const formData = new FormData();
-      // formData.append('file', file);
-      
-      // 使用 axios 发送 POST 请求到服务器
-      // this.$axios.post('/api/upload', formData, {
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data'
-      //   }
-      // }).then(res => {
-      //   if (res.data.code === 200) {
-      //     this.memberForm.avatar = res.data.data;
-      //     this.$message.success('头像上传成功');
-      //   } else {
-      //     this.$message.error('头像上传失败');
-      //   }
-      // }).catch(err => {
-      //   console.error('上传错误:', err);
-      //   this.$message.error('上传发生错误');
-      // });
-      
-      // 模拟上传成功，使用本地文件URL
-      this.memberForm.avatar = URL.createObjectURL(file);
-      this.$message.success('头像上传成功');
-      
-      // 通知上传组件上传成功
-      event.onSuccess();
+      try {
+        // 校验文件类型和大小
+        const isImage = file.type.indexOf('image/') === 0;
+        const isLt2M = file.size / 1024 / 1024 < 2;
+        
+        if (!isImage) {
+          this.$message.error('上传头像图片只能是图片格式!');
+          event.onError(new Error('非图片格式'));
+          return;
+        }
+        if (!isLt2M) {
+          this.$message.error('上传头像图片大小不能超过 2MB!');
+          event.onError(new Error('图片过大'));
+          return;
+        }
+        
+        // 创建一个临时的URL以预览图片
+        const fileUrl = URL.createObjectURL(file);
+        
+        // 设置成员头像为临时URL
+        this.memberForm.avatar = fileUrl;
+        
+        console.log('临时头像URL:', fileUrl);
+        this.$message.success('头像上传成功');
+        
+        // 通知上传组件上传成功
+        event.onSuccess();
+      } catch (error) {
+        console.error('上传过程中发生错误:', error);
+        this.$message.error('上传失败: ' + error.message);
+        event.onError(error);
+      }
     },
 
     // 处理头像加载错误
@@ -671,6 +819,26 @@ export default {
       // 这里可以添加处理头像加载错误的逻辑
       // 例如，设置一个默认头像
       member.avatar = require('@/assets/img/default-avatar.png');
+    },
+
+    // 获取头像URL
+    getImageUrl(avatar) {
+      if (!avatar) {
+        return require('@/assets/img/default-avatar.png');
+      }
+      
+      // 如果是/uploads开头的路径（相对于public目录）
+      if (avatar.startsWith('/uploads/')) {
+        return avatar; // 直接返回，Vue会从public目录查找
+      }
+      
+      // 如果已经是blob URL或者http URL，直接返回
+      if (avatar.startsWith('blob:') || avatar.startsWith('http') || avatar.startsWith('data:')) {
+        return avatar;
+      }
+      
+      // 对于其他路径返回默认头像
+      return require('@/assets/img/default-avatar.png');
     }
   }
 }
@@ -681,24 +849,54 @@ export default {
   padding: 20px;
 }
 
+/* 头部区域样式 */
+.family-management-container {
+  padding: 20px;
+}
+
 .page-header {
+  background: linear-gradient(135deg, #42b983, #2c9e6a);
+  color: white;
+  border-radius: 12px;
+  padding: 25px 30px;
+  margin-bottom: 30px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.title {
-  font-size: 22px;
-  color: #333;
+.page-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 10px;
+  color: white;
+}
+
+.page-subtitle {
+  font-size: 14px;
   margin: 0;
+  opacity: 0.9;
 }
 
-.member-list {
+.add-member-btn {
+  padding: 10px 20px;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.add-member-btn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/* 成员列表区域 */
+.family-members {
   margin-bottom: 30px;
 }
 
-.member-card-wrapper {
+.member-col {
   cursor: pointer;
   transition: all 0.3s;
   position: relative;
@@ -706,98 +904,284 @@ export default {
   margin-bottom: 15px;
 }
 
-.member-card-wrapper:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
+.member-col:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-3px);
 }
 
 .member-card {
-  display: flex;
-  align-items: center;
-  padding: 15px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: all 0.3s;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border: 2px solid transparent;
 }
 
+.member-card:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  transform: translateY(-5px);
+}
+
+/* 选中样式 */
 .member-card.active {
-  border-color: #409EFF;
-  background-color: #ecf5ff;
+  border-color: #42b983;
+  background-color: #f0f9eb;
+}
+
+.member-avatar-container {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
 }
 
 .member-avatar {
-  width: 60px;
-  height: 60px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   overflow: hidden;
-  margin-right: 15px;
-  flex-shrink: 0;
+  border: 4px solid #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
+.gender-indicator {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  border: 2px solid white;
+  z-index: 2; /* 确保性别指示器在头像上方 */
+}
+
+.gender-indicator.male {
+  background: linear-gradient(135deg, #4a90e2, #357ae8);
+}
+
+.gender-indicator.female {
+  background: linear-gradient(135deg, #e25c5c, #d83b3b);
+}
+
+/* 调整头像样式，确保图片能够完整显示 */
 .member-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block; /* 防止图片底部出现间隙 */
 }
 
-.member-info {
-  flex-grow: 1;
+.member-name {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 10px;
+  color: #333;
+  text-align: center;
 }
 
-.member-info h3 {
-  margin: 0 0 5px;
-  font-size: 16px;
+.relation-tag {
+  display: inline-block;
+  padding: 4px 12px;
+  background-color: #e1f3d8;
+  color: #42b983;
+  border-radius: 20px;
+  font-size: 12px;
+  margin: 0 auto 15px;
+  text-align: center;
 }
 
-.member-info p {
-  margin: 0;
-  color: #666;
+.member-detail {
+  margin-top: 15px;
+}
+
+.member-detail p {
+  margin: 8px 0;
+  color: #606266;
   font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.member-detail i {
+  margin-right: 8px;
+  color: #909399;
+  width: 16px;
+  text-align: center;
+}
+
+.password-mask {
+  background-color: #f5f7fa;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: monospace;
+  transition: all 0.3s;
+}
+
+.password-mask:hover {
+  background-color: #e1f3d8;
+  color: #42b983;
 }
 
 .member-actions {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 2;
+  margin-top: auto;
+  padding: 15px;
+  display: flex;
+  justify-content: space-around;
+  background-color: #f8f9fa;
+  border-top: 1px solid #e9ecef;
 }
 
-.section-header {
+.action-btn {
+  font-size: 12px;
+  padding: 7px 12px;
+  border-radius: 15px;
+}
+
+.edit-btn {
+  background-color: #409EFF;
+  border-color: #409EFF;
+}
+
+.reset-btn {
+  background-color: #E6A23C;
+  border-color: #E6A23C;
+}
+
+.delete-btn {
+  background-color: #F56C6C;
+  border-color: #F56C6C;
+}
+
+/* 健康数据区域 */
+.member-data-container {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+}
+
+.data-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
+  border-bottom: 2px solid #f5f5f5;
+  padding-bottom: 15px;
 }
 
-.section-header h3 {
-  font-size: 18px;
+.data-title {
+  display: flex;
+  align-items: center;
+}
+
+.data-title i {
+  font-size: 24px;
+  margin-right: 10px;
+  color: #42b983;
+}
+
+.data-title h3 {
+  font-size: 20px;
   color: #333;
-  margin: 0 0 15px;
+  margin: 0;
 }
 
+.refresh-btn {
+  background-color: #42b983;
+  border-color: #42b983;
+  color: white;
+}
+
+.refresh-btn:hover {
+  background-color: #2c9e6a;
+  border-color: #2c9e6a;
+}
+
+.custom-tabs {
+  margin-top: 20px;
+}
+
+/* 健康指标卡片 */
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 20px;
   margin-top: 20px;
 }
 
 .metric-card {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s;
+}
+
+.metric-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.metric-header {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.metric-header i {
+  font-size: 28px;
+  color: white;
+}
+
+.metric-header.status-normal {
+  background: linear-gradient(135deg, #42b983, #2c9e6a);
+}
+
+.metric-header.status-abnormal {
+  background: linear-gradient(135deg, #f56c6c, #d63b3b);
+}
+
+.metric-body {
+  padding: 15px;
   text-align: center;
-  padding: 20px;
 }
 
 .metric-value {
   font-size: 24px;
   font-weight: bold;
   color: #333;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
+}
+
+.metric-unit {
+  font-size: 14px;
+  color: #666;
+  margin-left: 2px;
 }
 
 .metric-name {
   color: #666;
   margin-bottom: 10px;
+  font-size: 14px;
 }
 
 .metric-status {
   display: inline-block;
-  padding: 2px 8px;
-  border-radius: 10px;
+  padding: 3px 10px;
+  border-radius: 15px;
   font-size: 12px;
 }
 
@@ -811,13 +1195,66 @@ export default {
   color: #f56c6c;
 }
 
+/* 表格样式 */
+.table-container {
+  margin: 20px 0;
+}
+
+.custom-table {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.table-cell {
+  display: flex;
+  align-items: center;
+}
+
+.cell-icon {
+  margin-right: 8px;
+  color: #409EFF;
+}
+
+/* 空状态卡片 */
+.empty-state-card {
+  text-align: center;
+  padding: 40px;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.empty-state {
+  color: #909399;
+}
+
+.empty-state i {
+  font-size: 60px;
+  margin-bottom: 20px;
+  color: #dcdfe6;
+}
+
+.empty-state p {
+  font-size: 16px;
+  margin: 0;
+}
+
+/* 头像上传区域 */
+.avatar-upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .avatar-uploader {
   text-align: center;
+  margin-bottom: 10px;
 }
 
 .avatar-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
+  border: 2px dashed #d9d9d9;
+  border-radius: 50%;
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -829,94 +1266,312 @@ export default {
   box-shadow: 0 0 8px rgba(64, 158, 255, 0.3);
 }
 
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 100px;
-  height: 100px;
-  line-height: 100px;
-  text-align: center;
-  border-radius: 50%;
-  background-color: #f8f8f8;
-}
-
 .avatar {
   width: 100px;
   height: 100px;
-  display: block;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.account-info-card {
-  margin-top: 10px;
-  padding: 10px;
-  background-color: #f8f8f8;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  border-left: 3px solid #409EFF;
-}
-
-.account-info-title {
-  font-size: 14px;
-  font-weight: bold;
-  margin-bottom: 10px;
-  color: #409EFF;
-}
-
-.account-info-item {
-  margin-bottom: 8px;
+.avatar-placeholder {
+  width: 100px;
+  height: 100px;
+  background-color: #f5f7fa;
+  border-radius: 50%;
   display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  border: 1px dashed #d9d9d9;
+  cursor: pointer;
+  transition: all 0.3s;
 }
 
-.label {
-  font-weight: bold;
-  color: #666;
-  width: 50px;
+.avatar-placeholder:hover {
+  border-color: #42b983;
+  background-color: #f0f9eb;
 }
 
-.value {
-  margin-left: 5px;
-  color: #333;
-  font-family: 'Courier New', monospace;
-  background-color: #f0f0f0;
-  padding: 2px 5px;
-  border-radius: 3px;
-  flex: 1;
-}
-
-.password-view-btn {
-  margin-left: 5px;
-}
-
-.password-preview {
-  padding: 20px;
-  text-align: center;
-}
-
-.password-preview-content {
-  margin-bottom: 20px;
+.avatar-uploader-icon {
   font-size: 28px;
-  font-family: 'Courier New', monospace;
-  letter-spacing: 2px;
-  background-color: #f8f8f8;
-  border: 1px solid #e0e0e0;
-  border-radius: 5px;
-  padding: 15px;
-  color: #333;
-  word-break: break-all;
-  font-weight: bold;
+  color: #8c939d;
+  margin-bottom: 5px;
 }
 
-.password-preview-actions {
-  margin-top: 20px;
+.upload-text {
+  font-size: 12px;
+  color: #909399;
   text-align: center;
 }
 
 .upload-tip {
-  margin-top: 10px;
   font-size: 12px;
   color: #909399;
+  margin-top: 10px;
+}
+
+/* 对话框样式 */
+.custom-dialog {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.dialog-header {
+  padding: 15px 20px;
+  background: linear-gradient(135deg, #42b983, #2c9e6a);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: none;
+}
+
+.dialog-title {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
+  color: white;
+}
+
+.close-icon {
+  cursor: pointer;
+  color: white;
+  font-size: 18px;
+}
+
+.dialog-body {
+  padding: 20px;
+}
+
+.dialog-footer {
+  padding: 10px 20px 20px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.cancel-btn {
+  border-radius: 20px;
+  padding: 10px 25px;
+  background-color: #f5f7fa;
+  border-color: #dcdfe6;
+  color: #606266;
+}
+
+.cancel-btn:hover {
+  background-color: #e9ebee;
+  border-color: #c6c8cc;
+}
+
+.confirm-btn {
+  border-radius: 20px;
+  padding: 10px 25px;
+  background-color: #42b983;
+  border-color: #42b983;
+}
+
+.confirm-btn:hover {
+  background-color: #2c9e6a;
+  border-color: #2c9e6a;
+}
+
+/* 新增样式 */
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-prefix-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  color: #909399;
+  font-size: 16px;
+}
+
+.input-with-icon .el-input__inner {
+  padding-left: 35px;
+}
+
+.gender-selector {
+  display: flex;
+  gap: 20px;
+}
+
+.gender-option {
+  flex: 1;
+  padding: 10px 15px;
+  border-radius: 6px;
+  border: 1px solid #dcdfe6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.gender-option.active {
+  border-color: #42b983;
+  background-color: #f0f9eb;
+}
+
+.gender-option .el-radio {
+  margin-right: 0;
+}
+
+.gender-option .el-radio__label {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.gender-option i {
+  margin-right: 5px;
+}
+
+.gender-option .el-icon-male {
+  color: #409EFF;
+}
+
+.gender-option .el-icon-female {
+  color: #ff6b9a;
+}
+
+.random-btn {
+  background-color: #67c23a;
+  color: white;
+  border-color: #67c23a;
+}
+
+.random-btn:hover {
+  background-color: #85ce61;
+  border-color: #85ce61;
+}
+
+/* 删除确认对话框样式 */
+.delete-confirm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 10px;
+  text-align: center;
+}
+
+.warning-icon-container {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background-color: rgba(255, 153, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.warning-icon {
+  font-size: 40px;
+  color: #ff9900;
+}
+
+.delete-message {
+  color: #333;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.highlight-text {
+  color: #f56c6c;
+  font-weight: bold;
+}
+
+.warning-text {
+  color: #ff9900;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* 密码预览对话框样式 */
+.password-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 10px;
+}
+
+.password-preview-content {
+  background-color: #f8f8f8;
+  padding: 15px 20px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  font-family: 'Courier New', monospace;
+  font-size: 20px;
+  margin-bottom: 20px;
+  width: 100%;
+  text-align: center;
+  word-break: break-all;
+  letter-spacing: 1px;
+  color: #333;
+}
+
+.password-preview-actions {
+  margin-top: 10px;
+}
+
+.copy-btn {
+  background-color: #409EFF;
+  color: white;
+  border-color: #409EFF;
+  padding: 10px 20px;
+  border-radius: 20px;
+}
+
+.copy-btn:hover {
+  background-color: #66b1ff;
+  border-color: #66b1ff;
+}
+
+/* 响应式调整 */
+@media screen and (max-width: 768px) {
+  .family-management-container {
+    padding: 10px;
+  }
+  
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .add-member-btn {
+    margin-top: 15px;
+  }
+  
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.add-button {
+  padding: 10px 20px;
+  border-radius: 20px;
+  background-color: #ffffff;
+  border-color: #ffffff;
+  color: #42b983;
+  font-weight: 500;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+}
+
+.add-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background-color: #f5f5f5;
+}
+
+.add-button i {
+  margin-right: 5px;
 }
 </style> 
