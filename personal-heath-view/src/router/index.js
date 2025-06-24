@@ -205,6 +205,12 @@ const routes = [
         component: () => import('@/views/user/CookbookOperation.vue'),
         meta: { requireAuth: true }
       },
+      {
+        path: '/health-report',
+        name: '健康报告',
+        component: () => import('@/views/user/HealthReport.vue'),
+        meta: { requireAuth: true }
+      },
     ]
   }
 ];
