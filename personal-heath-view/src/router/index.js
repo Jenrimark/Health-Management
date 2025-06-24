@@ -169,14 +169,6 @@ const routes = [
         },
       },
       {
-        name: '报告',
-        path: "/work",
-        component: () => import(`@/views/user/Work.vue`),
-        meta: {
-          requireAuth: true,
-        },
-      },
-      {
         name: '健康论坛详情',
         path: "/gourmetDetail",
         component: () => import(`@/views/user/GourmetDetail.vue`),
@@ -209,6 +201,12 @@ const routes = [
         path: '/health-report',
         name: '健康报告',
         component: () => import('@/views/user/HealthReport.vue'),
+        meta: { requireAuth: true }
+      },
+      {
+        path: '/family-management',
+        name: '家庭管理',
+        component: () => import('@/views/user/FamilyManagement.vue'),
         meta: { requireAuth: true }
       },
     ]

@@ -33,6 +33,7 @@
                 <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item icon="el-icon-user" @click.native="userCenterPanel">个人中心</el-dropdown-item>
                     <el-dropdown-item icon="el-icon-warning-outline" @click.native="resetPwd">修改密码</el-dropdown-item>
+                    <el-dropdown-item icon="el-icon-house" @click.native="familyManagement">家庭管理</el-dropdown-item>
                     <el-dropdown-item icon="el-icon-back" @click.native="loginOut">退出登录</el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
@@ -103,6 +104,10 @@ export default {
         // 重置密码，传回父组件处理
         resetPwd() {
             this.$emit('eventListener', 'resetPwd');
+        },
+        // 家庭管理，传回父组件处理
+        familyManagement() {
+            this.$emit('eventListener', 'familyManagement');
         },
         // 退出登录，传回父组件处理
         loginOut() {

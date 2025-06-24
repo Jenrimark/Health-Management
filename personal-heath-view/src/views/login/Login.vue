@@ -75,14 +75,29 @@ export default {
                     return;
                 }
                 setToken(data.data.token);
-                // 使用Swal通知登录成功，延迟后跳转
-                // this.$swal.fire({
-                //     title: '登录成功',
-                //     text: '即将进入系统...',
-                //     icon: 'success',
-                //     showConfirmButton: false,
-                //     timer: DELAY_TIME,
-                // });
+                
+                // 检查是否是家庭成员账号（是否有parentUserId）
+                if (data.data.parentUserId) {
+                    // 获取关联的主账号信息
+                    try {
+                        const parentResponse = await request.get(`user/parentInfo/${data.data.parentUserId}`);
+                        if (parentResponse.data.code === 200) {
+                            const parentInfo = parentResponse.data.data;
+                            // 保存关联关系信息
+                            sessionStorage.setItem('parentInfo', JSON.stringify({
+                                parentId: data.data.parentUserId,
+                                parentName: parentInfo.userName,
+                                relation: data.data.relation
+                            }));
+                            
+                            // 显示关联关系提示
+                            this.$message.success(`您已登录 ${parentInfo.userName} 的家庭成员账号 (${data.data.relation})`);
+                        }
+                    } catch (error) {
+                        console.error('获取关联用户信息失败:', error);
+                    }
+                }
+                
                 // 根据角色延迟跳转
                 setTimeout(() => {
                     const { role } = data.data;

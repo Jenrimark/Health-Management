@@ -3,6 +3,10 @@
         <div class="menus-container"
             style="position: sticky;top: 0;z-index: 1000;background-color: rgb(255, 255, 255);">
             <UserMenu :menus="routers" :userInfo="userInfo" @eventListener="eventListener" />
+            <!-- 如果是家庭成员账号，显示关联信息 -->
+            <div v-if="parentInfo" class="family-relation-info">
+                您正在使用 {{ parentInfo.parentName }} 的家庭成员账号 ({{ parentInfo.relation }})
+            </div>
         </div>
         <div class="content-container">
             <router-view class="route-container"></router-view>
@@ -117,11 +121,18 @@ export default {
             selecedFoodIndex: 0,
             selecedHealthModelIndex: 0,
             dietDialog: false,
-            healthModelConfigDialog: false
+            healthModelConfigDialog: false,
+            parentInfo: null
         };
     },
     created() {
         this.tokenCheckLoad();
+        
+        // 检查是否存在家庭关联信息
+        const parentInfoStr = sessionStorage.getItem('parentInfo');
+        if (parentInfoStr) {
+            this.parentInfo = JSON.parse(parentInfoStr);
+        }
     },
     methods: {
         healthModelChange() {
@@ -239,6 +250,10 @@ export default {
             else if (event === 'healthDataRecord') {
                 this.$router.push('/record');
             }
+            // 家庭管理
+            else if (event === 'familyManagement') {
+                this.$router.push('/family-management');
+            }
         },
         async loginOutOperation() {
             const confirmed = await this.$swalConfirm({
@@ -262,7 +277,7 @@ export default {
                     this.$router.push('/login');
                     return;
                 }
-                const { id: userId, userAvatar, userName, userRole, userEmail, gender, age } = res.data.data;
+                const { id: userId, userAvatar, userName, userRole, userEmail, gender, age, parentInfo } = res.data.data;
                 // 将用户信息存储起来
                 sessionStorage.setItem('userInfo', JSON.stringify(res.data.data));
                 this.userInfo = {
@@ -274,6 +289,7 @@ export default {
                     age: age
                 };
                 this.data = { ...this.userInfo };
+                this.parentInfo = parentInfo;
                 // 根据角色解析路由
                 const roleRouteKey = userRole === 1 ? 'admin' : 'user';
                 const roleRoute = router.options.routes.find(route => route.path.startsWith(`/${roleRouteKey}`));
@@ -297,8 +313,22 @@ export default {
     border: none;
     outline: none;
     width: 90%;
+}
+
+.family-relation-info {
+    background-color: #ecf5ff;
+    color: #409EFF;
+    padding: 8px 20px;
     font-size: 14px;
-    color: rgba(0, 0, 0, 0.6);
+    text-align: center;
+    border-bottom: 1px solid #d9ecff;
+}
+
+.user-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(247, 247, 247);
 }
 
 .removeFood {
