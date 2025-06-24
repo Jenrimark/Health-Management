@@ -176,7 +176,7 @@
       </el-card>
 
       <!-- 添加/编辑家庭成员对话框 -->
-      <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="30%" custom-class="custom-dialog" :show-close="false">
+      <el-dialog :visible.sync="dialogVisible" width="30%" custom-class="custom-dialog" :show-close="false">
         <div class="dialog-header">
           <h3 class="dialog-title">{{ dialogTitle }}</h3>
           <i class="el-icon-close close-icon" @click="dialogVisible = false"></i>
@@ -882,12 +882,11 @@ export default {
 .add-member-btn {
   padding: 10px 20px;
   border: none;
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: transparent;
   transition: all 0.3s ease;
 }
 
 .add-member-btn:hover {
-  background-color: rgba(255, 255, 255, 0.3);
   transform: translateY(-2px);
 }
 
