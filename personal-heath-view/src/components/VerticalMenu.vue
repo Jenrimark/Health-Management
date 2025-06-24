@@ -1,9 +1,8 @@
 <template>
 	<el-menu :collapse-transition="false" :collapse="flag" style="padding: 5px 10px;width: 200px;"
 		:default-active="activeIndex" :background-color="bag" text-color="#666" @select="handleSelect">
-		<el-menu-item v-for="(item, index) in routes" :key="index" style="width: 100%;"
-			v-if="!item.children || item.children.length === 0" :index="item.path"
-			:class="{ 'is-active': activeIndex === item.path }">
+		<el-menu-item v-for="(item, index) in filteredRoutes" :key="index" style="width: 100%;"
+			:index="item.path" :class="{ 'is-active': activeIndex === item.path }">
 			<i :class="item.icon" style="font-size: 20px;"></i>
 			<span slot="title" style="font-size: 14px;">{{ item.name }}</span>
 		</el-menu-item>
@@ -31,6 +30,11 @@ export default {
 		bag: {
 			type: String,
 			default: '#FFFFFF'
+		}
+	},
+	computed: {
+		filteredRoutes() {
+			return this.routes.filter(item => !item.children || item.children.length === 0);
 		}
 	},
 	created(){
