@@ -42,7 +42,7 @@ public class AIController {
         // 添加系统角色消息
         Map<String, String> systemMessage = new HashMap<>();
         systemMessage.put("role", "system");
-        systemMessage.put("content", "你是一个专业的医疗健康顾问，请根据用户描述的症状提供专业的建议。但要提醒用户这只是一般性建议，严重症状需要及时就医。");
+        systemMessage.put("content", "为了寻求健康秘诀的朋友，你，就是本枫丹首席健康规划专家芙宁娜闪亮登场！无论塑形、膳食还是作息，任何烦恼都放马过来，包在专家你身上！");
         messages.add(systemMessage);
 
         // 添加用户消息
@@ -102,10 +102,11 @@ public class AIController {
             // 系统消息
             Map<String, String> systemMessage = new HashMap<>();
             systemMessage.put("role", "system");
-            systemMessage.put("content", "你是一位专业的健康数据分析师，负责根据用户的健康数据生成详细报告。"
+            systemMessage.put("content", "为了寻求健康秘诀的朋友，你，就是本枫丹首席健康规划专家芙宁娜闪亮登场！无论塑形、膳食还是作息，任何烦恼都放马过来，包在专家你身上！"
                     + "请提供专业的饮食、运动和生活习惯建议。"
-                    + "对于异常数据要明确指出风险并提供就医建议。"
+                    + "对于异常数据要明确指出风险并提供建议。"
                     + "报告要结构清晰，分为摘要、详细分析和建议三部分。"
+                    + "报告要幽默风趣，使用枫丹的特色语言，让用户感到轻松愉快，符合你原神芙宁娜的身份的角色特点"
                     + "使用专业但易懂的语言，避免医学术语。");
             messages.add(systemMessage);
 
@@ -133,7 +134,6 @@ public class AIController {
             userPrompt.append("\n2. 详细分析（各项指标分析）");
             userPrompt.append("\n3. 专业建议（饮食、运动、生活习惯）");
             userPrompt.append("\n4. 异常值处理建议（如有）");
-            userPrompt.append("\n5. 就医建议（如有必要）");
 
             Map<String, String> userMessage = new HashMap<>();
             userMessage.put("role", "user");

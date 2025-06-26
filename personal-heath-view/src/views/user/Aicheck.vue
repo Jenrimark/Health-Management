@@ -14,7 +14,8 @@
           <div class="message-content">
             <div class="avatar">
               <template v-if="message.role === 'user'">
-                <i class="el-icon-user"></i>
+                <el-avatar :src="userAvatar" v-if="userAvatar" class="ai-avatar-img"></el-avatar>
+                <i class="el-icon-user" v-else></i>
               </template>
               <template v-else>
                 <img src="/fnn.jpg" alt="AI助手" class="ai-avatar-img" />
@@ -53,6 +54,12 @@ export default {
     return {
       question: '',
       loading: false,
+      userAvatar: '',
+      isTyping: false,
+      typingSpeed: 50, // 打字速度，每字符毫秒数
+      currentTypingMessage: '',
+      thinkingAnimation: null, // 思考动画定时器
+      thinkingDots: '', // 思考动画文本
       messages: [
         {
           role: 'assistant',
@@ -61,7 +68,27 @@ export default {
       ]
     }
   },
+  created() {
+    // 获取用户头像
+    this.getUserAvatar();
+  },
+  beforeDestroy() {
+    // 组件销毁前清除定时器
+    this.stopThinkingAnimation();
+  },
   methods: {
+    getUserAvatar() {
+      // 从sessionStorage获取用户信息
+      const userInfoStr = sessionStorage.getItem('userInfo');
+      if (userInfoStr) {
+        try {
+          const userInfo = JSON.parse(userInfoStr);
+          this.userAvatar = userInfo.userAvatar || '';
+        } catch (error) {
+          console.error('解析用户信息失败:', error);
+        }
+      }
+    },
     async sendQuestion() {
       if (!this.question.trim()) return
 
@@ -70,27 +97,105 @@ export default {
         content: this.question
       })
 
+      const userQuestion = this.question
+      this.question = ''
       this.loading = true
+      
+      // 添加一个空的AI回复消息占位
+      this.messages.push({
+        role: 'assistant',
+        content: '.'
+      })
+      
+      // 启动思考动画
+      this.startThinkingAnimation()
+      
       try {
         const response = await this.$axios.post('/api/personal-heath/v1.0/ai/aiDiagnosis', {
-          question: this.question
+          question: userQuestion
         })
 
-        this.messages.push({
-          role: 'assistant',
-          content: response.data.choices[0].message.content
-        })
-
-        this.question = ''
+        // 获取完整的AI回复内容
+        const aiResponse = response.data.choices[0].message.content
+        
+        // 停止思考动画
+        this.stopThinkingAnimation()
+        
+        // 开始流式显示回复
+        await this.typeMessage(aiResponse)
+        
       } catch (error) {
         console.error('AI诊断失败:', error)
         this.$message.error('抱歉，服务出现问题，请稍后再试')
+        
+        // 停止思考动画
+        this.stopThinkingAnimation()
+        
+        // 删除空的回复消息
+        this.messages.pop()
       } finally {
         this.loading = false
         this.$nextTick(() => {
           this.scrollToBottom()
         })
       }
+    },
+    
+    // 开始思考动画
+    startThinkingAnimation() {
+      // 获取当前消息的索引
+      const messageIndex = this.messages.length - 1
+      let dotCount = 1
+      
+      this.thinkingAnimation = setInterval(() => {
+        // 循环显示 "."、".."、"..."
+        this.thinkingDots = '.'.repeat(dotCount)
+        this.$set(this.messages[messageIndex], 'content', this.thinkingDots)
+        
+        // 更新点的数量，循环1-3个点
+        dotCount = dotCount % 3 + 1
+        
+        // 滚动到底部
+        this.$nextTick(() => {
+          this.scrollToBottom()
+        })
+      }, 500) // 每500毫秒更新一次
+    },
+    
+    // 停止思考动画
+    stopThinkingAnimation() {
+      if (this.thinkingAnimation) {
+        clearInterval(this.thinkingAnimation)
+        this.thinkingAnimation = null
+      }
+    },
+    
+    // 模拟打字效果的方法
+    async typeMessage(fullMessage) {
+      this.isTyping = true
+      this.currentTypingMessage = ''
+      
+      // 获取当前消息的索引
+      const messageIndex = this.messages.length - 1
+      
+      // 逐个字符显示
+      for (let i = 0; i < fullMessage.length; i++) {
+        // 将字符追加到当前正在输入的消息中
+        this.currentTypingMessage += fullMessage.charAt(i)
+        
+        // 更新消息内容
+        this.$set(this.messages[messageIndex], 'content', this.currentTypingMessage)
+        
+        // 每添加一个字符滚动到底部
+        this.$nextTick(() => {
+          this.scrollToBottom()
+        })
+        
+        // 等待一定时间模拟打字速度
+        await new Promise(resolve => setTimeout(resolve, this.typingSpeed))
+      }
+      
+      this.isTyping = false
     },
     scrollToBottom() {
       const chatBox = this.$refs.chatBox
@@ -207,6 +312,7 @@ export default {
   word-break: break-word;
   font-size: 14px;
   line-height: 1.5;
+  text-align: left;
 }
 
 .user-message .text {
