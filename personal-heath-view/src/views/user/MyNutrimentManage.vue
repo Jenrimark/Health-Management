@@ -267,4 +267,102 @@ async batchDelete() {
     },
 };
 </script>
-<style scoped lang="scss"></style>
+
+<style>
+.dialog-hover {
+    display: inline-block;
+    width: 100px;
+    text-align: right;
+    margin-right: 10px;
+}
+
+.dialog-input {
+    width: 160px;
+    height: 30px;
+    padding: 0 10px;
+}
+
+.dialog-footer {
+    margin-block: 10px;
+}
+
+.channel-button, .edit-button {
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    margin-right: 10px;
+}
+
+.channel-button {
+    border: 1px solid #dcdfe6;
+    background-color: #fff;
+    color: #606266;
+}
+
+.channel-button:hover {
+    color: #409EFF;
+    border-color: #c6e2ff;
+    background-color: #ecf5ff;
+}
+
+.edit-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  background: linear-gradient(135deg, #0f753f 0%, #2eab60 100%);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(15, 117, 63, 0.2);
+  min-width: 120px;
+  height: 32px;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.edit-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.edit-button:hover {
+  background: linear-gradient(135deg, #2eab60 0%, #0f753f 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(15, 117, 63, 0.3);
+}
+
+.edit-button:hover::before {
+  transform: translateX(0);
+}
+
+.edit-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(15, 117, 63, 0.25);
+}
+
+.text-button {
+    color: #409EFF;
+    cursor: pointer;
+    display: inline-block;
+    width: 50px;
+    margin-bottom: 8px;
+}
+</style>

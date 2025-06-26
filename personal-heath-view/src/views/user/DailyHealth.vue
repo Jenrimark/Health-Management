@@ -784,14 +784,51 @@ export default {
 }
 
 .edit-button {
-  border: 1px solid #409EFF;
-  background-color: #409EFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  background: linear-gradient(135deg, #0f753f 0%, #2eab60 100%);
   color: white;
-  
-  &:hover {
-    background-color: #66b1ff;
-    border-color: #66b1ff;
-  }
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(15, 117, 63, 0.2);
+  min-width: 120px;
+  height: 32px;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.edit-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.edit-button:hover {
+  background: linear-gradient(135deg, #2eab60 0%, #0f753f 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(15, 117, 63, 0.3);
+}
+
+.edit-button:hover::before {
+  transform: translateX(0);
+}
+
+.edit-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(15, 117, 63, 0.25);
 }
 
 .filter-container {
