@@ -94,10 +94,6 @@
             
             <!-- 用户已评分显示 -->
             <div v-else class="user-rated">
-              <div class="rating-current">
-                <i class="el-icon-success"></i> 
-                <span>您已评分 {{ userCurrentRating }} 分</span>
-              </div>
               <p class="rating-tip-small">评分一经提交无法修改</p>
             </div>
             

@@ -5,7 +5,6 @@
                 <el-button type="primary" size="small" @click="showNutritionSearch">营养素需求查询</el-button>
                 <el-button type="success" size="small" @click="showFunctionalGoals">营养素功能目标</el-button>
                 <el-button type="warning" size="small" @click="showFoodsByNutrient">查询含特定营养素的食物</el-button>
-                <el-button type="danger" size="small" @click="showHealthEffects">健康功效查询</el-button>
             </el-row>
             <el-row style="display: flex;justify-content: left;gap: 6px;">
                 <el-input size="small" style="width: 166px;" v-model="nutrimentQueryDto.name" placeholder="营养素名称"
@@ -235,96 +234,7 @@
             </div>
         </el-dialog>
 
-        <!-- 健康功效查询弹窗 -->
-        <el-dialog :visible.sync="healthEffectsVisible" custom-class="nutriment-detail-dialog" width="75%">
-            <div class="nutriment-detail-header">
-                <h2 class="nutriment-detail-title">健康功效查询</h2>
-                <p class="nutriment-detail-subtitle">了解不同健康功效所需的营养素和食物</p>
-            </div>
-            <div class="health-effects-container">
-                <div class="health-effects-selection">
-                    <el-tabs v-model="selectedHealthEffect" @tab-click="handleHealthEffectChange" type="card">
-                        <el-tab-pane label="降血压" name="lower_blood_pressure"></el-tab-pane>
-                        <el-tab-pane label="降血脂" name="lower_cholesterol"></el-tab-pane>
-                        <el-tab-pane label="降血糖" name="lower_blood_sugar"></el-tab-pane>
-                        <el-tab-pane label="抗氧化" name="antioxidant"></el-tab-pane>
-                        <el-tab-pane label="增强免疫" name="immune_boost"></el-tab-pane>
-                        <el-tab-pane label="抗炎" name="anti_inflammatory"></el-tab-pane>
-                        <el-tab-pane label="肠道健康" name="gut_health"></el-tab-pane>
-                        <el-tab-pane label="心脏健康" name="heart_health"></el-tab-pane>
-                        <el-tab-pane label="骨骼健康" name="bone_health"></el-tab-pane>
-                        <el-tab-pane label="肝脏保护" name="liver_protection"></el-tab-pane>
-                    </el-tabs>
-                </div>
-                <div class="health-effects-results">
-                    <div class="health-effect-details">
-                        <div class="effect-header">
-                            <div class="effect-icon">
-                                <i :class="getHealthEffectIcon()"></i>
-                            </div>
-                            <div class="effect-info">
-                                <h3>{{getHealthEffectTitle()}}</h3>
-                                <p class="effect-description">{{getHealthEffectDescription()}}</p>
-                            </div>
-                        </div>
 
-                        <el-divider content-position="center">关键营养素</el-divider>
-                        
-                        <div class="effect-nutrients">
-                            <el-row :gutter="20">
-                                <el-col :span="8" v-for="(nutrient, index) in getHealthEffectNutrients()" :key="index">
-                                    <div class="nutrient-card">
-                                        <div class="nutrient-card-header">
-                                            <h4>{{nutrient.name}}</h4>
-                                        </div>
-                                        <div class="nutrient-card-body">
-                                            <p>{{nutrient.effect}}</p>
-                                        </div>
-                                        <div class="nutrient-card-footer">
-                                            <p class="recommended-amount">推荐摄入量: {{nutrient.recommended}}</p>
-                                        </div>
-                                    </div>
-                                </el-col>
-                            </el-row>
-                        </div>
-
-                        <el-divider content-position="center">推荐食物</el-divider>
-                        
-                        <div class="effect-foods">
-                            <el-row :gutter="20">
-                                <el-col :span="6" v-for="(food, index) in getHealthEffectFoods()" :key="index">
-                                    <div class="food-card">
-                                        <div class="food-icon">
-                                            <i class="el-icon-food"></i>
-                                        </div>
-                                        <div class="food-name">{{food.name}}</div>
-                                        <div class="food-nutrients">{{food.nutrients}}</div>
-                                    </div>
-                                </el-col>
-                            </el-row>
-                        </div>
-
-                        <el-divider content-position="center">生活方式建议</el-divider>
-                        
-                        <div class="lifestyle-tips">
-                            <el-row :gutter="20">
-                                <el-col :span="8" v-for="(tip, index) in getHealthEffectLifestyleTips()" :key="index">
-                                    <div class="tip-card">
-                                        <div class="tip-icon">
-                                            <i :class="tip.icon"></i>
-                                        </div>
-                                        <div class="tip-content">
-                                            <h4>{{tip.title}}</h4>
-                                            <p>{{tip.content}}</p>
-                                        </div>
-                                    </div>
-                                </el-col>
-                            </el-row>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </el-dialog>
 
         <!-- 含特定营养素的食物查询弹窗 -->
         <el-dialog :visible.sync="foodsByNutrientVisible" custom-class="nutriment-detail-dialog" width="70%">
@@ -414,7 +324,7 @@ export default {
             nutrimentDetailVisible: false,
             nutritionSearchVisible: false,
             functionalGoalsVisible: false,
-            healthEffectsVisible: false,
+
             foodsByNutrientVisible: false,
             currentNutriment: null,
             nutrientSearchForm: {
@@ -427,10 +337,7 @@ export default {
             showNutrientResults: false,
             nutrientNeedsResults: [],
             selectedFunctionalGoal: 'skin',
-            selectedHealthEffect: 'lower_blood_pressure',
-            showHealthEffectsResults: false,
-            healthEffectNutrients: [],
-            healthEffectFoods: [],
+
             selectedNutrientForFoods: 'vitamin_c',
             showFoodsByNutrientResults: false,
             foodsByNutrientResults: [],
@@ -520,36 +427,6 @@ export default {
                     ],
                     foods: ['柑橘类水果', '红椒', '西兰花', '大蒜', '生姜', '蘑菇', '酸奶', '坚果和种子']
                 }
-            },
-            // 健康功效数据库
-            healthBenefits: {
-                lower_blood_lipids: {
-                    title: '降血脂食物与营养素',
-                    nutrients: [
-                        { name: '不饱和脂肪酸', description: '尤其是Omega-3脂肪酸，能降低甘油三酯水平，改善心血管健康' },
-                        { name: '膳食纤维', description: '可结合胆固醇并帮助排出体外，降低LDL胆固醇' },
-                        { name: '植物固醇', description: '能抑制肠道对胆固醇的吸收，降低血液中的胆固醇水平' }
-                    ],
-                    foods: ['鱼油', '亚麻籽油', '橄榄油', '燕麦', '大豆', '扁豆', '杏仁', '核桃', '苹果', '山楂']
-                },
-                lower_blood_pressure: {
-                    title: '降血压食物与营养素',
-                    nutrients: [
-                        { name: '钾', description: '帮助平衡体内钠含量，放松血管壁并降低血压' },
-                        { name: '镁', description: '帮助血管放松，参与调节血压的多种生理过程' },
-                        { name: '钙', description: '适量摄入钙有助于维持正常血压水平' }
-                    ],
-                    foods: ['香蕉', '土豆', '菠菜', '西红柿', '甜菜', '全谷物', '大蒜', '坚果', '低脂乳制品', '深色巧克力']
-                },
-                lower_blood_sugar: {
-                    title: '降血糖食物与营养素',
-                    nutrients: [
-                        { name: '铬', description: '可能增强胰岛素敏感性，帮助控制血糖' },
-                        { name: '膳食纤维', description: '减缓碳水化合物吸收，稳定血糖水平' },
-                        { name: '镁', description: '参与葡萄糖代谢，缺乏可能增加2型糖尿病风险' }
-                    ],
-                    foods: ['肉桂', '苦瓜', '黄秋葵', '燕麦', '扁豆', '豆类', '藜麦', '鱼类', '发酵食品']
-                }
             }
         };
     },
@@ -611,9 +488,7 @@ export default {
             this.foodsByNutrientVisible = true;
         },
 
-        showHealthEffects() {
-            this.healthEffectsVisible = true;
-        },
+
 
         viewNutrimentDetail(nutriment) {
             this.currentNutriment = nutriment;
@@ -646,16 +521,7 @@ export default {
             this.selectedFunctionalGoal = tab.name;
         },
 
-        searchHealthEffects() {
-            // 搜索特定健康功效的食物和营养素
-            this.showHealthEffectsResults = true;
-            
-            const benefit = this.healthBenefits[this.selectedHealthEffect];
-            if (benefit) {
-                this.healthEffectNutrients = benefit.nutrients;
-                this.healthEffectFoods = benefit.foods;
-            }
-        },
+
 
         searchFoodsByNutrient() {
             // 搜索含有特定营养素的食物
@@ -735,11 +601,7 @@ export default {
             return goal ? goal.foods : [];
         },
 
-        getHealthEffectTitle() {
-            // 获取当前选择的健康功效标题
-            const benefit = this.healthBenefits[this.selectedHealthEffect];
-            return benefit ? benefit.title : '';
-        },
+
 
         getSelectedNutrientLabel() {
             // 获取当前选择的营养素标签
@@ -854,72 +716,17 @@ export default {
             }
         },
 
-        getHealthEffectIcon() {
-            // 根据健康功效获取对应的图标
-            const icons = {
-                lower_blood_pressure: 'el-icon-blood-pressure',
-                lower_cholesterol: 'el-icon-cholesterol',
-                lower_blood_sugar: 'el-icon-blood-sugar',
-                antioxidant: 'el-icon-antioxidant',
-                immune_boost: 'el-icon-immune-boost',
-                anti_inflammatory: 'el-icon-anti-inflammatory',
-                gut_health: 'el-icon-gut-health',
-                heart_health: 'el-icon-heart-health',
-                bone_health: 'el-icon-bone-health',
-                liver_protection: 'el-icon-liver-protection'
-            };
-            return icons[this.selectedHealthEffect] || 'el-icon-question';
-        },
 
-        getHealthEffectDescription() {
-            // 获取当前选择的健康功效描述
-            const benefit = this.healthBenefits[this.selectedHealthEffect];
-            return benefit ? benefit.description : '';
-        },
 
-        getHealthEffectNutrients() {
-            // 获取当前选择的健康功效相关营养素
-            const benefit = this.healthBenefits[this.selectedHealthEffect];
-            return benefit ? benefit.nutrients : [];
-        },
 
-        getHealthEffectFoods() {
-            // 获取当前选择的健康功效推荐食物
-            const benefit = this.healthBenefits[this.selectedHealthEffect];
-            return benefit ? benefit.foods : [];
-        },
 
-        getHealthEffectLifestyleTips() {
-            // 获取当前选择的健康功效生活方式建议
-            // 这里可以根据实际需求添加更多的生活方式建议
-            return [
-                {
-                    icon: 'el-icon-water',
-                    title: '多喝水',
-                    content: '保持充足的水分摄入，每天饮水1.5-2升'
-                },
-                {
-                    icon: 'el-icon-sleep',
-                    title: '规律作息',
-                    content: '保证充足睡眠'
-                },
-                {
-                    icon: 'el-icon-exercise',
-                    title: '适当运动',
-                    content: '增强身体机能'
-                },
-                {
-                    icon: 'el-icon-mood',
-                    title: '保持良好心态',
-                    content: '避免过度压力'
-                }
-            ];
-        },
 
-        handleHealthEffectChange(tab) {
-            // 当用户选择不同健康功效时更新显示内容
-            this.selectedHealthEffect = tab.name;
-        }
+
+
+
+
+
+
     }
 };
 </script>
@@ -1268,161 +1075,5 @@ export default {
     margin: 0;
 }
 
-/* 健康功效相关样式 */
-.health-effects-container {
-    padding: 20px;
-}
 
-.health-effects-selection {
-    margin-bottom: 20px;
-}
-
-.health-effects-results {
-    margin-top: 20px;
-}
-
-.health-effect-details {
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    padding: 20px;
-}
-
-.effect-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.effect-icon {
-    width: 60px;
-    height: 60px;
-    background-color: #ecf5ff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #409EFF;
-    font-size: 30px;
-    margin-right: 15px;
-}
-
-.effect-info {
-    flex: 1;
-}
-
-.effect-info h3 {
-    color: #409EFF;
-    margin-top: 0;
-    margin-bottom: 5px;
-}
-
-.effect-description {
-    color: #606266;
-    font-size: 14px;
-    line-height: 1.6;
-}
-
-.effect-nutrients {
-    margin-bottom: 15px;
-}
-
-.nutrient-card {
-    background-color: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-    margin-bottom: 15px;
-    height: 100%;
-}
-
-.nutrient-card-header {
-    margin-bottom: 10px;
-}
-
-.nutrient-card-header h4 {
-    margin: 0;
-    color: #409EFF;
-}
-
-.nutrient-card-body {
-    color: #606266;
-    font-size: 14px;
-    line-height: 1.6;
-}
-
-.nutrient-card-footer {
-    text-align: right;
-    color: #909399;
-    font-size: 12px;
-    margin-top: 10px;
-}
-
-.effect-foods {
-    margin-bottom: 15px;
-}
-
-.food-card {
-    background-color: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-    text-align: center;
-    margin-bottom: 15px;
-    height: 100%;
-}
-
-.food-icon {
-    font-size: 24px;
-    color: #409EFF;
-    margin-bottom: 10px;
-}
-
-.food-name {
-    font-weight: bold;
-    color: #303133;
-    margin-bottom: 5px;
-}
-
-.food-nutrients {
-    color: #909399;
-    font-size: 12px;
-}
-
-.lifestyle-tips {
-    margin-top: 15px;
-}
-
-.tip-card {
-    background-color: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 15px;
-    height: 100%;
-}
-
-.tip-icon {
-    font-size: 24px;
-    color: #409EFF;
-}
-
-.tip-content {
-    flex: 1;
-}
-
-.tip-content h4 {
-    color: #409EFF;
-    margin-top: 0;
-    margin-bottom: 5px;
-}
-
-.tip-content p {
-    color: #606266;
-    font-size: 14px;
-    line-height: 1.6;
-    margin: 0;
-}
 </style> 
