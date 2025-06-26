@@ -21,3 +21,62 @@ body {
 .icon-r-add:before {
     content: "" !important;
 }
+
+/* 美化下拉选择框样式 */
+.el-select {
+    /* 保持原有宽度 */
+    
+    .el-input__inner {
+        border-radius: 20px !important;
+        border: 1px solid #dcdfe6;
+        padding-left: 15px;
+        transition: all 0.3s;
+        background-color: #f9f9f9;
+        
+        &:hover, &:focus {
+            border-color: #42b983;
+            box-shadow: 0 0 0 2px rgba(66, 185, 131, 0.2);
+        }
+    }
+    
+    .el-input__suffix {
+        right: 10px;
+    }
+    
+    .el-select__caret {
+        color: #42b983;
+        transition: all 0.3s;
+    }
+}
+
+/* 美化下拉选项样式 */
+.el-select-dropdown {
+    border-radius: 10px !important;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1) !important;
+    
+    .el-select-dropdown__item {
+        padding: 10px 20px;
+        transition: all 0.2s;
+        border-radius: 6px;
+        margin: 2px 5px;
+        
+        &:hover {
+            background-color: rgba(66, 185, 131, 0.1);
+            transform: translateX(3px);
+        }
+        
+        &.selected {
+            color: #42b983;
+            font-weight: bold;
+            background-color: rgba(66, 185, 131, 0.1);
+        }
+    }
+    
+    .popper__arrow {
+        border-bottom-color: #fff !important;
+        
+        &::after {
+            border-bottom-color: #fff !important;
+        }
+    }
+}

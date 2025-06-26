@@ -22,8 +22,7 @@
                         type="daterange" range-separator="至" start-placeholder="发布开始" end-placeholder="发布结束">
                     </el-date-picker>
                     <el-input class="styled-input" size="small" style="width: 180px;" v-model="cookbookQueryDto.title" placeholder="美食名"
-                        clearable @clear="handleFilterClear">
-                        <el-button slot="append" @click="handleFilter" icon="el-icon-search"></el-button>
+                        clearable @clear="handleFilterClear" @keyup.enter.native="handleFilter">
                     </el-input>
                 </div>
             </el-row>

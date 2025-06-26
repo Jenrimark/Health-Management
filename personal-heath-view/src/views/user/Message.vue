@@ -26,7 +26,7 @@
                     </div>
                     <div class="action-right">
                         <el-tooltip content="将所有消息标记为已读" placement="top">
-                            <el-button type="text" @click="clearMessage" class="clear-button">
+                            <el-button @click="clearMessage" class="clear-button" size="small" plain>
                                 <i class="el-icon-s-open"></i> 全部已读
                             </el-button>
                         </el-tooltip>
@@ -322,14 +322,19 @@ export default {
     color: #42b983;
     font-size: 14px;
     transition: all 0.3s;
+    border-color: #42b983;
+    border-radius: 20px;
+    padding: 8px 16px;
     
     &:hover {
-        color: #2c9e6a;
-        transform: scale(1.05);
+        color: white;
+        background-color: #42b983;
+        transform: translateY(-2px);
+        box-shadow: 0 3px 8px rgba(66, 185, 131, 0.2);
     }
     
     i {
-        margin-right: 4px;
+        margin-right: 6px;
     }
 }
 
