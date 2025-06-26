@@ -13,7 +13,12 @@
              :class="['message', message.role === 'user' ? 'user-message' : 'ai-message']">
           <div class="message-content">
             <div class="avatar">
-              <i :class="message.role === 'user' ? 'el-icon-user' : 'el-icon-service'"></i>
+              <template v-if="message.role === 'user'">
+                <i class="el-icon-user"></i>
+              </template>
+              <template v-else>
+                <img src="/fnn.jpg" alt="AI助手" class="ai-avatar-img" />
+              </template>
             </div>
             <div class="text">{{ message.content }}</div>
           </div>
@@ -26,7 +31,7 @@
           v-model="question"
           type="textarea"
           :rows="3"
-          placeholder="请描述您的症状或健康问题..."
+          placeholder="把答案留给时间去验证吧~"
           :disabled="loading"
         />
         <el-button 
@@ -51,7 +56,7 @@ export default {
       messages: [
         {
           role: 'assistant',
-          content: '您好！我是您的AI健康助手。请描述您的症状或健康问题，我会为您提供专业的建议。'
+          content: '我是枫丹的大明星芙宁娜，哎呀呀！是来寻求健康秘诀的朋友吗？本枫丹首席健康规划专家芙宁娜闪亮登场！无论塑形、膳食还是作息，任何烦恼都放马过来，包在本专家身上！'
         }
       ]
     }
@@ -176,6 +181,7 @@ export default {
   justify-content: center;
   margin: 0 10px;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .user-message .avatar {
@@ -186,6 +192,12 @@ export default {
 .ai-message .avatar {
   background-color: #67C23A;
   color: white;
+}
+
+.ai-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .text {

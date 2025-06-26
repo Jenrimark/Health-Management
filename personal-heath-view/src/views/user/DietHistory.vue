@@ -343,63 +343,75 @@
   :show-close="false"
   :visible.sync="dialogDietOperaion"
   width="40%"
-  center>
-  <div style="padding:16px 20px;">
-    <p>{{ data.id ? '编辑饮食记录' : '添加饮食记录' }}</p>
+  center
+  custom-class="diet-record-dialog">
+  <div class="diet-dialog-content">
+    <h2 class="dialog-title">{{ data.id ? '编辑饮食记录' : '添加饮食记录' }}</h2>
     
-    <div style="margin-block: 10px;">
-      <span class="dialog-hover">食谱选择</span>
+    <div class="form-item">
+      <label class="form-label">
+        <i class="el-icon-dish"></i>
+        <span>食谱选择</span>
+      </label>
       <el-select
         v-model="dieHistory.cookbookId"
         placeholder="请选择食谱"
         filterable
-        style="width: 100%;">
+        class="full-width-select">
         <el-option
           v-for="item in cookbooks"
           :key="item.id"
           :label="item.name"
           :value="item.id">
-          <div style="display: flex; align-items: center;">
-            <img :src="item.cover" style="width: 30px; height: 30px; margin-right: 10px; border-radius: 4px;">
-            <span>{{ item.name }}</span>
+          <div class="food-option">
+            <img :src="item.cover" class="option-image">
+            <span class="option-text">{{ item.name }}</span>
           </div>
         </el-option>
       </el-select>
     </div>
     
-    <div style="margin-block: 10px;">
-      <span class="dialog-hover">备注信息</span>
+    <div class="form-item">
+      <label class="form-label">
+        <i class="el-icon-notebook-1"></i>
+        <span>备注信息</span>
+      </label>
       <el-input
         type="textarea"
         :rows="3"
         placeholder="请输入备注（可选）"
         v-model="dieHistory.detail"
-        style="width: 100%;">
+        class="full-width-input">
       </el-input>
     </div>
     
-    <div style="margin-block: 10px;">
-      <span class="dialog-hover">食用量</span>
-      <el-input-number
-        v-model="dieHistory.value"
-        :min="1"
-        :max="1000"
-        :step="10"
-        controls-position="right"
-        placeholder="请输入食用量"
-        style="width: 200px;">
-      </el-input-number>
+    <div class="form-item">
+      <label class="form-label">
+        <i class="el-icon-scale-to-original"></i>
+        <span>食用量</span>
+      </label>
+      <div class="quantity-input-group">
+        <el-input-number
+          v-model="dieHistory.value"
+          :min="1"
+          :max="1000"
+          :step="10"
+          controls-position="right"
+          placeholder="请输入食用量">
+        </el-input-number>
+        <span class="unit-label">克</span>
+      </div>
     </div>
   </div>
   
-  <span slot="footer" class="dialog-footer" style="margin-top: 10px;">
-    <span class="channel-button" @click="cannel">
+  <div class="dialog-footer">
+    <button class="dialog-btn cancel-btn" @click="cannel">
       取消操作
-    </span>
-    <span class="edit-button" @click="data.id ? updateOperation() : addOperation()">
-      确 定
-    </span>
-  </span>
+    </button>
+    <button class="dialog-btn confirm-btn" @click="data.id ? updateOperation() : addOperation()">
+      {{ data.id ? '保存修改' : '添加记录' }}
+    </button>
+  </div>
 </el-dialog>
   </div>
 </template>
@@ -1098,58 +1110,133 @@ export default {
 }
 
 /* 对话框样式 */
-.diet-dialog {
-  .dialog-content {
-    padding: 0 20px;
-  }
-  
-  .form-item {
-    margin-bottom: 20px;
-    
-    label {
-      display: flex;
-      align-items: center;
-      margin-bottom: 8px;
-      color: #606266;
-      font-size: 14px;
-      font-weight: 500;
-      
-      i {
-        margin-right: 8px;
-        font-size: 16px;
-      }
-    }
-  }
-  
-  .full-width-select, .full-width-input {
-    width: 100%;
-  }
-  
-  .food-option {
-    display: flex;
-    align-items: center;
-    
-    .option-image {
-      width: 30px;
-      height: 30px;
-      border-radius: 4px;
-      margin-right: 10px;
-      object-fit: cover;
-    }
-  }
-  
-  .dialog-footer {
-    .cancel-btn {
-      padding: 10px 20px;
-    }
-    
-    .confirm-btn {
-      padding: 10px 20px;
-      background: linear-gradient(135deg, #409EFF, #66b1ff);
-      border: none;
-      box-shadow: 0 2px 6px rgba(64, 158, 255, 0.3);
-    }
-  }
+.diet-record-dialog {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+}
+
+.diet-record-dialog .el-dialog__header {
+  display: none;
+}
+
+.diet-record-dialog .el-dialog__body {
+  padding: 0;
+}
+
+.diet-dialog-content {
+  padding: 25px 30px;
+}
+
+.dialog-title {
+  color: #303133;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 25px;
+  text-align: center;
+  position: relative;
+}
+
+.dialog-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(135deg, #42b983, #2c9e6a);
+  border-radius: 3px;
+}
+
+.form-item {
+  margin-bottom: 22px;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  color: #606266;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.form-label i {
+  margin-right: 8px;
+  color: #42b983;
+  font-size: 18px;
+}
+
+.full-width-select, .full-width-input {
+  width: 100%;
+}
+
+.food-option {
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
+  line-height: normal;
+}
+
+.option-image {
+  width: 35px;
+  height: 35px;
+  border-radius: 6px;
+  margin-right: 12px;
+  object-fit: cover;
+}
+
+.quantity-input-group {
+  display: flex;
+  align-items: center;
+}
+
+.unit-label {
+  margin-left: 12px;
+  color: #606266;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: center;
+  padding: 20px 30px 30px;
+  gap: 15px;
+}
+
+.dialog-btn {
+  padding: 10px 25px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  outline: none;
+}
+
+.cancel-btn {
+  background-color: #f5f7fa;
+  color: #606266;
+  border: 1px solid #dcdfe6;
+}
+
+.cancel-btn:hover {
+  background-color: #e9ecef;
+  color: #409EFF;
+}
+
+.confirm-btn {
+  background: linear-gradient(135deg, #42b983, #2c9e6a);
+  color: white;
+  box-shadow: 0 4px 12px rgba(66, 185, 131, 0.25);
+}
+
+.confirm-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(66, 185, 131, 0.35);
 }
 
 /* 响应式设计 */
@@ -1190,6 +1277,44 @@ export default {
 .el-notification__title, .el-notification__content {
   color: white !important;
 }
+
+/* 修复下拉框和表单项中的文字对齐问题 */
+.diet-record-dialog {
+  .el-select .el-input__inner {
+    height: 40px;
+    line-height: 40px;
+  }
+}
+
+/* 直接覆盖Element UI下拉菜单样式 */
+.el-select-dropdown__item {
+  padding: 0 !important;
+  height: auto !important;
+}
+
+.food-option {
+  display: flex !important;
+  align-items: center !important;
+  padding: 8px 20px !important;
+  height: auto !important;
+}
+
+.option-image {
+  width: 35px !important;
+  height: 35px !important;
+  border-radius: 6px !important;
+  margin-right: 12px !important;
+  object-fit: cover !important;
+  flex-shrink: 0 !important;
+}
+
+.option-text {
+  display: inline-block !important;
+  vertical-align: middle !important;
+  line-height: 35px !important;
+  font-size: 14px !important;
+}
+
 .recipe-recommendation-card {
   background: #fff;
   border-radius: 12px;
@@ -1312,5 +1437,20 @@ export default {
   .meal-recommendations {
     grid-template-columns: 1fr;
   }
+}
+
+/* 修复下拉框文字垂直对齐问题 */
+.el-select-dropdown__item {
+  line-height: normal;
+  padding: 10px 20px;
+}
+
+.el-select-dropdown__item span {
+  vertical-align: middle;
+  line-height: 1.5;
+}
+
+.el-select .el-input__inner {
+  line-height: normal;
 }
 </style>
