@@ -1,23 +1,31 @@
 <template>
     <el-row style="background-color: #FFFFFF;padding: 5px 0;border-radius: 5px;">
         <el-row style="padding: 10px;margin-left: 5px;">
-            <el-row style="display: flex;justify-content: left;gap: 6px;margin-bottom: 10px;">
-                <el-button type="primary" size="small" @click="showFoodNutrientSearch">食物营养成分查询</el-button>
-                <el-button type="success" size="small" @click="showPortionCalculator">食物份量营养计算</el-button>
-            </el-row>
-            <el-row style="display: flex;justify-content: left;gap: 6px;">
-                <el-select style="width: 100px;" @change="fetchFreshData" size="small"
-                    v-model="cookbookQueryDto.categoryId" placeholder="菜系">
-                    <el-option v-for="item in categories" :key="item.id" :label="item.name" :value="item.id">
-                    </el-option>
-                </el-select>
-                <el-date-picker style="width: 216px;" @change="fetchFreshData" size="small" v-model="searchTime"
-                    type="daterange" range-separator="至" start-placeholder="发布开始" end-placeholder="发布结束">
-                </el-date-picker>
-                <el-input size="small" style="width: 166px;" v-model="cookbookQueryDto.title" placeholder="美食名"
-                    clearable @clear="handleFilterClear">
-                    <el-button slot="append" @click="handleFilter" icon="el-icon-search"></el-button>
-                </el-input>
+            <el-row style="display: flex;justify-content: space-between;align-items: center;margin-bottom: 15px;">
+                <div style="display: flex;gap: 12px;">
+                    <button class="custom-button nutrition-search-btn" @click="showFoodNutrientSearch">
+                        <i class="el-icon-food"></i>
+                        <span>食物营养成分查询</span>
+                    </button>
+                    <button class="custom-button portion-calc-btn" @click="showPortionCalculator">
+                        <i class="el-icon-pie-chart"></i>
+                        <span>食物份量营养计算</span>
+                    </button>
+                </div>
+                <div style="display: flex;gap: 15px;">
+                    <el-select class="styled-select" style="width: 120px;" @change="fetchFreshData" size="small"
+                        v-model="cookbookQueryDto.categoryId" placeholder="菜系">
+                        <el-option v-for="item in categories" :key="item.id" :label="item.name" :value="item.id">
+                        </el-option>
+                    </el-select>
+                    <el-date-picker class="styled-date-picker" style="width: 240px;" @change="fetchFreshData" size="small" v-model="searchTime"
+                        type="daterange" range-separator="至" start-placeholder="发布开始" end-placeholder="发布结束">
+                    </el-date-picker>
+                    <el-input class="styled-input" size="small" style="width: 180px;" v-model="cookbookQueryDto.title" placeholder="美食名"
+                        clearable @clear="handleFilterClear">
+                        <el-button slot="append" @click="handleFilter" icon="el-icon-search"></el-button>
+                    </el-input>
+                </div>
             </el-row>
         </el-row>
         <el-row style="margin: 0 22px;border-top: 1px solid rgb(245,245,245);">
@@ -125,7 +133,10 @@
                                 </el-autocomplete>
                             </el-form-item>
                             <el-form-item>
-                                <el-button type="primary" @click="searchFoodNutrient">查询</el-button>
+                                <button class="custom-button search-btn" @click="searchFoodNutrient">
+                                    <i class="el-icon-search"></i>
+                                    <span>查询</span>
+                                </button>
                             </el-form-item>
                         </el-form>
                     </div>
@@ -194,7 +205,10 @@
                             </el-input-number>
                         </el-form-item>
                         <el-form-item>
-                            <el-button type="primary" @click="calculatePortionNutrients">计算</el-button>
+                            <button class="custom-button calc-btn" @click="calculatePortionNutrients">
+                                <i class="el-icon-data-analysis"></i>
+                                <span>计算</span>
+                            </button>
                         </el-form-item>
                     </el-form>
                 </div>
@@ -770,6 +784,94 @@ export default {
 </script>
 
 <style>
+/* 自定义按钮样式 */
+.custom-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    min-width: 140px;
+    height: 36px;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.custom-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+}
+
+.custom-button:hover::before {
+    transform: translateX(0);
+}
+
+.custom-button:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.custom-button i {
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+.custom-button span {
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.nutrition-search-btn {
+    background: linear-gradient(135deg, #6a5af9, #4285f4);
+    font-size: 14px;
+}
+
+.nutrition-search-btn:hover {
+    background: linear-gradient(135deg, #5648e6, #3b78e7);
+}
+
+.portion-calc-btn {
+    background: linear-gradient(135deg, #f9466a, #f05d23);
+    font-size: 14px;
+}
+
+.portion-calc-btn:hover {
+    background: linear-gradient(135deg, #e33959, #e34e16);
+}
+
+.search-btn {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    width: 90px;
+}
+
+.search-btn:hover {
+    background: linear-gradient(135deg, #2980b9, #2573a7);
+}
+
+.calc-btn {
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    width: 90px;
+}
+
+.calc-btn:hover {
+    background: linear-gradient(135deg, #219d54, #27ae60);
+}
+
 /* 全局样式，确保能够应用到元素上 */
 .nutriment-dialog .el-dialog__body {
     padding: 40px 30px 25px 30px !important;
@@ -840,15 +942,28 @@ export default {
 }
 
 .nutriment-title {
-    font-size: 22px;
-    color: #409EFF;
-    margin-bottom: 10px;
+    font-size: 24px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #3498db, #8e44ad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+}
+
+.cookbook-detail-subtitle {
+    color: #606266;
+    font-size: 15px;
+    margin: 0;
+    font-weight: 400;
+    letter-spacing: 0.5px;
 }
 
 .nutriment-subtitle {
-    color: #909399;
-    font-size: 14px;
+    color: #606266;
+    font-size: 15px;
     margin: 0;
+    font-weight: 400;
+    letter-spacing: 0.5px;
 }
 
 .nutriment-empty {
@@ -1006,15 +1121,12 @@ export default {
 }
 
 .cookbook-detail-title {
-    font-size: 22px;
-    color: #409EFF;
-    margin-bottom: 10px;
-}
-
-.cookbook-detail-subtitle {
-    color: #909399;
-    font-size: 14px;
-    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #3498db, #8e44ad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
 }
 
 .food-nutrient-search-container {
@@ -1159,5 +1271,311 @@ export default {
     color: #606266;
     margin-top: 10px;
     line-height: 1.6;
+}
+
+/* 响应式设计 */
+@media screen and (max-width: 768px) {
+    .custom-button {
+        min-width: 120px;
+        height: 32px;
+        font-size: 13px;
+        padding: 6px 12px;
+    }
+    
+    .custom-button i {
+        font-size: 14px;
+        margin-right: 6px;
+    }
+    
+    .cookbook-detail-title,
+    .nutriment-title {
+        font-size: 22px;
+    }
+    
+    .cookbook-detail-subtitle,
+    .nutriment-subtitle {
+        font-size: 14px;
+    }
+    
+    .nutriment-card {
+        width: 140px;
+        height: 120px;
+    }
+    
+    .nutriment-value {
+        font-size: 22px;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .custom-button {
+        min-width: 100px;
+        height: 30px;
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+    
+    .macronutrient-distribution {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+/* 美化选择框和搜索框 */
+.el-select .el-input__inner,
+.el-date-editor.el-input__inner,
+.el-input__inner {
+    border-radius: 20px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.el-select .el-input__inner:hover,
+.el-date-editor.el-input__inner:hover,
+.el-input__inner:hover {
+    border-color: #c0c4cc;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+.el-select .el-input__inner:focus,
+.el-date-editor.el-input__inner:focus,
+.el-input__inner:focus {
+    border-color: #409EFF;
+    box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+}
+
+/* 美化下拉菜单 */
+.el-select-dropdown {
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    border: none;
+}
+
+.el-select-dropdown__item {
+    padding: 10px 20px;
+}
+
+.el-select-dropdown__item.selected {
+    background-color: #ecf5ff;
+    color: #409EFF;
+    font-weight: bold;
+}
+
+/* 美化日期选择器 */
+.el-picker-panel {
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    border: none;
+    overflow: hidden;
+}
+
+/* 美化搜索按钮 */
+.el-input-group__append {
+    border-top-right-radius: 20px !important;
+    border-bottom-right-radius: 20px !important;
+    background: linear-gradient(135deg, #409EFF, #64B5F6);
+    border-color: #409EFF;
+    color: white;
+    transition: all 0.3s;
+}
+
+.el-input-group__append:hover {
+    background: linear-gradient(135deg, #64B5F6, #409EFF);
+    border-color: #64B5F6;
+}
+
+.el-input-group__append .el-button {
+    border: none;
+    background: transparent;
+    color: white;
+    padding: 0;
+}
+
+/* 修正搜索框组合样式 */
+.el-input-group__append + .el-input__inner {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.el-input--suffix .el-input__inner {
+    padding-right: 40px;
+}
+
+/* 自定义美化组件样式 */
+.styled-select, .styled-date-picker, .styled-input {
+    font-size: 14px;
+}
+
+.styled-select .el-input__inner, 
+.styled-date-picker .el-input__inner, 
+.styled-input .el-input__inner {
+    height: 36px;
+    line-height: 36px;
+}
+
+.styled-input .el-input__icon,
+.styled-select .el-input__icon {
+    line-height: 36px;
+    color: #409EFF;
+}
+
+.styled-select .el-select-dropdown__item.selected {
+    font-weight: 600;
+}
+
+/* 优化组件间距 */
+.el-form-item {
+    margin-bottom: 18px;
+}
+
+/* 特别修复日期选择器中"至"字的垂直居中问题 - 提高选择器优先级 */
+.el-date-editor .el-range-separator.el-range-separator {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    width: 6% !important;
+    height: 100% !important;
+    color: #909399 !important;
+    font-size: 14px !important;
+    line-height: 1 !important;
+}
+
+/* 进一步优化日期选择器样式，确保所有元素垂直居中 */
+.el-date-editor--daterange.el-input__inner {
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+}
+
+.el-date-editor .el-range__icon,
+.el-date-editor .el-range__close-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    line-height: normal;
+}
+
+.el-range-editor--small .el-range-input {
+    font-size: 14px;
+}
+
+/* 修正日期选择器中输入框的垂直对齐 */
+.el-range-editor .el-range-input {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+}
+
+/* 修正图标和文本位置问题 */
+.el-input__inner {
+    padding-left: 15px;
+    padding-right: 30px;
+}
+
+.el-input__suffix {
+    right: 10px;
+}
+
+.el-input__prefix {
+    left: 10px;
+}
+
+.el-input__icon {
+    line-height: 36px;
+    height: 100%;
+    text-align: center;
+}
+
+/* 调整搜索按钮内的图标位置 */
+.el-input-group__append .el-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
+}
+
+.el-input-group__append .el-icon-search {
+    font-size: 16px;
+}
+
+/* 调整下拉箭头位置 */
+.el-select .el-input .el-select__caret {
+    color: #909399;
+    font-size: 14px;
+    transition: transform .3s;
+    transform: rotateZ(180deg);
+    cursor: pointer;
+    line-height: 36px;
+}
+
+/* 进一步优化日期选择器样式，确保所有元素垂直居中 */
+.el-date-editor--daterange.el-input__inner {
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+}
+
+.el-date-editor .el-range__icon,
+.el-date-editor .el-range__close-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    line-height: normal;
+}
+
+.el-range-editor--small .el-range-input {
+    font-size: 14px;
+}
+
+/* 修正日期选择器中输入框的垂直对齐 */
+.el-range-editor .el-range-input {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+    width: 39%;
+    margin: 0;
+    padding: 0 3px;
+    background-color: transparent;
+    border: none;
+    outline: none;
+}
+
+/* 确保搜索框内的清除图标位置正确 */
+.el-input__suffix-inner {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.el-input__icon.el-icon-circle-close {
+    height: auto;
+    font-size: 16px;
+}
+
+/* 调整占位符文本颜色和位置 */
+.el-input__inner::-webkit-input-placeholder {
+    color: #b4b6bd;
+    line-height: 1.3;
+}
+
+.el-input__inner:-moz-placeholder {
+    color: #b4b6bd;
+    line-height: 1.3;
+}
+
+.el-input__inner::-moz-placeholder {
+    color: #b4b6bd;
+    line-height: 1.3;
+}
+
+.el-input__inner:-ms-input-placeholder {
+    color: #b4b6bd;
+    line-height: 1.3;
 }
 </style> 

@@ -1,13 +1,22 @@
 <template>
     <el-row style="background-color: #FFFFFF;padding: 5px 0;border-radius: 5px;">
         <el-row style="padding: 10px;margin-left: 5px;">
-            <el-row style="display: flex;justify-content: left;gap: 6px;margin-bottom: 10px;">
-                <el-button type="primary" size="small" @click="showNutritionSearch">营养素需求查询</el-button>
-                <el-button type="success" size="small" @click="showFunctionalGoals">营养素功能目标</el-button>
-                <el-button type="warning" size="small" @click="showFoodsByNutrient">查询含特定营养素的食物</el-button>
-            </el-row>
-            <el-row style="display: flex;justify-content: left;gap: 6px;">
-                <el-input size="small" style="width: 166px;" v-model="nutrimentQueryDto.name" placeholder="营养素名称"
+            <el-row style="display: flex;justify-content: space-between;align-items: center;margin-bottom: 15px;">
+                <div style="display: flex;gap: 15px;">
+                    <el-button class="nutriment-button primary-button" size="small" @click="showNutritionSearch">
+                        <i class="el-icon-data-analysis"></i>
+                        <span>营养素需求查询</span>
+                    </el-button>
+                    <el-button class="nutriment-button success-button" size="small" @click="showFunctionalGoals">
+                        <i class="el-icon-aim"></i>
+                        <span>营养素功能目标</span>
+                    </el-button>
+                    <el-button class="nutriment-button warning-button" size="small" @click="showFoodsByNutrient">
+                        <i class="el-icon-food"></i>
+                        <span>含营养素的食物查询</span>
+                    </el-button>
+                </div>
+                <el-input class="styled-input" size="small" style="width: 200px;" v-model="nutrimentQueryDto.name" placeholder="营养素名称"
                     clearable @clear="handleFilterClear">
                     <el-button slot="append" @click="handleFilter" icon="el-icon-search"></el-button>
                 </el-input>
@@ -425,9 +434,9 @@ export default {
                         { name: '锌', benefit: '支持免疫细胞生长和活性，缺乏会影响免疫反应' },
                         { name: '硒', benefit: '具有抗氧化特性，支持免疫系统功能' }
                     ],
-                    foods: ['柑橘类水果', '红椒', '西兰花', '大蒜', '生姜', '蘑菇', '酸奶', '坚果和种子']
-                }
-            }
+                                          foods: ['柑橘类水果', '红椒', '西兰花', '大蒜', '生姜', '蘑菇', '酸奶', '坚果和种子']
+                  }
+              }
         };
     },
     created() {
@@ -717,16 +726,6 @@ export default {
         },
 
 
-
-
-
-
-
-
-
-
-
-
     }
 };
 </script>
@@ -739,6 +738,65 @@ export default {
     }
     .el-dialog__body {
         padding: 0;
+    }
+}
+
+/* 自定义按钮样式 */
+.nutriment-button {
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-weight: 500;
+    transition: all 0.3s;
+    border: none;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    
+    i {
+        font-size: 16px;
+    }
+
+    span {
+        font-size: 14px;
+        white-space: nowrap;
+    }
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
+    }
+    
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+.primary-button {
+    background: linear-gradient(135deg, #409EFF, #64B5F6);
+    color: white;
+    
+    &:hover {
+        background: linear-gradient(135deg, #64B5F6, #409EFF);
+    }
+}
+
+.success-button {
+    background: linear-gradient(135deg, #67C23A, #8BC34A);
+    color: white;
+    
+    &:hover {
+        background: linear-gradient(135deg, #8BC34A, #67C23A);
+    }
+}
+
+.warning-button {
+    background: linear-gradient(135deg, #E6A23C, #FFB74D);
+    color: white;
+    
+    &:hover {
+        background: linear-gradient(135deg, #FFB74D, #E6A23C);
     }
 }
 
@@ -1075,5 +1133,233 @@ export default {
     margin: 0;
 }
 
+/* 调整日期选择器内的文本位置 */
+.el-date-editor .el-range-input {
+    font-size: 14px;
+    display: inline-block;
+    width: 39%;
+    height: 100%;
+    line-height: 36px;
+    margin: 0;
+    padding: 0 3px;
+    text-align: center;
+    background-color: transparent;
+    border: none;
+    outline: none;
+}
+
+/* 确保搜索框内的清除图标位置正确 */
+.el-input__suffix-inner {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.el-input__icon.el-icon-circle-close {
+    height: auto;
+    font-size: 16px;
+}
+
+/* 调整占位符文本颜色和位置 */
+.el-input__inner::-webkit-input-placeholder {
+    color: #b4b6bd;
+    line-height: 1.3;
+}
+
+.el-input__inner:-moz-placeholder {
+    color: #b4b6bd;
+    line-height: 1.3;
+}
+
+.el-input__inner::-moz-placeholder {
+    color: #b4b6bd;
+    line-height: 1.3;
+}
+
+.el-input__inner:-ms-input-placeholder {
+    color: #b4b6bd;
+    line-height: 1.3;
+}
+
+/* 修正图标和文本位置问题 */
+.el-input__inner {
+    padding-left: 15px;
+    padding-right: 30px;
+}
+
+.el-input__suffix {
+    right: 10px;
+}
+
+.el-input__prefix {
+    left: 10px;
+}
+
+.el-input__icon {
+    line-height: 36px;
+    height: 100%;
+    text-align: center;
+}
+
+/* 特别修复PublicNutriment搜索框图标位置 */
+.el-input-group__append .el-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    width: 30px;
+    height: 100%;
+}
+
+.el-input-group__append .el-button i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-size: 16px;
+    margin: 0;
+}
+
+/* 确保按钮内的图标对齐 */
+.el-button [class*="el-icon-"] + span {
+    margin-left: 5px;
+}
+
+/* 提高选择器优先级，确保样式生效 */
+.el-input-group__append.el-input-group__append {
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+/* 美化选择框和搜索框 */
+.el-select .el-input__inner,
+.el-date-editor.el-input__inner,
+.el-input__inner {
+    border-radius: 20px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.el-select .el-input__inner:hover,
+.el-date-editor.el-input__inner:hover,
+.el-input__inner:hover {
+    border-color: #c0c4cc;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+.el-select .el-input__inner:focus,
+.el-date-editor.el-input__inner:focus,
+.el-input__inner:focus {
+    border-color: #409EFF;
+    box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+}
+
+/* 美化下拉菜单 */
+.el-select-dropdown {
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    border: none;
+}
+
+.el-select-dropdown__item {
+    padding: 10px 20px;
+}
+
+.el-select-dropdown__item.selected {
+    background-color: #ecf5ff;
+    color: #409EFF;
+    font-weight: bold;
+}
+
+/* 美化日期选择器 */
+.el-picker-panel {
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    border: none;
+    overflow: hidden;
+}
+
+/* 美化搜索按钮 */
+.el-input-group__append {
+    border-top-right-radius: 20px !important;
+    border-bottom-right-radius: 20px !important;
+    background: linear-gradient(135deg, #409EFF, #64B5F6);
+    border-color: #409EFF;
+    color: white;
+    transition: all 0.3s;
+}
+
+.el-input-group__append:hover {
+    background: linear-gradient(135deg, #64B5F6, #409EFF);
+    border-color: #64B5F6;
+}
+
+.el-input-group__append .el-button {
+    border: none;
+    background: transparent;
+    color: white;
+    padding: 0;
+}
+
+/* 修正搜索框组合样式 */
+.el-input-group__append + .el-input__inner {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.el-input--suffix .el-input__inner {
+    padding-right: 40px;
+}
+
+/* 自定义美化组件样式 */
+.styled-select, .styled-date-picker, .styled-input {
+    font-size: 14px;
+}
+
+.styled-select .el-input__inner, 
+.styled-date-picker .el-input__inner, 
+.styled-input .el-input__inner {
+    height: 36px;
+    line-height: 36px;
+}
+
+.styled-input .el-input__icon,
+.styled-select .el-input__icon {
+    line-height: 36px;
+    color: #409EFF;
+}
+
+.styled-select .el-select-dropdown__item.selected {
+    font-weight: 600;
+}
+
+/* 优化组件间距 */
+.el-form-item {
+    margin-bottom: 18px;
+}
+
+.el-date-editor .el-range-separator {
+    padding: 0 5px;
+    line-height: 32px;
+    color: #909399;
+}
+
+.el-date-editor .el-range__icon, 
+.el-date-editor .el-range__close-icon {
+    line-height: 24px;
+}
+
+/* 调整下拉箭头位置 */
+.el-select .el-input .el-select__caret {
+    color: #909399;
+    font-size: 14px;
+    transition: transform .3s;
+    transform: rotateZ(180deg);
+    cursor: pointer;
+    line-height: 36px;
+}
 
 </style> 
