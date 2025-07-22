@@ -1,4 +1,5 @@
-<!-- 点击进入DeepWiki查看详细设计 -->
+> 💡 **提示**：点击下方徽章进入DeepWiki查看详细设计文档
+
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Jenrimark/Health-Management)
 
 # 蝶启新生-健康管理系统
