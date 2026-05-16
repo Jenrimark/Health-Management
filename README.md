@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="personal-heath-view/public/LOGO0.png" width="200" alt="蝶启新生 Logo"/>
+<img src="personal-heath-view/public/LOGO0.png" width="200" alt="蝶启新生 Logo" style="border-radius:24px;"/>
 
 ### ⚡ 蝶启新生 - 芙芙健康管家 v0.1 | 内测开启 ⚡
 
@@ -19,7 +19,7 @@
 <br/>
 
 <a href="https://www.bilibili.com/video/BV11PgPzaEz1/" target="_blank">
-<img src="personal-heath-view/public/logoz2.png" width="360" alt="芙芙健康管家 - B站宣传视频" style="border-radius:12px;"/>
+<video src="personal-heath-view/public/background.mp4" width="360" autoplay loop muted playsinline style="border-radius:12px;pointer-events:none;"></video>
 </a>
 
 <br/>
