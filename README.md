@@ -5,7 +5,7 @@
 
 ### ⚡ 蝶启新生 - 芙芙健康管家 v0.1 | 内测开启 ⚡
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Jenrimark/Health-Management) ![GitHub stars](https://img.shields.io/github/stars/Jenrimark/Health-Management?style=flat-square) ![GitHub forks](https://img.shields.io/github/forks/Jenrimark/Health-Management?style=flat-square) ![GitHub license](https://img.shields.io/github/license/Jenrimark/Health-Management?style=flat-square) ![Bilibili](https://img.shields.io/badge/Bilibili-宣传视频-00A1D6?style=flat-square&logo=bilibili&logoColor=white)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Jenrimark/Health-Management) ![GitHub stars](https://img.shields.io/github/stars/Jenrimark/Health-Management?style=flat-square) ![GitHub forks](https://img.shields.io/github/forks/Jenrimark/Health-Management?style=flat-square) ![GitHub license](https://img.shields.io/github/license/Jenrimark/Health-Management?style=flat-square) [![Bilibili](https://img.shields.io/badge/Bilibili-宣传视频-00A1D6?style=flat-square&logo=bilibili&logoColor=white)](https://www.bilibili.com/video/BV11PgPzaEz1/)
 
 **一个基于 Spring Boot + Vue.js 的全栈健康管理系统**
 
@@ -52,10 +52,11 @@
 - [部署说明](#-部署说明)
 - [贡献指南](#-贡献指南)
 - [许可证](#-许可证)
+- [联系方式](#-联系方式)
 
 ## 🎯 项目简介
 
-蝶启新生健康管理系统是一个现代化的健康管理平台，旨在帮助用户更好地管理个人和家庭的健康状况。系统集成了健康数据记录、智能食谱推荐、运动计划制定、健康报告生成等多项功能，为用户提供全方位的健康管理服务。
+蝶启新生是一个现代化的全栈健康管理平台，帮助用户科学管理个人与家庭健康。系统涵盖健康数据追踪、智能营养推荐、运动计划制定、健康报告生成等核心能力，致力于为用户提供一站式健康管理体验。
 
 ## ✨ 主要功能
 
@@ -90,14 +91,27 @@
 
 ## 🏗 系统架构
 
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   前端 (Vue.js)  │───▶│  后端 (Spring)   │───▶│  数据库 (MySQL)  │
-│                 │    │                 │    │                 │
-│ • 用户界面       │    │ • RESTful API   │    │ • 用户数据       │
-│ • 数据可视化     │    │ • 业务逻辑       │    │ • 健康记录       │
-│ • 交互体验       │    │ • 数据处理       │    │ • 食谱数据       │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
+```mermaid
+graph LR
+    subgraph Frontend["🖥 前端 (Vue.js)"]
+        A1[用户界面]
+        A2[数据可视化]
+        A3[交互体验]
+    end
+
+    subgraph Backend["⚙️ 后端 (Spring Boot)"]
+        B1[RESTful API]
+        B2[业务逻辑]
+        B3[JWT 认证]
+    end
+
+    subgraph Database["🗄 数据层"]
+        C1[(MySQL)]
+        C2[MyBatis ORM]
+    end
+
+    Frontend -->|"Axios HTTP"| Backend
+    Backend --> Database
 ```
 
 ## 🚀 快速开始
@@ -132,7 +146,7 @@ mysql -u root -p personal_health < personal_health.sql
 
 ```bash
 cd personal-health-api
-# 修改 src/main/resources/application.yml 中的数据库配置
+# 修改 src/main/resources/application.yml 中的数据库连接配置
 mvn clean install
 mvn spring-boot:run
 ```
@@ -147,7 +161,7 @@ npm install
 npm run serve
 ```
 
-前端页面访问 `http://localhost:8080`
+前端访问 `http://localhost:8080`
 
 ## 📁 项目结构
 
@@ -488,7 +502,7 @@ cd personal-health-api && mvn spring-boot:run
 cd personal-heath-view && npm run serve
 ```
 
-### 生产环境
+### 生产部署
 
 ```bash
 # 后端打包
@@ -497,13 +511,14 @@ cd personal-health-api && mvn clean package -Dmaven.test.skip=true
 # 前端打包
 cd personal-heath-view && npm run build
 
-# 运行
+# 启动后端服务
 java -jar personal-health-api/target/personal-health-api-1.0-SNAPSHOT.jar
+
 # 前端静态文件部署到 Nginx
 cp -r personal-heath-view/dist/* /var/www/html/
 ```
 
-### Docker
+### Docker 部署
 
 ```bash
 docker build -t health-management .
