@@ -13,7 +13,9 @@
 
 <br/>
 
+<a href="https://www.bilibili.com/video/BV11PgPzaEz1/" target="_blank">
 <img src="https://github.com/Jenrimark/Health-Management/raw/main/personal-heath-view/public/background.gif" width="360" alt="蝶启新生演示"/>
+</a>
 
 <br/>
 
