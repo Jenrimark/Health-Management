@@ -13,7 +13,7 @@
 
 <br/>
 
-<video src="https://github.com/Jenrimark/Health-Management/raw/main/personal-heath-view/public/background.mp4" width="360" controls></video>
+<img src="https://github.com/Jenrimark/Health-Management/raw/main/personal-heath-view/public/background.gif" width="360" alt="蝶启新生演示"/>
 
 <br/>
 
