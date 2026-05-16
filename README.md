@@ -1,31 +1,20 @@
 <div align="center">
 
-<img src="personal-heath-view/public/LOGO0.png" width="200" alt="蝶启新生 Logo" style="border-radius:24px;"/>
+<img src="personal-heath-view/public/LOGO0.png" width="60" alt="蝶启新生 Logo"/>
+<img src="personal-heath-view/public/logoz2.png" height="60" alt="蝶启新生"/>
 
 ### ⚡ 蝶启新生 - 芙芙健康管家 v0.1 | 内测开启 ⚡
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Jenrimark/Health-Management)
-![GitHub stars](https://img.shields.io/github/stars/Jenrimark/Health-Management?style=flat-square)
-![GitHub forks](https://img.shields.io/github/forks/Jenrimark/Health-Management?style=flat-square)
-![GitHub license](https://img.shields.io/github/license/Jenrimark/Health-Management?style=flat-square)
-![Bilibili](https://img.shields.io/badge/Bilibili-宣传视频-00A1D6?style=flat-square&logo=bilibili&logoColor=white)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Jenrimark/Health-Management) ![GitHub stars](https://img.shields.io/github/stars/Jenrimark/Health-Management?style=flat-square) ![GitHub forks](https://img.shields.io/github/forks/Jenrimark/Health-Management?style=flat-square) ![GitHub license](https://img.shields.io/github/license/Jenrimark/Health-Management?style=flat-square) ![Bilibili](https://img.shields.io/badge/Bilibili-宣传视频-00A1D6?style=flat-square&logo=bilibili&logoColor=white)
 
 **一个基于 Spring Boot + Vue.js 的全栈健康管理系统**
 
 提供个人健康数据管理、营养食谱推荐、健康计划制定、家庭健康管理等功能
 
-> 🎮 爱原神，爱自己！
-
 <br/>
 
 <a href="https://www.bilibili.com/video/BV11PgPzaEz1/" target="_blank">
-<video src="personal-heath-view/public/background.mp4" width="360" autoplay loop muted playsinline style="border-radius:12px;pointer-events:none;"></video>
-</a>
-
-<br/>
-
-<a href="https://www.bilibili.com/video/BV11PgPzaEz1/">
-<img src="https://img.shields.io/badge/📺_观看宣传视频-BV11PgPzaEz1-00A1D6?style=for-the-badge&logo=bilibili&logoColor=white" alt="B站宣传视频"/>
+<img src="personal-heath-view/public/background.mp4" width="360" alt="芙芙健康管家 - 宣传视频"/>
 </a>
 
 <br/>
