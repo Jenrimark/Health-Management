@@ -1,3 +1,37 @@
 /deepseek接口.docx
 /personal-heath-view/node_modules/
-.gitignore
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Java / Maven
+*.class
+*.jar
+*.war
+*.ear
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Node.js
+node_modules/
+dist/
+npm-debug.log*
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+*.swp
+*.swo
+*~
+.settings/
+.classpath
+.project
+.factorypath
+
+# Logs
+*.log
