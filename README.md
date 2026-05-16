@@ -13,9 +13,7 @@
 
 <br/>
 
-<a href="https://www.bilibili.com/video/BV11PgPzaEz1/" target="_blank">
-<img src="personal-heath-view/public/background.mp4" width="360" alt="芙芙健康管家 - 宣传视频"/>
-</a>
+<video src="https://raw.githubusercontent.com/Jenrimark/Health-Management/main/personal-heath-view/public/background.mp4" width="360" controls muted></video>
 
 <br/>
 
