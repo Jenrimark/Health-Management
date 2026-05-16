@@ -13,7 +13,7 @@
 
 <br/>
 
-<video src="https://raw.githubusercontent.com/Jenrimark/Health-Management/main/personal-heath-view/public/background.mp4" width="360" controls muted></video>
+<video src="https://github.com/Jenrimark/Health-Management/raw/main/personal-heath-view/public/background.mp4" width="360" controls></video>
 
 <br/>
 
